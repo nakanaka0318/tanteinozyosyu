@@ -290,3 +290,91 @@ button{font-family:inherit;cursor:pointer}
   background:radial-gradient(ellipse at center,rgba(4,3,8,.82) 0%,rgba(4,3,8,.55) 45%,rgba(4,3,8,0) 72%)}
 #title > *{position:relative}
 #title .tt-press,#title .tt-copy{position:absolute}
+
+/* =========================================================
+   スマートフォン対応
+   ========================================================= */
+body{-webkit-touch-callout:none}
+.touch-only{display:none}
+body.touch .touch-only{display:block}
+body.touch .pc-only{display:none}
+body.touch #hud-menu{display:none}
+
+/* --- タッチ操作パネル --- */
+body.touch-port #wrap{justify-content:flex-start;padding-top:env(safe-area-inset-top)}
+body.touch-port #touch{flex:1;min-height:150px;align-items:center;padding:8px 18px calc(10px + env(safe-area-inset-bottom))}
+body.touch-land #touch{position:fixed;inset:0;padding:0;pointer-events:none;display:block}
+body.touch-land #touch .dpad{position:absolute;left:calc(8px + env(safe-area-inset-left));bottom:14px;width:126px;height:126px}
+body.touch-land #touch .dpad button{width:42px;height:42px}
+body.touch-land #touch .du{left:42px;top:0}body.touch-land #touch .dd{left:42px;bottom:0}
+body.touch-land #touch .dl{left:0;top:42px}body.touch-land #touch .dr{right:0;top:42px}
+body.touch-land #touch .abtn{position:absolute;right:calc(10px + env(safe-area-inset-right));bottom:14px;flex-direction:column-reverse;gap:12px}
+body.touch-land #touch .abtn button{width:66px;height:66px}
+body.touch-land #touch .abtn .ba{transform:none}
+#touch button{pointer-events:auto;-webkit-user-select:none;user-select:none}
+
+/* --- 縦持ちレイアウト --- */
+#stage.vmode #hud-obj{left:calc(var(--u)*2);right:auto;top:calc(var(--u)*10.4);max-width:92%;text-align:left;border-right:none;border-left:2px solid var(--gold);
+  background:linear-gradient(90deg,rgba(8,7,12,.85),rgba(8,7,12,0));padding-left:calc(var(--u)*1.2);font-size:.72em}
+#stage.vmode #hud-trust{top:calc(var(--u)*7.2)}
+#stage.vmode #toast{top:auto;bottom:36%;max-width:92%;width:max-content}
+#stage.vmode #room-label{top:30%;font-size:1.3em;letter-spacing:.4em}
+#stage.vmode #dialog{left:3%;right:3%;bottom:2.5%;height:28%;padding:calc(var(--u)*2.4) calc(var(--u)*2) calc(var(--u)*1.4)}
+#stage.vmode #dlg-text{font-size:1.02em;line-height:1.75}
+#stage.vmode #dlg-text.big{font-size:1.5em}
+#stage.vmode .portrait{width:48%;height:34%;bottom:30%;left:0}
+#stage.vmode .portrait.right{left:auto;right:0}
+#stage.vmode #choices{min-width:88%;max-width:92%;top:42%}
+#stage.vmode #mono p{max-width:88%;font-size:1.15em;letter-spacing:.1em}
+#stage.vmode .tt-logo{font-size:2.9em}
+#stage.vmode .tt-kicker{font-size:.85em;letter-spacing:.4em}
+#stage.vmode .tt-en{font-size:.55em;letter-spacing:.35em;text-align:center}
+#stage.vmode #title{padding-bottom:20%}
+#stage.vmode #title::before{width:120%;height:60%;top:52%}
+#stage.vmode .tt-menu{margin-top:calc(var(--u)*4)}
+#stage.vmode .tt-copy{font-size:.62em;line-height:1.7}
+#stage.vmode .tt-press{bottom:22%}
+#stage.vmode .ch-title{font-size:1.75em;letter-spacing:.18em;text-align:center;padding:0 4%}
+#stage.vmode .ch-num{letter-spacing:.5em}
+#stage.vmode .ci-text{font-size:2.2em;letter-spacing:.12em}
+#stage.vmode .ci-icon{left:50%;top:22%;transform:translate(-50%,-50%);width:calc(var(--u)*9);height:calc(var(--u)*9)}
+#stage.vmode #cutin::before{height:22%}
+#stage.vmode .card-inner{width:90%;padding:calc(var(--u)*2.4) calc(var(--u)*2.2)}
+#stage.vmode .card-icon{width:calc(var(--u)*8);height:calc(var(--u)*8);padding:calc(var(--u)*1.4)}
+#stage.vmode .card-name{font-size:1.25em}
+#stage.vmode .nm-inner{width:92%;padding:calc(var(--u)*3) calc(var(--u)*2)}
+#stage.vmode #result .rs-rank{font-size:5em}
+#stage.vmode #result .rs-title{font-size:1.2em}
+/* 手帳 */
+#stage.vmode .nb-book{width:94%;height:94%}
+#stage.vmode .nb-book{background:linear-gradient(90deg,#d8ccad 0%,#ece2cb 5%,#efe6d1 50%,#ece2cb 95%,#d4c7a6 100%)}
+#stage.vmode .nb-head{flex-direction:column;align-items:stretch;padding:calc(var(--u)*1.2) calc(var(--u)*1.6) 0}
+#stage.vmode .nb-prompt{font-size:.85em;padding-bottom:calc(var(--u)*.6)}
+#stage.vmode .nb-tabs{margin-left:0}
+#stage.vmode .nb-tabs button{flex:1;padding:calc(var(--u)*.7) 0;letter-spacing:.1em}
+#stage.vmode .nb-body{flex-direction:column}
+#stage.vmode .nb-list{width:100%;flex:none;max-height:36%;padding:calc(var(--u)*.8) calc(var(--u)*1.4);border-bottom:1px solid rgba(90,60,30,.3)}
+#stage.vmode .nb-item{font-size:.82em;padding:calc(var(--u)*.45) calc(var(--u)*.6)}
+#stage.vmode .nb-item .ic{width:calc(var(--u)*2.8);height:calc(var(--u)*2.8)}
+#stage.vmode .nb-detail{padding:calc(var(--u)*1.4) calc(var(--u)*2)}
+#stage.vmode .nb-detail .big{width:calc(var(--u)*8);height:calc(var(--u)*8);padding:calc(var(--u)*1);margin-bottom:calc(var(--u)*.8)}
+#stage.vmode .nb-detail h3{font-size:1.05em}
+#stage.vmode .nb-detail p{font-size:.82em;line-height:1.8}
+#stage.vmode .nb-foot{padding:calc(var(--u)*.7) calc(var(--u)*1.6)}
+#stage.vmode .nb-foot span{display:none}
+#stage.vmode .nb-foot button{margin-left:auto}
+/* 犯人選択 */
+#stage.vmode .pk-prompt{font-size:.9em;letter-spacing:.1em;text-align:center;padding:0 5%;line-height:1.7}
+#stage.vmode .pk-row{flex-wrap:wrap;justify-content:center;gap:calc(var(--u)*1.2);padding:0 3%}
+#stage.vmode .pk{width:calc(var(--u)*13.5)}
+#stage.vmode .pk .pkimg{height:calc(var(--u)*16)}
+/* 時系列（縦） */
+.tl-body.vert{width:86%;height:58%}
+.tl-body.vert .tl-axis{left:26%;right:auto;top:0;bottom:0;width:2px;height:auto;background:linear-gradient(180deg,transparent,var(--gold) 5%,var(--gold) 95%,transparent)}
+.tl-body.vert .tl-mark{left:26%;transform:none;display:block;width:0;height:0}
+.tl-body.vert .tl-mark .dot{transform:translate(-50%,-50%)}
+.tl-body.vert .tl-mark .tm{top:0!important;bottom:auto!important;right:calc(var(--u)*2);transform:translateY(-50%)}
+.tl-body.vert .tl-mark .ev{top:0!important;bottom:auto!important;left:calc(var(--u)*2.2);transform:translateY(-50%);text-align:left;width:calc(var(--u)*30)}
+.tl-body.vert .tl-mark .ev br{display:none}
+.tl-body.vert .tl-zone{left:26%;height:auto;width:calc(var(--u)*5);transform:translateX(-50%)}
+.tl-body.vert .tl-zone span{top:auto;bottom:calc(100% + var(--u)*1.2);left:50%;transform:translateX(-50%)}

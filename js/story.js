@@ -158,7 +158,9 @@ const STORY = (() => {
     await M('九条さん、くれぐれも失礼のないようにしてくださいね。', 'serious');
     await K('善処しよう。', 'closed');
     G.cam(null); G.cinema(false);
-    G.toast('<b>移動</b>：矢印キー / WASD（Shiftで早歩き）<br><b>調べる・話す・決定</b>：Z / Enter / Space<br><b>手帳を開く</b>：X / Esc（右下のボタンでも可）', 9000);
+    G.toast(document.body.classList.contains('touch')
+      ? '<b>移動</b>：十字ボタン<br><b>調べる・話す・決定</b>：Aボタン（会話は画面タップでも送れます）<br><b>手帳を開く</b>：Bボタン'
+      : '<b>移動</b>：矢印キー / WASD（Shiftで早歩き）<br><b>調べる・話す・決定</b>：Z / Enter / Space<br><b>手帳を開く</b>：X / Esc（右下のボタンでも可）', 9000);
   }
 
   async function dinner() {
@@ -323,7 +325,7 @@ const STORY = (() => {
     await M('……はい。', 'serious');
     await K('私の目は二つしかない。君の目も貸してくれ。気になるものは何でも調べて、私に見せるんだ。');
     G.cinema(false);
-    G.toast('調べたい物の前で <b>Z / Enter / Space</b>。<br>【✦ 光っている場所】は手がかりの可能性があります。', 8000);
+    G.toast(`調べたい物の前で <b>${document.body.classList.contains('touch') ? 'Aボタン' : 'Z / Enter / Space'}</b>。<br>【✦ 光っている場所】は手がかりの可能性があります。`, 8000);
   }
 
   async function afterStudy() {
@@ -463,7 +465,7 @@ const STORY = (() => {
     await K('雅人氏は二階の自室。白瀬さんは図書室。藤堂先生はサロン。すずさんは厨房で、真田さんはホールにいる。');
     await K('話を聞く時は、私も一緒だ。だが――君にしか聞き出せない話も、きっとあるだろう。', 'smile');
     await K('頼りにしているよ、{N}くん。');
-    G.toast('<b>手帳</b>（X / Esc）で、集めた証拠品や人物を確認できます。<br>迷ったら、後ろにいる<b>九条に話しかけて</b>みましょう。', 8500);
+    G.toast(`<b>手帳</b>（${document.body.classList.contains('touch') ? 'Bボタン' : 'X / Esc'}）で、集めた証拠品や人物を確認できます。<br>迷ったら、後ろにいる<b>九条に話しかけて</b>みましょう。`, 8500);
   }
 
   async function talkSanada() {

@@ -2,7 +2,8 @@
 /* =========================================================
    ENGINE : 描画・入力・UI・スクリプト実行
    ========================================================= */
-const RS = 3, TS = 16, VW = 384, VH = 216;
+const RS = 3, TS = 16;
+let VW = 384, VH = 216;
 const SAVE_KEY = 'kurosagi_save_v1', CFG_KEY = 'kurosagi_cfg_v1';
 const $ = id => document.getElementById(id);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -32,21 +33,39 @@ function newState(name) {
 /* ======================= resize / touch ======================= */
 const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0 && matchMedia('(pointer:coarse)').matches);
 function resize() {
-  const portrait = innerHeight > innerWidth;
-  const touchBelow = isTouch && portrait;
+  const iw = window.visualViewport ? Math.round(visualViewport.width) : innerWidth;
+  const ih = window.visualViewport ? Math.round(visualViewport.height) : innerHeight;
+  const portrait = ih > iw * 1.05;
+  document.body.classList.toggle('touch', isTouch);
+  document.body.classList.toggle('touch-port', isTouch && portrait);
+  document.body.classList.toggle('touch-land', isTouch && !portrait);
+  stage.classList.toggle('vmode', portrait);
   $('touch').classList.toggle('hidden', !isTouch);
-  const tEl = $('touch');
-  if (isTouch && !portrait) { tEl.style.position = 'fixed'; tEl.style.bottom = '0'; tEl.style.left = '0'; tEl.style.right = '0'; tEl.style.pointerEvents = 'none'; tEl.style.opacity = '.75'; }
-  else { tEl.style.position = 'relative'; tEl.style.pointerEvents = ''; tEl.style.opacity = '1'; }
-  tEl.querySelectorAll('button').forEach(b => b.style.pointerEvents = 'auto');
-  const aw = innerWidth, ah = innerHeight - (touchBelow ? 200 : 0);
-  let w = aw, h = w * 9 / 16;
-  if (h > ah) { h = ah; w = h * 16 / 9; }
-  stage.style.width = Math.floor(w) + 'px'; stage.style.height = Math.floor(h) + 'px';
-  stage.style.setProperty('--u', (w / 100) + 'px');
-  stage.style.fontSize = `calc(var(--u)*${w < 700 ? 2.35 : 2.0})`;
+  let w, h;
+  if (portrait) {
+    const padH = isTouch ? Math.min(210, Math.round(ih * 0.27)) : 0;
+    w = iw; h = Math.min(ih - padH, Math.round(w * 2.1));
+  } else {
+    const side = isTouch ? Math.min(150, Math.round(iw * 0.17)) : 0;
+    w = iw - side * 2; h = w * 9 / 16;
+    if (h > ih) { h = ih; w = h * 16 / 9; }
+  }
+  w = Math.floor(w); h = Math.floor(h);
+  stage.style.width = w + 'px'; stage.style.height = h + 'px';
+  const u = portrait ? w / 52 : w / 100;
+  stage.style.setProperty('--u', u + 'px');
+  stage.style.fontSize = `calc(var(--u)*${portrait ? 2.0 : (w < 700 ? 2.35 : 2.0)})`;
+  // 論理解像度：縦持ちは縦長のビューにする
+  const nVW = portrait ? 240 : 384, nVH = portrait ? Math.round(240 * h / w) : 216;
+  if (nVW !== VW || nVH !== VH) {
+    VW = nVW; VH = nVH;
+    cv.width = VW * RS; cv.height = VH * RS; lc.width = cv.width; lc.height = cv.height;
+    if (W.map) snapCam();
+  }
 }
 addEventListener('resize', resize);
+addEventListener('orientationchange', () => setTimeout(resize, 200));
+if (window.visualViewport) visualViewport.addEventListener('resize', resize);
 
 /* ======================= input ======================= */
 const KEYMAP = { ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right',
@@ -91,6 +110,7 @@ document.querySelectorAll('#touch button').forEach(b => {
   b.addEventListener('touchstart', on, { passive: false }); b.addEventListener('touchend', off, { passive: false }); b.addEventListener('touchcancel', off, { passive: false });
   b.addEventListener('mousedown', on); b.addEventListener('mouseup', off); b.addEventListener('mouseleave', off);
 });
+$('touch').addEventListener('click', e => { if (e.target === $('touch')) { const h = topH(); if (h && h.tap) h.tap(); } });
 $('hud-menu').addEventListener('click', e => { e.stopPropagation(); if (!topH() && W.mode === 'play' && !W.busy) runScript(async () => { await NB.open('menu'); }); });
 const heldDir = () => ['up', 'down', 'left', 'right'].find(d => held.has(d)) || null;
 
@@ -229,7 +249,7 @@ function camDesired() {
   if (W.camTarget) { tx = W.camTarget[0] * TS + 8; ty = W.camTarget[1] * TS + 8; }
   else { tx = W.P.px + 8; ty = W.P.py + 4; }
   const mw = W.map.w * TS, mh = W.map.h * TS;
-  let x = tx - VW / 2, y = ty - VH / 2 - (DLG.visible ? 24 : 0);
+  let x = tx - VW / 2, y = ty - VH / 2 - (DLG.visible ? (VH > VW ? VH * 0.16 : 24) : 0);
   x = mw <= VW ? (mw - VW) / 2 : Math.max(0, Math.min(mw - VW, x));
   y = mh <= VH ? (mh - VH) / 2 : Math.max(-30, Math.min(mh - VH + 30, y));
   return [x, y];
@@ -584,6 +604,8 @@ async function cutin(text, icon, ms = 1300) {
 }
 async function timeline(marks, zone) {
   const box = $('tl-body'); box.innerHTML = '<div class="tl-axis"></div>';
+  const vert = VH > VW, P = vert ? 'top' : 'left', SZ = vert ? 'height' : 'width';
+  box.classList.toggle('vert', vert);
   const t0 = 21 * 60 + 20, t1 = 22 * 60 + 55;
   $('portrait-l').classList.remove('show'); $('portrait-r').classList.remove('show'); DLG.curL = DLG.curR = null;
   const pos = s => { const [h, m] = s.split(':').map(Number); return ((h * 60 + m - t0) / (t1 - t0)) * 100; };
@@ -591,13 +613,13 @@ async function timeline(marks, zone) {
   marks.forEach((m, i) => {
     const d = document.createElement('div');
     d.className = 'tl-mark ' + (i % 2 ? 'down' : 'up') + (m.cls ? ' ' + m.cls : '');
-    d.style.left = pos(m.t) + '%'; d.style.animationDelay = (0.3 + i * 0.35) + 's';
+    d.style[P] = pos(m.t) + '%'; d.style.animationDelay = (0.3 + i * 0.35) + 's';
     d.innerHTML = `<div class="dot"></div><div class="tm">${m.t}</div><div class="ev">${richHTML(m.text)}</div>`;
     box.appendChild(d);
   });
   if (zone) {
     const z = document.createElement('div'); z.className = 'tl-zone';
-    z.style.left = pos(zone[0]) + '%'; z.style.width = (pos(zone[1]) - pos(zone[0])) + '%';
+    z.style[P] = pos(zone[0]) + '%'; z.style[SZ] = (pos(zone[1]) - pos(zone[0])) + '%';
     z.style.animationDelay = (0.4 + marks.length * 0.35) + 's';
     z.innerHTML = `<span>${zone[2]}</span>`; box.appendChild(z);
   }
@@ -863,8 +885,8 @@ function clearSave() { try { localStorage.removeItem(SAVE_KEY); } catch (e) {} }
 
 /* ======================= Title ======================= */
 const TITLE = (() => {
-  const drops = Array.from({ length: 260 }, () => ({ x: Math.random() * VW, y: Math.random() * VH, v: 4 + Math.random() * 4, l: 6 + Math.random() * 10 }));
-  const clouds = Array.from({ length: 14 }, (_, i) => ({ x: Math.random() * VW * 1.4, y: 10 + Math.random() * 70, r: 30 + Math.random() * 50, v: 0.004 + Math.random() * 0.008 }));
+  const drops = Array.from({ length: 260 }, () => ({ x: Math.random() * 400, y: Math.random() * 500, v: 4 + Math.random() * 4, l: 6 + Math.random() * 10 }));
+  const clouds = Array.from({ length: 14 }, (_, i) => ({ x: Math.random() * 384 * 1.4, y: 10 + Math.random() * 70, r: 30 + Math.random() * 50, v: 0.004 + Math.random() * 0.008 }));
   let bolt = null, nextBolt = 2500;
   const wins = [];
   // 屋敷のシルエット
@@ -882,8 +904,8 @@ const TITLE = (() => {
   for (const [x, y, on] of [[78, 120, 1], [86, 120, 0], [78, 136, 1], [98, 104, 0], [108, 104, 1], [124, 118, 1], [136, 118, 0], [124, 136, 0], [136, 136, 1], [160, 118, 1], [172, 118, 1], [184, 118, 0], [200, 118, 1], [212, 118, 0], [224, 118, 1], [160, 138, 0], [184, 138, 1], [212, 138, 1], [244, 118, 0], [252, 118, 1], [244, 138, 1], [286, 76, 1], [296, 76, 0], [286, 96, 0], [296, 96, 1], [286, 120, 1], [296, 140, 1], [314, 124, 0]]) wins.push({ x, y, on, f: Math.random() * 10 });
   return {
     update(dt) {
-      for (const d of drops) { d.y += d.v * dt / 16; d.x -= d.v * 0.25 * dt / 16; if (d.y > VH) { d.y = -10; d.x = Math.random() * VW * 1.2; } }
-      for (const c of clouds) { c.x -= c.v * dt; if (c.x < -c.r * 2) c.x = VW + c.r; }
+      for (const d of drops) { d.y += d.v * dt / 16; d.x -= d.v * 0.25 * dt / 16; if (d.y > VH) { d.y = -10; d.x = Math.random() * (VW + 40); } }
+      for (const c of clouds) { c.x -= c.v * dt; if (c.x < -c.r * 2) c.x = 384 + c.r; }
       nextBolt -= dt;
       if (nextBolt <= 0) {
         nextBolt = 6000 + Math.random() * 9000;
@@ -900,7 +922,9 @@ const TITLE = (() => {
       g.addColorStop(0, `rgb(${6 + L * 80},${5 + L * 80},${14 + L * 110})`); g.addColorStop(0.6, `rgb(${18 + L * 60},${14 + L * 60},${34 + L * 80})`); g.addColorStop(1, '#0a0810');
       c.fillStyle = g; c.fillRect(0, 0, VW, VH);
       const mg = c.createRadialGradient(300, 40, 0, 300, 40, 80); mg.addColorStop(0, 'rgba(200,200,230,.18)'); mg.addColorStop(1, 'rgba(200,200,230,0)');
-      c.fillStyle = mg; c.fillRect(0, 0, VW, VH);
+      const sc = VW < 384 ? VW / 300 : 1, sox = (VW - 384 * sc) / 2, soy = VH < 300 ? 0 : VH * 0.6 - 120 * sc;
+      c.setTransform(RS * sc, 0, 0, RS * sc, sox * RS, soy * RS);
+      c.fillStyle = mg; c.fillRect(0, 0, 384, 216);
       for (const cl of clouds) { c.fillStyle = `rgba(${12 + L * 60},${10 + L * 60},${22 + L * 70},.85)`; c.beginPath(); c.ellipse(cl.x, cl.y, cl.r * 1.6, cl.r * 0.45, 0, 0, 7); c.fill(); }
       if (bolt) {
         c.strokeStyle = `rgba(230,236,255,${bolt.life})`; c.lineWidth = 1.4; c.beginPath();
@@ -908,8 +932,8 @@ const TITLE = (() => {
         c.strokeStyle = `rgba(160,180,255,${bolt.life * 0.4})`; c.lineWidth = 4; c.stroke();
       }
       // 海
-      c.fillStyle = '#07060e'; c.fillRect(0, 160, VW, 56);
-      for (let i = 0; i < 30; i++) { const y = 165 + (i * 7) % 50, x = (i * 53 + W.t * 0.01 * (i % 3 + 1)) % (VW + 40) - 20; c.fillStyle = `rgba(120,130,180,${0.05 + L * 0.2})`; c.fillRect(x, y, 14, 1); }
+      c.fillStyle = '#07060e'; c.fillRect(-200, 160, 784, 56 + 400);
+      for (let i = 0; i < 30; i++) { const y = 165 + (i * 7) % 50, x = (i * 53 + W.t * 0.01 * (i % 3 + 1)) % (384 + 40) - 20; c.fillStyle = `rgba(120,130,180,${0.05 + L * 0.2})`; c.fillRect(x, y, 14, 1); }
       house(c);
       for (const w of wins) {
         if (!w.on) { c.fillStyle = 'rgba(30,26,40,.9)'; c.fillRect(w.x, w.y, 5, 8); continue; }
@@ -922,6 +946,8 @@ const TITLE = (() => {
       // 崖
       c.fillStyle = '#030206';
       c.beginPath(); c.moveTo(40, 216); c.lineTo(52, 176); c.lineTo(66, 168); c.lineTo(330, 168); c.lineTo(346, 180); c.lineTo(360, 216); c.fill();
+      c.fillRect(-200, 216, 784, 600);
+      c.setTransform(RS, 0, 0, RS, 0, 0);
       c.strokeStyle = 'rgba(180,190,230,.35)'; c.lineWidth = 0.7; c.beginPath();
       for (const d of drops) { c.moveTo(d.x, d.y); c.lineTo(d.x - d.l * 0.25, d.y + d.l); } c.stroke();
       if (L > 0.05) { c.fillStyle = `rgba(220,230,255,${L * 0.25})`; c.fillRect(0, 0, VW, VH); }
@@ -953,6 +979,7 @@ async function bootTitle() {
   stage.classList.remove('flashback', 'cinema');
   $('title').classList.remove('hidden'); $('tt-menu').innerHTML = '';
   $('tt-press').classList.remove('hidden');
+  if (isTouch) { $('tt-press').textContent = '画面をタップしてください'; $('nm-input').closest('.nm-inner').querySelector('.nm-hint').textContent = '６文字まで'; }
   $('result').classList.add('hidden');
   await fade(0, 1200);
   await new Promise(r => { const h = { key: () => { popH(h); r(); }, tap: () => { popH(h); r(); } }; pushH(h); });
@@ -1020,7 +1047,7 @@ async function showResult() {
   const [rank, title] = t >= 90 ? ['S', '名探偵の相棒'] : t >= 72 ? ['A', '頼れる助手'] : t >= 50 ? ['B', '駆け出しの助手'] : ['C', '見習い助手'];
   const el = $('result');
   el.innerHTML = `<div class="rs-k">九条からの信頼</div><div class="rs-rank">${rank}</div><div class="rs-title">${title}</div>
-    <div class="rs-stat">信頼度　${t} / 100<br>集めた証拠・証言　${STATE.evidence.length} / ${EVIDENCE_ORDER.length}</div><div class="rs-next">― クリック または キーで続ける ―</div>`;
+    <div class="rs-stat">信頼度　${t} / 100<br>集めた証拠・証言　${STATE.evidence.length} / ${EVIDENCE_ORDER.length}</div><div class="rs-next">― ${isTouch ? 'タップ' : 'クリック または キー'}で続ける ―</div>`;
   el.classList.remove('hidden');
   await fade(0, 800);
   SND.se('clue');
