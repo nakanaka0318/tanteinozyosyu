@@ -4,35 +4,35 @@
    ========================================================= */
 const PORTRAIT = (() => {
   const C = {
-    kujo: { rim: '#6fd6cc', hair: ['#14131b', '#2a2836'], skin: ['#2c2531', '#4a3e48'], coat: ['#121620', '#26304a'], hairStyle: 'messy', collar: 'high', tie: '#3fb0a8' },
-    me: { rim: '#f0b060', hair: ['#2a1a10', '#4a3020'], skin: ['#33292a', '#584640'], coat: ['#1e150e', '#3e2c1c'], hairStyle: 'cap', vest: true, tie: '#d39a3a' },
-    genichiro: { rim: '#e6c06a', hair: ['#55555c', '#8a8a92'], skin: ['#2e2526', '#4c3c3a'], coat: ['#1a0b0d', '#3a171b'], hairStyle: 'bald', beard: true, tie: '#c9a45c' },
-    masato: { rim: '#e0605e', hair: ['#0c0c10', '#24242c'], skin: ['#2e2628', '#4c3e3e'], coat: ['#14171b', '#2c3238'], hairStyle: 'slick', tie: '#b8323a', loose: true },
-    fuyuko: { rim: '#c0a6f0', hair: ['#0e0b14', '#262032'], skin: ['#322a33', '#54464f'], coat: ['#17121f', '#2f2440'], hairStyle: 'bun', glasses: true, brooch: true },
-    sanada: { rim: '#d2d6de', hair: ['#4a4a52', '#86868e'], skin: ['#2c2526', '#4a3c3a'], coat: ['#08080b', '#1a1a20'], hairStyle: 'side', mustache: true, bowtie: true },
-    todo: { rim: '#b4cf86', hair: ['#14110e', '#2e2820'], skin: ['#2e2627', '#4c3e3b'], coat: ['#18140e', '#3a3022'], hairStyle: 'part', glasses: true, steth: true, mustache: true },
-    mirai: { rim: '#5ef0ff', hair: ['#0c0a12', '#26202e'], skin: ['#342c36', '#5a4a52'], coat: ['#3a3e4c', '#9aa2b8'], hairStyle: 'bobcut', tie: '#3ff0ff', techCollar: '#3ff0ff', earring: '#3ff0ff' },
-    kurosu: { rim: '#6dff9a', hair: ['#0c1414', '#203030'], skin: ['#302826', '#544640'], coat: ['#14161c', '#2c303c'], hairStyle: 'shaggy', hoodie: true, headset: '#6dff9a' },
-    amagi: { rim: '#ffcc66', hair: ['#4a4a52', '#9a9aa2'], skin: ['#2e2526', '#4c3c3a'], coat: ['#121216', '#2e2e36'], hairStyle: 'slick', tie: '#c9a24a', monocle: '#ff5a5a' },
-    noa: { rim: '#ff6ad5', hair: ['#5a1a4a', '#ff8ad8'], skin: ['#382c30', '#60504e'], coat: ['#1c1026', '#3a2450'], hairStyle: 'twintail', phones: '#5ef0ff', tie: '#5ef0ff' },
+    kujo: { rim: '#6fd6cc', hair: ['#14131b', '#2a2836'], skin: ['#e4b392', '#f8d6bc'], coat: ['#121620', '#26304a'], hairStyle: 'messy', collar: 'high', tie: '#3fb0a8' },
+    me: { rim: '#f0b060', hair: ['#2a1a10', '#4a3020'], skin: ['#e4b392', '#f8d6bc'], coat: ['#1e150e', '#3e2c1c'], hairStyle: 'cap', vest: true, tie: '#d39a3a' },
+    genichiro: { rim: '#e6c06a', hair: ['#55555c', '#8a8a92'], skin: ['#d6a284', '#eec8ac'], coat: ['#1a0b0d', '#3a171b'], hairStyle: 'bald', beard: true, tie: '#c9a45c' },
+    masato: { rim: '#e0605e', hair: ['#0c0c10', '#24242c'], skin: ['#d9a47f', '#f0c8a6'], coat: ['#14171b', '#2c3238'], hairStyle: 'slick', tie: '#b8323a', loose: true },
+    fuyuko: { rim: '#c0a6f0', hair: ['#0e0b14', '#262032'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#17121f', '#2f2440'], hairStyle: 'bun', glasses: true, brooch: true },
+    sanada: { rim: '#d2d6de', hair: ['#4a4a52', '#86868e'], skin: ['#d6a284', '#eec8ac'], coat: ['#08080b', '#1a1a20'], hairStyle: 'side', mustache: true, bowtie: true },
+    todo: { rim: '#b4cf86', hair: ['#14110e', '#2e2820'], skin: ['#d6a284', '#eec8ac'], coat: ['#18140e', '#3a3022'], hairStyle: 'part', glasses: true, steth: true, mustache: true },
+    mirai: { rim: '#5ef0ff', hair: ['#0c0a12', '#26202e'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#3a3e4c', '#9aa2b8'], hairStyle: 'bobcut', tie: '#3ff0ff', techCollar: '#3ff0ff', earring: '#3ff0ff' },
+    kurosu: { rim: '#6dff9a', hair: ['#0c1414', '#203030'], skin: ['#d9a47f', '#f0c8a6'], coat: ['#14161c', '#2c303c'], hairStyle: 'shaggy', hoodie: true, headset: '#6dff9a' },
+    amagi: { rim: '#ffcc66', hair: ['#4a4a52', '#9a9aa2'], skin: ['#d6a284', '#eec8ac'], coat: ['#121216', '#2e2e36'], hairStyle: 'slick', tie: '#c9a24a', monocle: '#ff5a5a' },
+    noa: { rim: '#ff6ad5', hair: ['#5a1a4a', '#ff8ad8'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#1c1026', '#3a2450'], hairStyle: 'twintail', phones: '#5ef0ff', tie: '#5ef0ff' },
     muse: { rim: '#9ffcff', hair: ['#1a6a8a', '#7fe8ff'], skin: ['#2a5a70', '#8adcf0'], coat: ['#14506a', '#5fd0ec'], hairStyle: 'holo', holo: true, techCollar: '#ffffff' },
-    kirishima: { rim: '#a0b8ff', hair: ['#14141a', '#2c2c36'], skin: ['#302828', '#504240'], coat: ['#6a7080', '#d8dde8'], hairStyle: 'part', glasses: true, lab: true, tie: '#5a8aff' },
-    houjou: { rim: '#e6c06a', hair: ['#5a5a60', '#9a9aa2'], skin: ['#2e2526', '#4e3e3a'], coat: ['#1a120c', '#3e2c1e'], hairStyle: 'bald', mustache: true, tie: '#8a1e22' },
-    reika: { rim: '#ff6a7a', hair: ['#14080c', '#3a1820'], skin: ['#362a2c', '#5e4a48'], coat: ['#3a0610', '#8a1428'], hairStyle: 'longwave', brooch: true },
-    washio: { rim: '#d8c08a', hair: ['#14110e', '#2e2820'], skin: ['#2e2422', '#4c3a34'], coat: ['#2e2618', '#6a5a44'], hairStyle: 'part', fedora: '#2e2618', collar: 'high', tie: '#2a3a5a' },
-    hiiragi: { rim: '#c8ccd8', hair: ['#4a4a52', '#8a8a92'], skin: ['#2e2628', '#4c3e3c'], coat: ['#060608', '#1c1c22'], hairStyle: 'side', bowtie: true },
-    hayase: { rim: '#8ab8e8', hair: ['#1e160e', '#4a3a2a'], skin: ['#342a2a', '#5a4844'], coat: ['#4a4438', '#b8b0a0'], hairStyle: 'slick', glasses: true, tie: '#2a4a6a' },
-    mina: { rim: '#f0a0b0', hair: ['#1e120a', '#3e2a1a'], skin: ['#342a2c', '#5a4844'], coat: ['#0e0e14', '#2a2a3a'], hairStyle: 'bun', maid: true },
-    yogarasu: { rim: '#ff3a4a', hair: ['#9a9aa6', '#f4f4fa'], skin: ['#3a3236', '#6a5c5c'], coat: ['#020204', '#14141c'], hairStyle: 'messy', cape: true, mask: true },
-    yogarasu_face: { rim: '#ff3a4a', hair: ['#9a9aa6', '#f4f4fa'], skin: ['#3a3236', '#6a5c5c'], coat: ['#020204', '#14141c'], hairStyle: 'messy', cape: true, redEyes: true },
-    siesta: { rim: '#8ac4ff', hair: ['#b8bccc', '#f6f8ff'], skin: ['#3a3236', '#6a5a5c'], coat: ['#121a36', '#2c3c6e'], hairStyle: 'longwave', hairclip: '#c8304a', tie: '#c8304a', collar: 'high' },
-    ca: { rim: '#f0a080', hair: ['#1a100c', '#3a2a1e'], skin: ['#342a2c', '#5a4844'], coat: ['#121a36', '#24345e'], hairStyle: 'bun', scarf: '#d84a3a' },
-    hikawa: { rim: '#a8c0d8', hair: ['#14110e', '#2e2a24'], skin: ['#302828', '#504240'], coat: ['#2a2c32', '#5a5e68'], hairStyle: 'side', glasses: true, tie: '#3a5a7a' },
-    hikawa_x: { rim: '#b46aff', hair: ['#14110e', '#2e2a24'], skin: ['#2a2230', '#4a3a52'], coat: ['#1a1620', '#3a3446'], hairStyle: 'side', glasses: true, tie: '#3a5a7a', tentacles: '#b46aff' },
-    kuroda: { rim: '#e8c070', hair: ['#0c0c10', '#24242c'], skin: ['#2e2526', '#4c3c3a'], coat: ['#0e0e12', '#24242c'], hairStyle: 'slick', mustache: true, tie: '#c9a24a' },
-    nanase: { rim: '#9ae07a', hair: ['#1e140c', '#3e2a1c'], skin: ['#342a2a', '#5a4844'], coat: ['#22301c', '#4a6a3a'], hairStyle: 'shaggy', hoodie: true, phones: '#e8e8e8' },
-    kase: { rim: '#ff5a4a', hair: ['#5a0a0a', '#e0402a'], skin: ['#362a2c', '#5e4a48'], coat: ['#08080c', '#24242c'], hairStyle: 'longwave', collar: 'high', tie: '#24242c' },
-    suzu: { rim: '#f6a2c0', hair: ['#1e130c', '#3e2a1c'], skin: ['#342a2c', '#5a4844'], coat: ['#0e0e12', '#22222a'], hairStyle: 'braids', maid: true },
+    kirishima: { rim: '#a0b8ff', hair: ['#14141a', '#2c2c36'], skin: ['#e4b392', '#f8d6bc'], coat: ['#6a7080', '#d8dde8'], hairStyle: 'part', glasses: true, lab: true, tie: '#5a8aff' },
+    houjou: { rim: '#e6c06a', hair: ['#5a5a60', '#9a9aa2'], skin: ['#d6a284', '#eec8ac'], coat: ['#1a120c', '#3e2c1e'], hairStyle: 'bald', mustache: true, tie: '#8a1e22' },
+    reika: { rim: '#ff6a7a', hair: ['#14080c', '#3a1820'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#3a0610', '#8a1428'], hairStyle: 'longwave', brooch: true },
+    washio: { rim: '#d8c08a', hair: ['#14110e', '#2e2820'], skin: ['#d9a47f', '#f0c8a6'], coat: ['#2e2618', '#6a5a44'], hairStyle: 'part', fedora: '#2e2618', collar: 'high', tie: '#2a3a5a' },
+    hiiragi: { rim: '#c8ccd8', hair: ['#4a4a52', '#8a8a92'], skin: ['#d6a284', '#eec8ac'], coat: ['#060608', '#1c1c22'], hairStyle: 'side', bowtie: true },
+    hayase: { rim: '#8ab8e8', hair: ['#1e160e', '#4a3a2a'], skin: ['#e4b392', '#f8d6bc'], coat: ['#4a4438', '#b8b0a0'], hairStyle: 'slick', glasses: true, tie: '#2a4a6a' },
+    mina: { rim: '#f0a0b0', hair: ['#1e120a', '#3e2a1a'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#0e0e14', '#2a2a3a'], hairStyle: 'bun', maid: true },
+    yogarasu: { rim: '#ff3a4a', hair: ['#9a9aa6', '#f4f4fa'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#020204', '#14141c'], hairStyle: 'messy', cape: true, mask: true },
+    yogarasu_face: { rim: '#ff3a4a', hair: ['#9a9aa6', '#f4f4fa'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#020204', '#14141c'], hairStyle: 'messy', cape: true, redEyes: true },
+    siesta: { cute: true, iris: '#3a78d8', rim: '#8ac4ff', hair: ['#c4cad8', '#fbfcff'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#121a36', '#2c3c6e'], hairStyle: 'siesta', hairclip: '#c8304a', blouse: '#c8304a' },
+    ca: { rim: '#f0a080', hair: ['#1a100c', '#3a2a1e'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#121a36', '#24345e'], hairStyle: 'bun', scarf: '#d84a3a' },
+    hikawa: { rim: '#a8c0d8', hair: ['#14110e', '#2e2a24'], skin: ['#e4b392', '#f8d6bc'], coat: ['#2a2c32', '#5a5e68'], hairStyle: 'side', glasses: true, tie: '#3a5a7a' },
+    hikawa_x: { rim: '#b46aff', hair: ['#14110e', '#2e2a24'], skin: ['#a898b4', '#d8cce0'], coat: ['#1a1620', '#3a3446'], hairStyle: 'side', glasses: true, tie: '#3a5a7a', tentacles: '#b46aff' },
+    kuroda: { rim: '#e8c070', hair: ['#0c0c10', '#24242c'], skin: ['#d9a47f', '#f0c8a6'], coat: ['#0e0e12', '#24242c'], hairStyle: 'slick', mustache: true, tie: '#c9a24a' },
+    nanase: { rim: '#9ae07a', hair: ['#1e140c', '#3e2a1c'], skin: ['#e4b392', '#f8d6bc'], coat: ['#22301c', '#4a6a3a'], hairStyle: 'shaggy', hoodie: true, phones: '#e8e8e8' },
+    kase: { rim: '#ff5a4a', hair: ['#5a0a0a', '#e0402a'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#08080c', '#24242c'], hairStyle: 'longwave', collar: 'high', tie: '#24242c' },
+    suzu: { rim: '#f6a2c0', hair: ['#1e130c', '#3e2a1c'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#0e0e12', '#22222a'], hairStyle: 'braids', maid: true },
   };
   let uid = 0;
   const F = 'rgba(244,232,212,.92)';
@@ -42,10 +42,19 @@ const PORTRAIT = (() => {
       <stop offset="0" stop-color="${a}"/><stop offset="0.72" stop-color="${b}"/><stop offset="0.9" stop-color="${b}"/><stop offset="1" stop-color="${rim}" stop-opacity=".95"/></linearGradient>`;
   }
 
-  function eyes(e) {
-    const L = 86, Rr = 114, Y = 114;
-    const st = `stroke="${F}" stroke-width="2.4" stroke-linecap="round" fill="none"`;
-    const almond = (x, w = 6, h = 3) => `<path d="M${x - w} ${Y} Q${x} ${Y - h * 1.6} ${x + w} ${Y} Q${x} ${Y + h} ${x - w} ${Y}Z" fill="${F}"/><circle cx="${x + 0.5}" cy="${Y - 0.3}" r="1.6" fill="#120e14"/>`;
+  const INK = '#2e1c18';
+  const NECK_DROP = 22;  // 頭を下げて首を短く
+  function skinGrad(id, [a, b], rim) {
+    return `<linearGradient id="${id}" x1="0" y1="0" x2="1" y2="0.25">
+      <stop offset="0" stop-color="${a}"/><stop offset="0.5" stop-color="${b}"/><stop offset="0.86" stop-color="${b}"/><stop offset="1" stop-color="${rim}" stop-opacity=".45"/></linearGradient>`;
+  }
+
+  // 通常の目（元のデザイン。線だけ肌色に合わせて濃い色に）
+  function eyes(e, c, id) {
+    if (c.cute) return cuteEyes(e, c, id);
+    const L = 86, Rr = 114, Y = 114, ink = c.ink || INK;
+    const st = `stroke="${ink}" stroke-width="2.4" stroke-linecap="round" fill="none"`;
+    const almond = (x, w = 6, h = 3) => `<path d="M${x - w} ${Y} Q${x} ${Y - h * 1.6} ${x + w} ${Y} Q${x} ${Y + h} ${x - w} ${Y}Z" fill="${F}" stroke="${ink}" stroke-width=".8"/><circle cx="${x + 0.5}" cy="${Y - 0.3}" r="1.6" fill="#120e14"/>`;
     let s = '';
     switch (e) {
       case 'smile':
@@ -57,8 +66,8 @@ const PORTRAIT = (() => {
         s += `<path d="M${L - 8} ${Y - 14} L${L + 7} ${Y - 8}" ${st}/><path d="M${Rr + 8} ${Y - 14} L${Rr - 7} ${Y - 8}" ${st}/>`;
         break;
       case 'shock':
-        s += `<circle cx="${L}" cy="${Y}" r="4.6" fill="none" stroke="${F}" stroke-width="2"/><circle cx="${L}" cy="${Y}" r="1.4" fill="${F}"/>`;
-        s += `<circle cx="${Rr}" cy="${Y}" r="4.6" fill="none" stroke="${F}" stroke-width="2"/><circle cx="${Rr}" cy="${Y}" r="1.4" fill="${F}"/>`;
+        s += `<circle cx="${L}" cy="${Y}" r="4.6" fill="${F}" stroke="${ink}" stroke-width="2"/><circle cx="${L}" cy="${Y}" r="1.4" fill="${ink}"/>`;
+        s += `<circle cx="${Rr}" cy="${Y}" r="4.6" fill="${F}" stroke="${ink}" stroke-width="2"/><circle cx="${Rr}" cy="${Y}" r="1.4" fill="${ink}"/>`;
         s += `<path d="M${L - 7} ${Y - 15} Q${L} ${Y - 20} ${L + 7} ${Y - 15}" ${st}/><path d="M${Rr - 7} ${Y - 15} Q${Rr} ${Y - 20} ${Rr + 7} ${Y - 15}" ${st}/>`;
         break;
       case 'sad':
@@ -83,13 +92,55 @@ const PORTRAIT = (() => {
     }
     return s;
   }
+
+  // かわいい目（大きな瞳・ハイライト・まつげ）
+  function cuteEyes(e, c, id) {
+    const L = 84, Rr = 116, Y = 118, ink = c.ink || '#2a1618';
+    const brow = `stroke="${ink}" stroke-width="1.8" stroke-linecap="round" fill="none" opacity=".75"`;
+    const lid = `stroke="${ink}" stroke-width="3" stroke-linecap="round" fill="none"`;
+    const eye = (x, h = 1, side = 1, small = false) => {
+      const irx = small ? 3.4 : 5.6, iry = (small ? 4 : 6.8) * h;
+      return `<ellipse cx="${x}" cy="${Y - 0.5}" rx="7.8" ry="${7.6 * h}" fill="#fffaf6"/>
+        <ellipse cx="${x}" cy="${Y + 0.3}" rx="${irx}" ry="${iry}" fill="url(#i${id})"/>
+        <ellipse cx="${x}" cy="${Y + 1}" rx="${irx * 0.48}" ry="${iry * 0.5}" fill="#0e0a14"/>
+        <circle cx="${x - 2 * side}" cy="${Y - 3 * h}" r="2.2" fill="#fff"/><circle cx="${x + 2.2 * side}" cy="${Y + 3 * h}" r="1.1" fill="#fff" opacity=".9"/>
+        <path d="M${x - 8.8 * side} ${Y - 1.5 * h} Q${x - 1 * side} ${Y - 11.4 * h} ${x + 9 * side} ${Y - 3.6 * h}" ${lid}/>
+        <path d="M${x + 8.6 * side} ${Y - 3.8 * h} L${x + 11 * side} ${Y - 6.2 * h}" stroke="${ink}" stroke-width="2" stroke-linecap="round"/>
+        <path d="M${x - 6 * side} ${Y + 7.2 * h} Q${x} ${Y + 8.2 * h} ${x + 6 * side} ${Y + 6.8 * h}" stroke="${ink}" stroke-width="1" fill="none" opacity=".4"/>`;
+    };
+    const arcUp = x => `<path d="M${x - 8} ${Y + 1} Q${x} ${Y - 8} ${x + 8} ${Y + 1}" ${lid}/>`;
+    const arcDn = x => `<path d="M${x - 7} ${Y - 1} Q${x} ${Y + 4} ${x + 7} ${Y - 1}" ${lid}/><path d="M${x + 6} ${Y - 0.5} L${x + 8.6} ${Y - 2.4}" stroke="${ink}" stroke-width="1.6" stroke-linecap="round"/>`;
+    const brows = (dy1, dy2) => `<path d="M${L - 8} ${Y - 15 + dy1} Q${L} ${Y - 18 + (dy1 + dy2) / 2} ${L + 7} ${Y - 15 + dy2}" ${brow}/><path d="M${Rr + 8} ${Y - 15 + dy1} Q${Rr} ${Y - 18 + (dy1 + dy2) / 2} ${Rr - 7} ${Y - 15 + dy2}" ${brow}/>`;
+    switch (e) {
+      case 'smile': return arcUp(L) + arcUp(Rr) + brows(-1, -1);
+      case 'closed': return arcDn(L) + arcDn(Rr) + brows(0, 0);
+      case 'angry': return eye(L, 0.72, 1) + eye(Rr, 0.72, -1) + brows(-2, 4);
+      case 'sad': return eye(L, 0.85, 1) + eye(Rr, 0.85, -1) + brows(3, -3);
+      case 'serious': return eye(L, 0.86, 1) + eye(Rr, 0.86, -1) + brows(0, 2);
+      case 'shock': return eye(L, 1.08, 1, true) + eye(Rr, 1.08, -1, true) + brows(-4, -4);
+      case 'think': return arcDn(L) + eye(Rr, 0.95, -1) + brows(1, 1);
+      default: return eye(L, 1, 1) + eye(Rr, 1, -1) + brows(0, 0);
+    }
+  }
   function mouth(e, c) {
     if (c.beard) return '';
-    const st = `stroke="${F}" stroke-width="2.2" stroke-linecap="round" fill="none" opacity=".85"`;
+    const ink = c.ink || INK;
+    if (c.cute) {
+      const st = `stroke="${ink}" stroke-width="1.8" stroke-linecap="round" fill="none"`;
+      switch (e) {
+        case 'smile': return `<path d="M93 138 Q100 147 107 138 Q100 141 93 138Z" fill="#c8566a"/><path d="M93 138 Q100 147 107 138" ${st}/>`;
+        case 'angry': return `<path d="M95 142 Q100 138 105 142" ${st}/>`;
+        case 'shock': return `<ellipse cx="100" cy="141" rx="3" ry="4" fill="#a8404e" stroke="${ink}" stroke-width="1.4"/>`;
+        case 'sad': return `<path d="M95 142 Q100 139 105 142" ${st}/>`;
+        case 'closed': return `<path d="M96 139 Q100 142 104 139" ${st}/>`;
+        default: return `<path d="M96 139.5 Q100 141.5 104 139.5" ${st}/>`;
+      }
+    }
+    const st = `stroke="${ink}" stroke-width="2.2" stroke-linecap="round" fill="none" opacity=".85"`;
     switch (e) {
       case 'smile': return `<path d="M91 139 Q100 146 109 139" ${st}/>`;
       case 'angry': return `<path d="M92 143 Q100 137 108 143" ${st}/>`;
-      case 'shock': return `<ellipse cx="100" cy="142" rx="4" ry="5.5" fill="none" stroke="${F}" stroke-width="2" opacity=".85"/>`;
+      case 'shock': return `<ellipse cx="100" cy="142" rx="4" ry="5.5" fill="none" stroke="${ink}" stroke-width="2" opacity=".85"/>`;
       case 'sad': return `<path d="M93 143 Q100 139 107 143" ${st}/>`;
       default: return `<path d="M94 141 L106 141" ${st}/>`;
     }
@@ -143,6 +194,11 @@ const PORTRAIT = (() => {
         <path d="M58 150 C48 90 66 54 100 52 C134 54 152 90 142 150 L134 120 L136 96 C124 84 112 80 100 82 C88 80 76 84 64 96 L66 120 Z" ${f} opacity=".85"/>
         <path d="M64 96 L58 150 M136 96 L142 150 M100 52 L100 82" stroke="#e8fdff" stroke-width="1" opacity=".6"/>
         <path d="M76 70 L100 60 L124 70" stroke="#e8fdff" stroke-width="1.2" fill="none" opacity=".8"/>`;
+      case 'siesta': return `
+        <path d="M62 102 C48 150 60 196 44 244 C66 232 76 186 72 120 Z" ${f}/><path d="M138 102 C152 150 140 196 156 244 C134 232 124 186 128 120 Z" ${f}/>
+        <path d="M60 122 C52 74 76 50 102 50 C130 50 150 74 140 122 C138 106 132 96 126 90 L122 104 L116 90 L108 106 L102 90 L95 104 L90 90 L82 102 L78 94 C70 102 64 110 60 122 Z" ${f}/>
+        <path d="M74 74 C88 60 116 58 130 72" stroke="#ffffff" stroke-width="2.4" opacity=".55" fill="none"/>
+        <path d="M70 80 C76 72 84 68 92 66" stroke="${c.rim}" stroke-width="1.6" opacity=".5" fill="none"/>`;
       case 'longwave': return `
         <path d="M62 118 C56 72 78 54 102 54 C128 54 146 74 138 118 C130 96 116 86 100 88 C84 86 70 96 62 118 Z" ${f}/>
         <path d="M64 100 C52 140 64 170 52 214 C70 200 74 170 72 120 Z" ${f}/><path d="M136 100 C148 140 136 170 148 214 C130 200 126 170 128 120 Z" ${f}/>
@@ -166,6 +222,13 @@ const PORTRAIT = (() => {
       s += `<path d="M80 190 L100 206 L120 190 L116 186 L100 196 L84 186 Z" fill="#ece6da"/>`;
       s += `<path d="M78 196 L66 262 M122 196 L134 262" stroke="#d8d0c2" stroke-width="5" opacity=".7"/>`;
       s += `<path d="M94 200 L100 206 L106 200 L100 196 Z" fill="${c.rim}"/>`;
+      return s;
+    }
+    if (c.blouse) {
+      s += `<path d="M66 196 C78 188 90 188 100 200 C110 188 122 188 134 196 L126 218 C114 210 106 208 100 212 C94 208 86 210 74 218 Z" fill="#f4f6fb"/>`;
+      s += `<path d="M100 200 L84 194 L82 210 Z" fill="${c.blouse}"/><path d="M100 200 L116 194 L118 210 Z" fill="${c.blouse}"/><circle cx="100" cy="202" r="4" fill="${c.blouse}"/>`;
+      s += `<path d="M98 205 L92 226 L98 222 Z" fill="${c.blouse}"/><path d="M102 205 L108 226 L102 222 Z" fill="${c.blouse}"/>`;
+      s += `<path d="M100 214 L100 262" stroke="#0e1428" stroke-width="1.4" opacity=".6"/><circle cx="100" cy="236" r="2" fill="#c9a45c"/><circle cx="100" cy="252" r="2" fill="#c9a45c"/>`;
       return s;
     }
     if (c.lab) {
@@ -222,23 +285,28 @@ const PORTRAIT = (() => {
   function svg(name, expr = 'normal') {
     const c = C[name]; if (!c) return '';
     const id = name + (uid++);
-    const glasses = c.glasses ? `<g stroke="rgba(236,232,224,.75)" stroke-width="2" fill="rgba(200,220,240,.06)"><circle cx="86" cy="114" r="10"/><circle cx="114" cy="114" r="10"/><path d="M96 113 L104 113" /></g><path d="M80 108 L84 104" stroke="#fff" stroke-width="1.6" opacity=".6"/>` : '';
+    const glasses = c.glasses ? `<g stroke="#2a2a30" stroke-width="2" fill="rgba(200,220,240,.12)"><circle cx="86" cy="114" r="10"/><circle cx="114" cy="114" r="10"/><path d="M96 113 L104 113" /></g><path d="M80 108 L84 104" stroke="#fff" stroke-width="1.6" opacity=".6"/>` : '';
     const must = (c.mustache && !c.beard) ? `<path d="M84 134 C92 129 98 131 100 134 C102 131 108 129 116 134 C108 140 92 140 84 134 Z" fill="url(#h${id})"/>` : '';
     return `<svg viewBox="0 0 200 262" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax meet"${c.holo ? ' class="holo" opacity=".88"' : ''}>
       <defs>
-        ${grad('s' + id, c.skin, c.rim)}${grad('h' + id, c.hair, c.rim)}${grad('c' + id, c.coat, c.rim)}
+        ${skinGrad('s' + id, c.skin, c.rim)}${grad('h' + id, c.hair, c.rim)}${grad('c' + id, c.coat, c.rim)}
+        <linearGradient id="i${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#140e18"/><stop offset=".55" stop-color="${c.iris || '#4a3426'}"/><stop offset="1" stop-color="${c.iris || '#4a3426'}" stop-opacity=".75"/></linearGradient>
         <radialGradient id="g${id}" cx=".5" cy=".42" r=".55"><stop offset="0" stop-color="${c.rim}" stop-opacity=".32"/><stop offset="1" stop-color="${c.rim}" stop-opacity="0"/></radialGradient>
       </defs>
       <circle cx="100" cy="118" r="104" fill="url(#g${id})"/>
       ${body(c, id)}
-      <path d="M83 148 L83 194 L117 194 L117 148 Z" fill="url(#s${id})"/>
-      <path d="M83 176 Q100 186 117 176 L117 194 L83 194 Z" fill="#000" opacity=".3"/>
+      ${c.cute ? `<path d="M89 150 L88 196 L112 196 L111 150 Z" fill="url(#s${id})"/><path d="M89 150 L111 150 L111 168 Q100 175 89 168 Z" fill="#b8705a" opacity=".32"/>`
+      : `<path d="M83 148 L83 194 L117 194 L117 148 Z" fill="url(#s${id})"/><path d="M83 148 L117 148 L117 166 Q100 174 83 166 Z" fill="#a8604a" opacity=".32"/>`}
       
-      <path d="M65 104 C65 68 135 68 135 104 C135 134 124 154 100 160 C76 154 65 134 65 104 Z" fill="url(#s${id})"/>
-      <path d="M100 118 L97 132 L102 133" stroke="rgba(0,0,0,.35)" stroke-width="1.6" fill="none"/>
-      ${eyes(expr)}${mouth(expr, c)}${must}
+      <g transform="translate(0 ${NECK_DROP})">
+      ${c.cute ? `<path d="M64 104 C64 68 136 68 136 104 C136 130 124 151 100 160 C76 151 64 130 64 104 Z" fill="url(#s${id})"/>
+      <path d="M100 130 L99 133" stroke="rgba(120,60,50,.45)" stroke-width="1.4" stroke-linecap="round"/>`
+      : `<path d="M65 104 C65 68 135 68 135 104 C135 134 124 154 100 160 C76 154 65 134 65 104 Z" fill="url(#s${id})"/>
+      <path d="M100 118 L97 132 L102 133" stroke="rgba(110,60,45,.45)" stroke-width="1.6" fill="none"/>`}
+      ${eyes(expr, c, id)}${mouth(expr, c)}${must}
       ${hair(c, id)}
       ${glasses}${acc(c)}
+      </g>
     </svg>`;
   }
   return { svg, has: n => !!C[n] };
