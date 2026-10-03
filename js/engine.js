@@ -584,9 +584,10 @@ async function cutin(text, icon, ms = 1300) {
 }
 async function timeline(marks, zone) {
   const box = $('tl-body'); box.innerHTML = '<div class="tl-axis"></div>';
-  const t0 = 21 * 60, t1 = 23 * 60;
+  const t0 = 21 * 60 + 20, t1 = 22 * 60 + 55;
+  $('portrait-l').classList.remove('show'); $('portrait-r').classList.remove('show'); DLG.curL = DLG.curR = null;
   const pos = s => { const [h, m] = s.split(':').map(Number); return ((h * 60 + m - t0) / (t1 - t0)) * 100; };
-  ['21:00', '22:00', '23:00'].forEach(s => { const d = document.createElement('div'); d.className = 'tl-mark down'; d.style.left = pos(s) + '%'; d.style.animationDelay = '0s'; d.innerHTML = `<div class="dot" style="width:4px;height:4px;box-shadow:none;background:#8a6c34"></div><div class="tm" style="opacity:.6">${s}</div>`; box.appendChild(d); });
+  [].forEach(s => { const d = document.createElement('div'); d.className = 'tl-mark down'; d.style.left = pos(s) + '%'; d.style.animationDelay = '0s'; d.innerHTML = `<div class="dot" style="width:4px;height:4px;box-shadow:none;background:#8a6c34"></div><div class="tm" style="opacity:.6">${s}</div>`; box.appendChild(d); });
   marks.forEach((m, i) => {
     const d = document.createElement('div');
     d.className = 'tl-mark ' + (i % 2 ? 'down' : 'up') + (m.cls ? ' ' + m.cls : '');
@@ -792,7 +793,7 @@ const G = {
   load(id, x, y, dir) { loadMap(id, x, y, dir); W.mode = 'play'; updateRoom(); refreshHUD(); },
   async warp(id, x, y, dir) { SND.se('door'); await fade(1, 260); loadMap(id, x, y, dir); updateRoom(); await fade(0, 300); },
   place(id, x, y, dir) {
-    if (id === 'me') { const P = W.P; Object.assign(P, { x, y, px: x * TS, py: y * TS, tx: x, ty: y, moving: false, path: [], dir: dir || P.dir, visible: true }); return; }
+    if (id === 'me') { const P = W.P; Object.assign(P, { x, y, px: x * TS, py: y * TS, tx: x, ty: y, moving: false, path: [], dir: dir || P.dir, visible: true }); updateRoom(); return; }
     let a = W.actors.find(a => a.id === id);
     if (!a) { a = mkActor(id, x, y, dir); W.actors.push(a); }
     else Object.assign(a, { x, y, px: x * TS, py: y * TS, tx: x, ty: y, moving: false, path: [], dir: dir || a.dir, visible: true });

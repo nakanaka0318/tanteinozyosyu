@@ -95,7 +95,6 @@ const PORTRAIT = (() => {
         <path d="M78 82 C90 72 112 72 124 82" stroke="rgba(255,240,200,.08)" stroke-width="3" fill="none"/>`;
       case 'slick': return `
         <path d="M63 112 C56 64 144 58 137 110 C133 88 119 76 99 76 C83 77 70 90 63 112 Z" ${f}/>
-        <path d="M78 66 C92 60 116 60 128 70" stroke="rgba(220,220,240,.22)" stroke-width="2.4" fill="none"/>
         <path d="M66 100 C64 112 64 120 66 128 L70 108 Z" ${f}/><path d="M134 100 C136 112 136 120 134 128 L130 108 Z" ${f}/>`;
       case 'bun': return `
         <circle cx="100" cy="56" r="19" ${f}/>
@@ -104,8 +103,7 @@ const PORTRAIT = (() => {
         <path d="M86 50 L116 62" stroke="${c.rim}" stroke-width="2" opacity=".6"/>`;
       case 'side': return `
         <path d="M63 110 C58 68 142 66 137 108 C131 90 113 80 93 82 C80 84 70 94 63 110 Z" ${f}/>
-        <path d="M64 102 C61 114 62 124 66 130 L70 108 Z" ${f}/><path d="M136 100 C139 112 138 122 134 128 L130 106 Z" ${f}/>
-        <path d="M82 76 C96 70 118 72 130 82" stroke="rgba(255,255,255,.12)" stroke-width="2" fill="none"/>`;
+        <path d="M64 102 C61 114 62 124 66 130 L70 108 Z" ${f}/><path d="M136 100 C139 112 138 122 134 128 L130 106 Z" ${f}/>`;
       case 'part': return `
         <path d="M63 110 C58 64 144 62 137 110 C135 92 127 84 113 82 L111 88 C99 82 79 86 63 110 Z" ${f}/>
         <path d="M64 102 C61 114 62 122 66 128 L70 108 Z" ${f}/><path d="M136 102 C139 114 138 122 134 128 L130 108 Z" ${f}/>`;
@@ -165,7 +163,7 @@ const PORTRAIT = (() => {
       ${body(c, id)}
       <path d="M83 148 L83 194 L117 194 L117 148 Z" fill="url(#s${id})"/>
       <path d="M83 176 Q100 186 117 176 L117 194 L83 194 Z" fill="#000" opacity=".3"/>
-      <ellipse cx="64" cy="116" rx="5" ry="9" fill="url(#s${id})"/><ellipse cx="136" cy="116" rx="5" ry="9" fill="url(#s${id})"/>
+      
       <path d="M65 104 C65 68 135 68 135 104 C135 134 124 154 100 160 C76 154 65 134 65 104 Z" fill="url(#s${id})"/>
       <path d="M100 118 L97 132 L102 133" stroke="rgba(0,0,0,.35)" stroke-width="1.6" fill="none"/>
       ${eyes(expr)}${mouth(expr, c)}${must}
