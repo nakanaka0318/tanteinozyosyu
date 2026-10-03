@@ -121,6 +121,7 @@ function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<':
 function sub(s) { return String(s).replace(/\{N\}/g, STATE ? STATE.name : '真白'); }
 function richHTML(s) { return esc(sub(s)).replace(/【(.+?)】/g, '<span class="kw">$1</span>').replace(/《(.+?)》/g, '<span class="kw">$1</span>').replace(/\n/g, '<br>'); }
 function charName(id) { const c = CHARS[id]; if (!c) return id; return typeof c.name === 'function' ? c.name() : c.short || c.name; }
+function fullName(id) { const c = CHARS[id]; if (!c) return id; return typeof c.name === 'function' ? c.name() : c.name; }
 function shortName(id) { const c = CHARS[id]; if (!c) return id; const s = c.short; return typeof s === 'function' ? s() : s; }
 
 /* ======================= map / actors ======================= */
@@ -668,7 +669,7 @@ function pickPerson(prompt, ids) {
     let sel = 0;
     const els = ids.map((id, i) => {
       const d = document.createElement('div'); d.className = 'pk';
-      d.innerHTML = `<div class="pkimg">${PORTRAIT.svg(id, 'normal')}</div><div class="pkname">${esc(charName(id))}</div>`;
+      d.innerHTML = `<div class="pkimg">${PORTRAIT.svg(id, 'normal')}</div><div class="pkname">${esc(fullName(id))}</div>`;
       d.addEventListener('mouseenter', () => { sel = i; draw(); });
       d.addEventListener('click', e => { e.stopPropagation(); sel = i; draw(); done(); });
       row.appendChild(d); return d;

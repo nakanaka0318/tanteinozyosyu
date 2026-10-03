@@ -654,7 +654,7 @@ const STORY_CYBER = (() => {
     await T('mirai', '……いいわ。なら、受けて立ちます。', 'angry');
 
     await G.debate({
-      enemy: 'mirai', name: '神楽坂 ミライ', short: 'ミライ',
+      enemy: 'mirai', name: '神楽坂 ミライ', short: '神楽坂',
       intro: '論戦開始！ ミライの“心の防壁”を崩せ！',
       wrongDmg: 20,
       loseText: '論理が崩れた。神楽坂ミライは追及を逃れ、事件は『AIの暴走』として処理された。\nMUSEは――初期化された。',

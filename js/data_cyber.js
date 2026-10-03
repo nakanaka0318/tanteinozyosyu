@@ -86,7 +86,7 @@ Object.assign(MAPS, {
 });
 
 Object.assign(CHARS, {
-  mirai: { name: '神楽坂 ミライ', short: 'ミライ', role: '企画展の主任学芸員・31歳', voice: 1.05,
+  mirai: { name: '神楽坂 ミライ', short: '神楽坂', role: '企画展の主任学芸員・31歳', voice: 1.05,
     profile: () => '企画展「NEO//TOKYO 2099」を立ち上げた主任学芸員。理知的で、展示への情熱は人一倍。GHOSTの脅迫について九条に調査を依頼した。' + (STATE.flags.solved ? '【その正体は、霧島を殺害した犯人】。来場者の生体データを密かに売却していた。' : '') },
   kurosu: { name: '黒須 レン', short: '黒須', role: '警備AI「ARGUS」管理者・27歳', voice: 0.95,
     profile: () => '館内の全システムを統括する警備AI「ARGUS」の管理者。無愛想だが腕は確か。管理者権限を持つため、真っ先に疑われる立場にある。' },
