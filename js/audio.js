@@ -127,6 +127,15 @@ const SND = (() => {
     o.connect(f); o2.connect(f); f.connect(g); g.connect(out());
     o.start(t); o2.start(t); o.stop(t + dur + 0.05); o2.stop(t + dur + 0.05);
   }
+  function synth(m, t, dur, gain = 0.05, type = 'sawtooth', cut = 2400) {
+    [-6, 6].forEach(dt => {
+      const o = ac.createOscillator(); o.type = type; o.frequency.value = mtof(m); o.detune.value = dt;
+      const f = ac.createBiquadFilter(); f.type = 'lowpass'; f.frequency.setValueAtTime(cut, t); f.frequency.exponentialRampToValueAtTime(Math.max(300, cut * 0.3), t + dur);
+      const g = ac.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(gain / 2, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(f); f.connect(g); g.connect(out()); sendRv(g, 0.35);
+      o.start(t); o.stop(t + dur + 0.05);
+    });
+  }
   function tick(t, hi, gain = 0.05) { noise(t, 0.03, { type: 'bandpass', freq: hi ? 3200 : 2300, q: 8, gain, dest: out() }); }
   function kick(t, gain = 0.3) { osc(t, 140, 0.22, { to: 38, gain, dest: out() }); }
   function snare(t, gain = 0.1) { noise(t, 0.16, { type: 'bandpass', freq: 1900, q: 0.8, gain, dest: out() }); osc(t, 190, 0.08, { type: 'triangle', gain: gain * 0.6, dest: out() }); }
@@ -201,6 +210,73 @@ const SND = (() => {
       const M = [76, 0, 0, 79, 0, 0, 77, 76, 74, 0, 0, 0, 71, 0, 0, 0, 72, 0, 0, 76, 0, 0, 79, 0, 77, 0, 76, 0, 74, 0, 0, 0];
       const m = M[s % 32]; if (m) bell(m + 12, t, 0.03, 2.2);
     } },
+    c_title: { bpm: 96, fn(s, t, d) {
+      const bar = Math.floor(s / 8) % 4, b = s % 8;
+      const P = [[57, 60, 64], [53, 57, 60], [55, 59, 62], [52, 55, 59]];
+      const ch = P[bar];
+      if (b === 0) { pad(ch, t, d * 8, 0.07, 1400); bass(ch[0] - 24, t, d * 8, 0.12); }
+      synth(ch[[0, 1, 2, 1, 2, 1, 0, 2][b]] + 12, t, d * 0.9, 0.022, 'square', 1800);
+      if (b % 2 === 0) hat(t, 0.012);
+      if (b === 0 || b === 4) kick(t, 0.14);
+      const M = [76, 0, 0, 79, 0, 0, 76, 0, 74, 0, 0, 0, 72, 0, 71, 0, 72, 0, 0, 76, 0, 0, 79, 0, 81, 0, 79, 0, 76, 0, 0, 0];
+      const m = M[s % 32]; if (m) synth(m, t, d * 2.2, 0.035, 'sawtooth', 3000);
+    } },
+    c_explore: { bpm: 88, fn(s, t, d) {
+      const bar = Math.floor(s / 8) % 4, b = s % 8;
+      const P = [[50, 53, 57, 60], [46, 50, 53, 57], [48, 52, 55, 59], [45, 48, 52, 55]];
+      const ch = P[bar];
+      if (b === 0) { pad(ch, t, d * 8, 0.05, 900); bass(ch[0] - 12, t, d * 4, 0.11); }
+      if (b === 4) bass(ch[0] - 12, t, d * 4, 0.09);
+      synth(ch[(b * 3) % 4] + 24, t, d * 0.6, 0.016, 'triangle', 2600);
+      if (b % 2 === 1) hat(t, 0.01);
+      if (b === 2 || b === 6) tick(t, true, 0.02);
+    } },
+    c_tension: { bpm: 70, fn(s, t, d) {
+      const b = s % 16;
+      if (b === 0) { pad([38, 45, 51], t, d * 16, 0.07, 600); bass(26, t, d * 16, 0.12); }
+      if (b % 4 === 0) heart(t, 0.16);
+      if (s % 2 === 0) synth(74 + (s % 32 === 12 ? 1 : 0), t, d * 0.3, 0.008, 'square', 1500);
+      if (s % 32 === 20) bell(85, t, 0.02, 3);
+    } },
+    c_battle: { bpm: 150, fn(s, t, d) {
+      const bar = Math.floor(s / 8) % 4, b = s % 8;
+      const R = [45, 41, 43, 40];
+      const r = R[bar];
+      bass(r - 12 + [0, 12, 0, 12, 0, 12, 10, 12][b], t, d * 0.8, 0.12);
+      if (b === 0 || b === 4) kick(t, 0.24); if (b === 2 || b === 6) snare(t, 0.09); hat(t, b % 2 ? 0.014 : 0.026);
+      if (b === 0) pad([r + 12, r + 15, r + 19], t, d * 7, 0.05, 2200);
+      const M = [69, 0, 72, 0, 76, 0, 74, 72, 69, 0, 72, 0, 77, 0, 76, 74, 67, 0, 71, 0, 74, 0, 72, 71, 68, 0, 71, 0, 76, 0, 74, 0];
+      const m = M[s % 32]; if (m) synth(m, t, d * 0.9, 0.03, 'square', 2600);
+    } },
+    c_boss: { bpm: 160, fn(s, t, d) {
+      const bar = Math.floor(s / 8) % 4, b = s % 8;
+      const R = [38, 38, 36, 37];
+      const r = R[bar];
+      bass(r - 12 + [0, 0, 12, 0, 0, 12, 0, 13][b], t, d * 0.8, 0.14);
+      if (b % 2 === 0) kick(t, 0.26); if (b === 4) snare(t, 0.11); hat(t, 0.02);
+      if (b === 0) pad([r + 12, r + 13, r + 19], t, d * 7, 0.06, 1800);
+      const M = [74, 0, 73, 74, 77, 0, 76, 0, 74, 0, 73, 74, 70, 0, 69, 0, 74, 0, 73, 74, 77, 0, 80, 0, 81, 0, 80, 77, 76, 0, 73, 0];
+      const m = M[s % 32]; if (m) synth(m, t, d * 0.8, 0.032, 'sawtooth', 3200);
+    } },
+    c_debate: { bpm: 142, fn(s, t, d) {
+      const bar = Math.floor(s / 8) % 4, b = s % 8;
+      const R = [50, 46, 48, 45], C = [[62, 65, 69], [58, 62, 65], [60, 64, 67], [57, 61, 64]];
+      bass(R[bar] - 12 + [0, 0, 12, 0, 0, 12, 0, 10][b], t, d * 0.85, 0.13);
+      if (b === 0 || b === 3 || b === 4) kick(t, 0.22); if (b === 2 || b === 6) snare(t, 0.08); hat(t, b % 2 ? 0.014 : 0.028);
+      if (b === 0) pad(C[bar], t, d * 7.5, 0.05, 2400);
+      synth(C[bar][b % 3] + 12, t, d * 0.5, 0.012, 'square', 2200);
+      const M = [74, 0, 0, 72, 74, 0, 77, 0, 70, 0, 0, 69, 70, 0, 74, 0, 72, 0, 0, 71, 72, 0, 76, 0, 73, 0, 76, 0, 79, 0, 81, 0];
+      const m = M[s % 32]; if (m) synth(m, t, d * 0.8, 0.03, 'sawtooth', 3000);
+    } },
+    c_ending: { bpm: 84, fn(s, t, d) {
+      const bar = Math.floor(s / 8) % 4, b = s % 8;
+      const P = [[60, 64, 67, 71], [57, 60, 64, 67], [53, 57, 60, 64], [55, 59, 62, 65]];
+      const ch = P[bar];
+      if (b === 0) { pad(ch, t, d * 8, 0.05, 1200); bass(ch[0] - 24, t, d * 8, 0.1); }
+      synth(ch[[0, 1, 2, 3, 2, 1, 2, 3][b]] + 12, t, d * 1.2, 0.016, 'triangle', 3000);
+      const M = [76, 0, 0, 79, 0, 0, 77, 76, 74, 0, 0, 0, 72, 0, 0, 0, 72, 0, 0, 76, 0, 0, 79, 0, 83, 0, 81, 0, 79, 0, 0, 0];
+      const m = M[s % 32]; if (m) bell(m + 12, t, 0.03, 2.4);
+    } },
   };
 
   function schedule() {
@@ -246,6 +322,23 @@ const SND = (() => {
     rainNodes.g.gain.setTargetAtTime(level * 0.1, ac.currentTime, 1.2);
   }
 
+  let humNodes = null;
+  function hum(level) {
+    if (!ac) return;
+    if (!humNodes) {
+      const o = ac.createOscillator(); o.type = 'sine'; o.frequency.value = 55;
+      const o2 = ac.createOscillator(); o2.type = 'sine'; o2.frequency.value = 110.6;
+      const s2 = ac.createBufferSource(); s2.buffer = noiseBuf; s2.loop = true;
+      const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1800; bp.Q.value = 4;
+      const ng = ac.createGain(); ng.gain.value = 0.15;
+      const g = ac.createGain(); g.gain.value = 0;
+      o.connect(g); o2.connect(g); s2.connect(bp); bp.connect(ng); ng.connect(g); g.connect(busAmb);
+      o.start(); o2.start(); s2.start();
+      humNodes = { g };
+    }
+    humNodes.g.gain.setTargetAtTime(level * 0.05, ac.currentTime, 1.0);
+  }
+
   /* ---------------- SFX ---------------- */
   const SFX = {
     blip(p = 1) { const t = ac.currentTime; osc(t, 520 * p + Math.random() * 30, 0.035, { type: 'square', gain: 0.018, filter: 1800 }); },
@@ -276,6 +369,17 @@ const SND = (() => {
     heart() { const t = ac.currentTime; osc(t, 70, 0.16, { to: 40, gain: 0.3 }); osc(t + 0.2, 65, 0.18, { to: 38, gain: 0.22 }); },
     whoosh() { const t = ac.currentTime; noise(t, 0.5, { type: 'bandpass', freq: 400, q: 0.8, gain: 0.18, sweep: 3500, attack: 0.2 }); },
     gavel() { const t = ac.currentTime; osc(t, 200, 0.12, { to: 80, gain: 0.4 }); noise(t, 0.08, { type: 'bandpass', freq: 1500, gain: 0.3 }); },
+    zap() { const t = ac.currentTime; osc(t, 1800, 0.18, { type: 'sawtooth', to: 200, gain: 0.08, filter: 4000 }); noise(t, 0.12, { type: 'highpass', freq: 3000, gain: 0.08 }); },
+    hit() { const t = ac.currentTime; osc(t, 220, 0.15, { type: 'square', to: 60, gain: 0.12, filter: 1500 }); noise(t, 0.1, { freq: 1200, gain: 0.2 }); },
+    crit() { const t = ac.currentTime; osc(t, 2400, 0.25, { type: 'sawtooth', to: 300, gain: 0.08, filter: 5000 }); osc(t + 0.05, 90, 0.35, { to: 30, gain: 0.4 }); noise(t, 0.3, { freq: 2500, gain: 0.25 }); },
+    hurt() { const t = ac.currentTime; osc(t, 160, 0.25, { type: 'square', to: 50, gain: 0.12, filter: 900 }); noise(t, 0.2, { freq: 600, gain: 0.25 }); },
+    heal() { const t = ac.currentTime; [67, 71, 74, 79].forEach((m, i) => osc(t + i * 0.06, mtof(m), 0.5, { gain: 0.05, send: 0.5 })); },
+    shield() { const t = ac.currentTime; osc(t, 300, 0.5, { type: 'triangle', to: 900, gain: 0.07 }); noise(t, 0.4, { type: 'bandpass', freq: 2000, gain: 0.06, sweep: 6000 }); },
+    glitch() { const t = ac.currentTime; for (let i = 0; i < 6; i++) osc(t + i * 0.03, 200 + Math.random() * 2000, 0.04, { type: 'square', gain: 0.04 }); },
+    charge() { const t = ac.currentTime; osc(t, 100, 1.0, { type: 'sawtooth', to: 900, gain: 0.05, filter: 2000 }); },
+    victory() { const t = ac.currentTime; [72, 76, 79, 84, 79, 84, 88].forEach((m, i) => osc(t + i * 0.09, mtof(m), 0.5, { type: 'square', gain: 0.035, filter: 3000, send: 0.4 })); },
+    gameover() { const t = ac.currentTime; [64, 60, 57, 52].forEach((m, i) => osc(t + i * 0.35, mtof(m), 1.2, { type: 'triangle', gain: 0.07, send: 0.6 })); osc(t, 80, 2.5, { to: 30, gain: 0.25 }); },
+    dive() { const t = ac.currentTime; noise(t, 1.6, { type: 'bandpass', freq: 200, q: 1, gain: 0.3, sweep: 8000, attack: 1.0 }); osc(t, 60, 1.6, { type: 'sawtooth', to: 1800, gain: 0.05, filter: 4000 }); },
     ice() { const t = ac.currentTime; for (let i = 0; i < 5; i++) osc(t + i * 0.05, 2800 + Math.random() * 1500, 0.25, { gain: 0.03, send: 0.5 }); },
   };
   function bellSe(m, t, gain) {
@@ -283,5 +387,5 @@ const SND = (() => {
   }
   function se(name, ...a) { if (!ac || !SFX[name]) return; try { SFX[name](...a); } catch (e) { console.warn(e); } }
 
-  return { init, bgm, resumeBgm, rain, se, setVol, vol, get ready() { return !!ac; } };
+  return { init, bgm, resumeBgm, rain, hum, se, setVol, vol, get ready() { return !!ac; } };
 })();

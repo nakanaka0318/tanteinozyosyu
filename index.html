@@ -9,7 +9,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2307060b'/%3E%3Ccircle cx='27' cy='27' r='13' fill='none' stroke='%23c9a45c' stroke-width='5'/%3E%3Cpath d='M37 37l14 14' stroke='%23c9a45c' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;800&family=Zen+Kaku+Gothic+New:wght@400;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -34,6 +34,11 @@
         <span class="lbl">信頼</span>
         <div class="bar"><div class="fill" id="trust-fill"></div></div>
         <span class="delta" id="trust-delta"></span>
+      </div>
+      <div id="hud-focus" class="hidden" title="集中力">
+        <span class="lbl">集中</span>
+        <div class="bar"><div class="fill" id="focus-fill"></div></div>
+        <span class="delta" id="focus-delta"></span>
       </div>
       <div id="hud-obj"><span class="lbl">目的</span><span id="hud-objtext"></span></div>
       <button id="hud-menu" aria-label="手帳">手帳</button>
@@ -92,6 +97,20 @@
     <!-- chapter card -->
     <div id="chapter" class="hidden"><div class="ch-num" id="ch-num"></div><div class="ch-line"></div><div class="ch-title" id="ch-title"></div><div class="ch-sub" id="ch-sub"></div></div>
 
+    <!-- battle -->
+    <div id="battle" class="hidden"></div>
+
+    <!-- home -->
+    <div id="home" class="hidden">
+      <div class="hm-head">
+        <div class="hm-kicker">DETECTIVE'S ASSISTANT — CASE FILES</div>
+        <h1 class="hm-logo">探偵助手の事件簿</h1>
+        <div class="hm-sub">事件ファイルを選んでください</div>
+      </div>
+      <div class="hm-cards" id="hm-cards"></div>
+      <div class="hm-press" id="hm-press">クリック または キーを押してください</div>
+    </div>
+
     <!-- title -->
     <div id="title" class="hidden">
       <div class="tt-kicker">― 探偵助手の手記 ―</div>
@@ -116,6 +135,14 @@
     <!-- result / credits -->
     <div id="result" class="hidden"></div>
 
+    <!-- game over -->
+    <div id="gameover" class="hidden">
+      <div class="go-k" id="go-k">GAME OVER</div>
+      <div class="go-t" id="go-t"></div>
+      <div class="go-d" id="go-d"></div>
+      <div class="go-menu" id="go-menu"></div>
+    </div>
+
     <div id="fade"></div>
   </div>
 
@@ -136,9 +163,13 @@
 
 <script src="js/audio.js"></script>
 <script src="js/art.js"></script>
+<script src="js/art_cyber.js"></script>
 <script src="js/portraits.js"></script>
 <script src="js/data.js"></script>
+<script src="js/data_cyber.js"></script>
 <script src="js/story.js"></script>
+<script src="js/story_cyber.js"></script>
+<script src="js/battle.js"></script>
 <script src="js/engine.js"></script>
 </body>
 </html>

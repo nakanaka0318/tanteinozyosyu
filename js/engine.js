@@ -4,7 +4,9 @@
    ========================================================= */
 const RS = 3, TS = 16;
 let VW = 384, VH = 216;
-const SAVE_KEY = 'kurosagi_save_v1', CFG_KEY = 'kurosagi_cfg_v1';
+const CFG_KEY = 'kurosagi_cfg_v1';
+let STORY = STORY_KUROSAGI;
+const FID = () => (STATE && STATE.follower) || 'kujo';
 const $ = id => document.getElementById(id);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const DV = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
@@ -129,12 +131,13 @@ function loadMap(id, x, y, dir) {
   const m = MAPS[id];
   if (!m._r) {
     m.grid = m.rows; m.w = m.rows[0].length; m.h = m.rows.length;
-    m._r = ART.renderMap(m, RS);
+    m._art = m.theme ? CYART : ART;
+    m._r = m._art.renderMap(m, RS);
   }
   W.map = m; W.mapId = id;
   STATE.map = id;
   W.P = mkActor('me', x, y, dir || 'down');
-  W.P.look = ART.LOOKS.me;
+  W.P.look = ART.LOOKS[m.playerLook || 'me'];
   rebuildActors();
   W.room = null;
   W.camTarget = null;
@@ -143,7 +146,7 @@ function loadMap(id, x, y, dir) {
 function rebuildActors() {
   W.actors = [];
   for (const n of STORY.npcs(W.mapId)) W.actors.push(mkActor(n.id, n.x, n.y, n.dir));
-  if (STATE.follow && !W.actors.find(a => a.id === 'kujo')) placeFollower();
+  if (STATE.follow && !W.actors.find(a => a.id === FID())) placeFollower();
 }
 function placeFollower() {
   const P = W.P; const [dx, dy] = DV[P.dir];
@@ -152,11 +155,11 @@ function placeFollower() {
     const alt = [[0, 1], [0, -1], [1, 0], [-1, 0]].map(([a, b]) => [P.x + a, P.y + b]).find(([a, b]) => walkable(a, b) && !actorAt(a, b));
     if (alt) [fx, fy] = alt; else [fx, fy] = [P.x, P.y];
   }
-  W.actors = W.actors.filter(a => a.id !== 'kujo');
-  W.actors.push(mkActor('kujo', fx, fy, P.dir));
+  W.actors = W.actors.filter(a => a.id !== FID());
+  W.actors.push(mkActor(FID(), fx, fy, P.dir));
 }
 const tileAt = (x, y) => ART.at(W.map.grid, x, y);
-const walkable = (x, y) => x >= 0 && y >= 0 && x < W.map.w && y < W.map.h && ART.WALK.has(tileAt(x, y));
+const walkable = (x, y) => x >= 0 && y >= 0 && x < W.map.w && y < W.map.h && W.map._art.WALK.has(tileAt(x, y));
 const logical = a => a.moving ? [a.tx, a.ty] : [a.x, a.y];
 function actorAt(x, y, except) {
   return W.actors.find(a => a !== except && a.visible && ((a.x === x && a.y === y) || (a.moving && a.tx === x && a.ty === y)));
@@ -194,7 +197,7 @@ function tryMove(d) {
   const ev = eventAt(nx, ny);
   if (ev && evSolid(ev)) { if (ev.bump) { runScript(ev.bump); } return; }
   if (!walkable(nx, ny)) return;
-  const k = STATE.follow ? getActor('kujo') : null;
+  const k = STATE.follow ? getActor(FID()) : null;
   const blocker = actorAt(nx, ny, k);
   if (blocker) return;
   const fromX = P.x, fromY = P.y;
@@ -236,11 +239,19 @@ function interact() {
 async function runScript(fn) {
   if (W.busy) return;
   W.busy = true; refreshHUD();
-  try { await fn(); } catch (e) { console.error(e); }
+  let aborted = false;
+  try { await fn(); } catch (e) { if (e && e.abort) aborted = true; else console.error(e); }
   await DLG.close();
   W.busy = false; W.inputLock = true;
+  if (aborted) { resetOverlays(); const f = W.afterAbort; W.afterAbort = null; if (f) f(); return; }
+  if (STATE) STATE.resume = null;
   refreshHUD();
   if (W.mode === 'play') autosave();
+}
+function resetOverlays() {
+  UIH.length = 0;
+  ['notebook', 'choices', 'card', 'cutin', 'timeline', 'chapter', 'mono', 'picker', 'toast', 'battle', 'gameover', 'namebox'].forEach(i => { const e = $(i); if (e) e.classList.add('hidden'); });
+  DLG.close(); setCinema(false); stage.classList.remove('flashback'); W.spot = null; W.hideHud = false; W.camTarget = null;
 }
 
 /* ======================= camera ======================= */
@@ -267,9 +278,9 @@ function update(dt) {
   DLG.update(dt);
   if (W.lightning > 0) W.lightning = Math.max(0, W.lightning - dt / 380);
   if (W.shakeT > 0) W.shakeT -= dt;
-  if (W.mode === 'title') { TITLE.update(dt); return; }
+  if (W.mode === 'title' || W.mode === 'home') { titleRenderer().update(dt); return; }
   if (W.mode !== 'play' || !W.map) return;
-  if (W.storm && !W.busy) {
+  if (W.storm && !W.busy && !W.map.theme) {
     W.thunderIn -= dt;
     if (W.thunderIn <= 0) { W.thunderIn = 16000 + Math.random() * 26000; lightning(0.55 + Math.random() * 0.45); }
   }
@@ -293,7 +304,7 @@ function render(dt) {
   cx.setTransform(1, 0, 0, 1, 0, 0);
   cx.imageSmoothingEnabled = false;
   cx.fillStyle = '#000'; cx.fillRect(0, 0, cv.width, cv.height);
-  if (W.mode === 'title') { TITLE.render(cx); return; }
+  if (W.mode === 'title' || W.mode === 'home') { titleRenderer().render(cx); return; }
   if (!W.map || W.mode !== 'play') return;
   let sx = 0, sy = 0;
   if (W.shakeT > 0) { sx = (Math.random() - 0.5) * W.shakeP; sy = (Math.random() - 0.5) * W.shakeP; }
@@ -305,11 +316,11 @@ function render(dt) {
   for (const a of m._r.anims) {
     const x = a.tx * TS, y = a.ty * TS;
     if (x + ox > VW + 16 || x + ox < -32 || y + oy > VH + 32 || y + oy < -32) continue;
-    ART.drawAnim(cx, a, W.t, W.lightning, W.storm);
+    m._art.drawAnim(cx, a, W.t, W.lightning, W.storm);
   }
   // drawables
   const list = [];
-  for (const e of events()) if (e.sprite) { const [x, y] = e.at[0]; list.push({ y: y * TS + (e.z || 0), d: () => ART.drawSprite(cx, e.sprite, x * TS, y * TS, W.t) }); }
+  for (const e of events()) if (e.sprite) { const [x, y] = e.at[0]; list.push({ y: y * TS + (e.z || 0), d: () => m._art.drawSprite(cx, e.sprite, x * TS, y * TS, W.t) }); }
   const all = [...W.actors, W.P];
   for (const a of all) if (a.visible) list.push({ y: a.py + 8, d: () => { const fr = a.moving ? [1, 0, 3, 0][Math.floor(a.anim / 115) % 4] : 0; ART.drawChar(cx, a.px, a.py, a.dir, fr, a.look); } });
   list.sort((a, b) => a.y - b.y).forEach(o => o.d());
@@ -409,6 +420,9 @@ function refreshHUD() {
   if (!STATE) return;
   $('hud-time').textContent = STATE.time || '';
   $('trust-fill').style.width = Math.max(0, Math.min(100, STATE.trust)) + '%';
+  const hasF = typeof STATE.focus === 'number';
+  $('hud-focus').classList.toggle('hidden', !hasF);
+  if (hasF) $('focus-fill').style.width = Math.max(0, Math.min(100, STATE.focus)) + '%';
   const o = STORY.objective();
   $('hud-obj').classList.toggle('hidden', !o);
   $('hud-objtext').textContent = o || '';
@@ -602,11 +616,12 @@ async function cutin(text, icon, ms = 1300) {
   await sleep(ms);
   el.classList.add('hidden');
 }
-async function timeline(marks, zone) {
+async function timeline(marks, zone, range) {
   const box = $('tl-body'); box.innerHTML = '<div class="tl-axis"></div>';
   const vert = VH > VW, P = vert ? 'top' : 'left', SZ = vert ? 'height' : 'width';
   box.classList.toggle('vert', vert);
-  const t0 = 21 * 60 + 20, t1 = 22 * 60 + 55;
+  const tm = s => { const [h, m] = s.split(':').map(Number); return h * 60 + m; };
+  const t0 = range ? tm(range[0]) : 21 * 60 + 20, t1 = range ? tm(range[1]) : 22 * 60 + 55;
   $('portrait-l').classList.remove('show'); $('portrait-r').classList.remove('show'); DLG.curL = DLG.curR = null;
   const pos = s => { const [h, m] = s.split(':').map(Number); return ((h * 60 + m - t0) / (t1 - t0)) * 100; };
   [].forEach(s => { const d = document.createElement('div'); d.className = 'tl-mark down'; d.style.left = pos(s) + '%'; d.style.animationDelay = '0s'; d.innerHTML = `<div class="dot" style="width:4px;height:4px;box-shadow:none;background:#8a6c34"></div><div class="tm" style="opacity:.6">${s}</div>`; box.appendChild(d); });
@@ -690,7 +705,7 @@ const NB = {
   },
   items() {
     if (this.tab === 'ev') return STATE.evidence.slice();
-    if (this.tab === 'ppl') return STATE.flags.dinner ? ['kujo', 'genichiro', 'masato', 'fuyuko', 'sanada', 'todo', 'suzu'] : ['kujo', 'sanada'];
+    if (this.tab === 'ppl') return STORY.people();
     return [];
   },
   key(a) {
@@ -730,7 +745,7 @@ const NB = {
     this.tab = this.tabs[ni]; this.sel = 0; SND.se('cursor'); this.render();
   },
   render() {
-    $('nb-prompt').textContent = this.mode === 'present' ? sub(this.prompt) : `${STATE.name}の手帳`;
+    $('nb-prompt').textContent = this.mode === 'present' ? sub(this.prompt) : `${STATE.name}の${STORY.nbName || '手帳'}`;
     const T = { ev: '証拠品', ppl: '人物', log: '記録', set: '設定' };
     $('nb-tabs').innerHTML = this.tabs.map(t => `<button data-t="${t}" class="${t === this.tab ? 'sel' : ''}">${T[t]}</button>`).join('');
     $('nb-tabs').querySelectorAll('button').forEach(b => b.onclick = e => { e.stopPropagation(); this.tab = b.dataset.t; this.sel = 0; SND.se('cursor'); this.render(); });
@@ -842,7 +857,7 @@ const G = {
   },
   follow(on) {
     STATE.follow = on;
-    if (on) { if (!getActor('kujo')) placeFollower(); }
+    if (on) { if (!getActor(FID())) placeFollower(); }
   },
   restore() { rebuildActors(); W.P.visible = true; },
   cam(x, y) { W.camTarget = x === null || x === undefined ? null : [x, y]; },
@@ -865,10 +880,11 @@ const G = {
       }
       if (o.alt && o.alt[id]) { await G.say('kujo', o.alt[id], 'think'); continue; }
       tries++;
-      SND.se('wrong'); shake(3, 300, true); G.trust(-6);
+      SND.se('wrong'); shake(3, 300, true);
+      if (o.penalty) await o.penalty(); else G.trust(-6);
       await G.say('kujo', wrongLines[(tries - 1) % wrongLines.length], 'serious');
       if (tries === 2 && o.hint) await G.say('kujo', o.hint, 'think');
-      if (tries >= 3) {
+      if (tries >= 3 && !o.noAuto) {
         await G.say('kujo', '……仕方ない。私が出そう。', 'closed');
         await cutin('提示！', EVIDENCE[correct[0]].icon, 1000);
         return correct[0];
@@ -876,16 +892,27 @@ const G = {
     }
   },
   save: () => autosave(),
+  checkpoint, gameOver,
+  focus(d) {
+    STATE.focus = Math.max(0, Math.min(100, (STATE.focus || 0) + d));
+    const el = $('focus-delta'); el.textContent = (d > 0 ? '+' : '') + d; el.className = 'delta ' + (d > 0 ? 'up' : 'down');
+    clearTimeout(G._fd); G._fd = setTimeout(() => el.className = 'delta', 1800);
+    $('hud').classList.remove('hidden'); refreshHUD();
+    if (W.cinema || W.busy) { $('hud').classList.remove('hidden'); clearTimeout(G._th); G._th = setTimeout(refreshHUD, 2000); }
+  },
+  hum: v => SND.hum(v),
+  battle: def => BATTLE.run(def),
+  debate: def => BATTLE.debate(def),
 };
 
 /* ======================= save / load ======================= */
 function autosave() {
   if (!STATE || W.mode !== 'play') return;
   STATE.x = W.P.x; STATE.y = W.P.y; STATE.dir = W.P.dir; STATE.map = W.mapId;
-  try { localStorage.setItem(SAVE_KEY, JSON.stringify(STATE)); } catch (e) {}
+  try { localStorage.setItem(EP.saveKey, JSON.stringify(STATE)); } catch (e) {}
 }
-function hasSave() { try { return !!localStorage.getItem(SAVE_KEY); } catch (e) { return false; } }
-function clearSave() { try { localStorage.removeItem(SAVE_KEY); } catch (e) {} }
+function hasSave(ep = EP) { try { return !!localStorage.getItem(ep.saveKey); } catch (e) { return false; } }
+function clearSave() { try { localStorage.removeItem(EP.saveKey); localStorage.removeItem(EP.saveKey + '_ck'); } catch (e) {} }
 
 /* ======================= Title ======================= */
 const TITLE = (() => {
@@ -959,68 +986,165 @@ const TITLE = (() => {
   };
 })();
 
+/* ======================= Episodes / Home / Title ======================= */
+const EPISODES = {
+  kurosagi: {
+    id: 'kurosagi', file: 'FILE.01', name: '黒鷺館編', title: '黒鷺館の殺人', story: () => STORY_KUROSAGI, saveKey: 'kurosagi_save_v1',
+    bgm: 'title', rain: 0.8, hum: 0, renderer: () => TITLE, diff: 1,
+    blurb: '嵐の夜、岬の洋館で館の主が殺された。名探偵・九条玲司とともに、時計に隠された嘘を暴け。',
+    kicker: '― 探偵助手の手記 ―', en: 'THE MURDER AT KUROSAGI MANOR',
+    logo: '<span>黒</span><span>鷺</span><span>館</span><span class="no">の</span><span>殺</span><span>人</span>',
+  },
+  cyber: {
+    id: 'cyber', file: 'FILE.02', name: '電脳展編', title: '電脳展の亡霊', story: () => STORY_CYBER, saveKey: 'cyber_save_v1',
+    bgm: 'c_title', rain: 0, hum: 0.5, renderer: () => CYTITLE, diff: 3,
+    blurb: '黒鷺館の事件から半年。未来型美術館の企画展で、AIの創造主が密室で死んだ。電脳の亡霊の正体とは――。敗北あり・戦闘あり。',
+    kicker: '― 探偵助手の手記 FILE.02 ―', en: 'GHOST IN THE EXHIBITION',
+    logo: '<span>電</span><span>脳</span><span>展</span><span class="no">の</span><span>亡</span><span>霊</span>',
+  },
+};
+const EP_ORDER = ['kurosagi', 'cyber'];
+let EP = EPISODES.kurosagi;
+let homeSel = 0;
+function titleRenderer() { return (W.mode === 'home' ? EPISODES[EP_ORDER[homeSel]] : EP).renderer(); }
+function setEpisode(id) {
+  EP = EPISODES[id]; STORY = EP.story();
+  stage.classList.toggle('ep-cyber', id === 'cyber');
+}
+const cleared = id => { try { return !!localStorage.getItem('cleared_' + id); } catch (e) { return false; } };
+function epAmbience(ep) { SND.rain(ep.rain); SND.hum(ep.hum); }
+
+function applyTitle() {
+  const t = $('title');
+  t.querySelector('.tt-kicker').textContent = EP.kicker;
+  t.querySelector('.tt-logo').innerHTML = EP.logo;
+  t.querySelector('.tt-en').textContent = EP.en;
+  t.classList.toggle('cy', EP.id === 'cyber');
+  [...t.querySelectorAll('.tt-logo span, .tt-kicker, .tt-en')].forEach(e => { e.style.animation = 'none'; void e.offsetWidth; e.style.animation = ''; });
+}
+
 function showTitleMenu() {
   const menu = $('tt-menu'); menu.innerHTML = '';
-  const items = [['はじめから', newGame], ['つづきから', continueGame, !hasSave()]];
+  const items = [['はじめから', newGame], ['つづきから', continueGame, !hasSave()], ['ホームへ戻る', backHome]];
   let sel = hasSave() ? 1 : 0;
   const btns = items.map(([t, fn, dis], i) => {
     const b = document.createElement('button'); b.textContent = t; b.disabled = !!dis;
+    if (i === 2) b.classList.add('tt-home');
     b.onclick = e => { e.stopPropagation(); if (!dis) { sel = i; go(); } };
     b.onmouseenter = () => { if (!dis) { sel = i; draw(); } };
     menu.appendChild(b); return b;
   });
   const draw = () => btns.forEach((b, i) => b.classList.toggle('sel', i === sel));
-  const go = () => { SND.se('ok'); popH(h); items[sel][1](); };
+  const go = () => { SND.se(sel === 2 ? 'cancel' : 'ok'); popH(h); items[sel][1](); };
   const h = { key: a => {
     if (a === 'up' || a === 'down') { const n = items.length; let s = sel; do { s = (s + (a === 'up' ? n - 1 : 1)) % n; } while (items[s][2]); sel = s; SND.se('cursor'); draw(); }
     else if (a === 'ok') go();
+    else if (a === 'cancel') { sel = 2; draw(); go(); }
   } };
   draw(); pushH(h);
 }
-async function bootTitle() {
+
+function renderHome() {
+  const box = $('hm-cards'); box.innerHTML = '';
+  EP_ORDER.forEach((id, i) => {
+    const e = EPISODES[id];
+    const st = cleared(id) ? '<span class="hm-st clear">CLEAR</span>' : hasSave(e) ? '<span class="hm-st cont">つづきあり</span>' : '<span class="hm-st new">NEW</span>';
+    const d = document.createElement('div');
+    d.className = `hm-card ${id}` + (i === homeSel ? ' sel' : '');
+    d.innerHTML = `<div class="hm-file">${e.file}</div><div class="hm-name">${e.name}</div><div class="hm-title">${e.title}</div>
+      <div class="hm-blurb">${e.blurb}</div><div class="hm-foot"><span class="hm-diff">難易度 ${'★'.repeat(e.diff)}${'☆'.repeat(3 - e.diff)}</span>${st}</div>`;
+    d.onmouseenter = () => { if (homeSel !== i) { homeSel = i; SND.se('cursor'); homeSync(); } };
+    d.onclick = ev => { ev.stopPropagation(); homeSel = i; homeSync(); openEpisode(id); };
+    box.appendChild(d);
+  });
+}
+function homeSync() {
+  [...$('hm-cards').children].forEach((c, i) => c.classList.toggle('sel', i === homeSel));
+  const ep = EPISODES[EP_ORDER[homeSel]];
+  $('home').classList.toggle('cy', ep.id === 'cyber');
+  SND.bgm(ep.bgm); epAmbience(ep);
+}
+let homeH = null;
+function showHome() {
+  W.mode = 'home'; W.map = null; refreshHUD();
+  stage.classList.remove('ep-cyber');
+  $('title').classList.add('hidden');
+  $('home').classList.remove('hidden');
+  $('hm-press').classList.add('hidden');
+  renderHome(); homeSync();
+  if (homeH) popH(homeH);
+  homeH = { key: a => {
+    if (['left', 'right', 'up', 'down'].includes(a)) { homeSel = (homeSel + (a === 'left' || a === 'up' ? EP_ORDER.length - 1 : 1)) % EP_ORDER.length; SND.se('cursor'); homeSync(); }
+    else if (a === 'ok') openEpisode(EP_ORDER[homeSel]);
+  } };
+  pushH(homeH);
+}
+async function openEpisode(id) {
+  if (homeH) { popH(homeH); homeH = null; }
+  SND.se('ok');
+  await fade(1, 350);
+  setEpisode(id);
+  $('home').classList.add('hidden');
+  W.mode = 'title';
+  applyTitle();
+  $('title').classList.remove('hidden'); $('tt-press').classList.add('hidden');
+  SND.bgm(EP.bgm); epAmbience(EP);
+  await fade(0, 500);
+  showTitleMenu();
+}
+async function backHome() {
+  await fade(1, 350);
+  homeSel = EP_ORDER.indexOf(EP.id);
+  showHome();
+  await fade(0, 500);
+}
+async function bootHome() {
   UIH.length = 0;
-  W.mode = 'title'; W.map = null; refreshHUD();
-  stage.classList.remove('flashback', 'cinema');
-  $('title').classList.remove('hidden'); $('tt-menu').innerHTML = '';
-  $('tt-press').classList.remove('hidden');
-  if (isTouch) { $('tt-press').textContent = '画面をタップしてください'; $('nm-input').closest('.nm-inner').querySelector('.nm-hint').textContent = '６文字まで'; }
-  $('result').classList.add('hidden');
+  W.mode = 'home'; W.map = null; refreshHUD();
+  $('home').classList.remove('hidden'); renderHome();
+  [...$('hm-cards').children].forEach(c => c.classList.add('pre'));
+  $('hm-press').classList.remove('hidden');
+  $('hm-press').textContent = isTouch ? '画面をタップしてください' : 'クリック または キーを押してください';
+  if (isTouch) $('nm-input').closest('.nm-inner').querySelector('.nm-hint').textContent = '６文字まで';
   await fade(0, 1200);
   await new Promise(r => { const h = { key: () => { popH(h); r(); }, tap: () => { popH(h); r(); } }; pushH(h); });
   SND.init(); SND.setVol('bgm', CFG.bgm); SND.setVol('se', CFG.se); SND.setVol('amb', CFG.amb);
-  SND.bgm('title'); SND.rain(0.8); SND.se('ok');
-  $('tt-press').classList.add('hidden');
-  showTitleMenu();
+  SND.se('ok');
+  showHome();
 }
 async function toTitle() {
   autosave();
   await fade(1, 600);
-  W.busy = false; UIH.length = 0;
-  DLG.close(); setCinema(false); G.flashback(false); W.spot = null;
-  ['notebook', 'choices', 'card', 'cutin', 'timeline', 'chapter', 'mono', 'picker', 'toast'].forEach(i => $(i).classList.add('hidden'));
+  W.busy = false; resetOverlays();
   W.mode = 'title'; refreshHUD();
+  applyTitle();
   $('title').classList.remove('hidden'); $('tt-press').classList.add('hidden');
-  SND.bgm('title'); SND.rain(0.8);
+  SND.bgm(EP.bgm); epAmbience(EP);
   await fade(0, 800);
   showTitleMenu();
 }
 function newGame() {
   const box = $('namebox'), inp = $('nm-input');
-  box.classList.remove('hidden'); inp.value = '真白';
+  box.classList.remove('hidden');
+  let last = '真白'; try { last = localStorage.getItem('last_name') || last; } catch (e) {}
+  inp.value = last;
   setTimeout(() => { inp.focus(); inp.select(); }, 50);
   const h = { key: () => {} }; pushH(h);
   const done = async () => {
     const name = (inp.value || '').trim().slice(0, 6) || '真白';
+    try { localStorage.setItem('last_name', name); } catch (e) {}
     inp.blur(); box.classList.add('hidden'); popH(h);
     SND.se('ok');
     STATE = newState(name);
+    if (STORY.initState) STORY.initState(STATE);
     clearSave();
     $('title').style.opacity = '0';
     await fade(1, 900);
     $('title').classList.add('hidden'); $('title').style.opacity = '';
     W.log = [];
     W.mode = 'play';
-    loadMap('1F', 19, 23, 'up');
+    const st = STORY.start;
+    loadMap(st.map, st.x, st.y, st.dir);
     W.mode = 'blank';
     runScript(STORY.prologue);
   };
@@ -1029,14 +1153,13 @@ function newGame() {
 }
 async function continueGame() {
   let data = null;
-  try { data = JSON.parse(localStorage.getItem(SAVE_KEY)); } catch (e) {}
+  try { data = JSON.parse(localStorage.getItem(EP.saveKey)); } catch (e) {}
   if (!data) return;
   STATE = Object.assign(newState(data.name), data);
   $('title').style.opacity = '0';
   await fade(1, 800);
   $('title').classList.add('hidden'); $('title').style.opacity = '';
   W.log = [];
-  W.storm = STATE.chapter < 4;
   loadMap(STATE.map, STATE.x, STATE.y, STATE.dir);
   W.mode = 'play';
   STORY.onResume();
@@ -1045,38 +1168,85 @@ async function continueGame() {
   await fade(0, 700);
 }
 
+/* ======================= Checkpoint / Game over ======================= */
+function checkpoint(script) {
+  if (W.P) { STATE.x = W.P.x; STATE.y = W.P.y; STATE.dir = W.P.dir; STATE.map = W.mapId; }
+  STATE.resume = script;
+  const ck = { state: JSON.parse(JSON.stringify(STATE)), script };
+  W.ckpt = ck;
+  try { localStorage.setItem(EP.saveKey + '_ck', JSON.stringify(ck)); localStorage.setItem(EP.saveKey, JSON.stringify(STATE)); } catch (e) {}
+}
+async function gameOver(kind, head, text) {
+  DLG.close();
+  SND.bgm(null); SND.se('gameover');
+  const el = $('gameover');
+  $('go-k').textContent = kind;
+  $('go-t').textContent = sub(head);
+  $('go-d').innerHTML = richHTML(text);
+  el.classList.remove('hidden');
+  el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
+  await sleep(1600);
+  const menu = $('go-menu'); menu.innerHTML = '';
+  const opts = [['直前からやり直す', 'retry'], ['ホームへ戻る', 'home']];
+  let sel = 0;
+  const choice = await new Promise(res => {
+    const btns = opts.map(([t, v], i) => {
+      const b = document.createElement('button'); b.textContent = t;
+      b.onclick = e => { e.stopPropagation(); sel = i; fin(); };
+      b.onmouseenter = () => { sel = i; draw(); };
+      menu.appendChild(b); return b;
+    });
+    const draw = () => btns.forEach((b, i) => b.classList.toggle('sel', i === sel));
+    const fin = () => { popH(h); SND.se('ok'); res(opts[sel][1]); };
+    const h = { key: a => { if (a === 'up' || a === 'down' || a === 'left' || a === 'right') { sel = 1 - sel; SND.se('cursor'); draw(); } else if (a === 'ok') fin(); } };
+    draw(); pushH(h);
+  });
+  await fade(1, 700);
+  el.classList.add('hidden');
+  W.afterAbort = choice === 'retry' ? retryCheckpoint : async () => { await fade(1, 10); W.mode = 'home'; homeSel = EP_ORDER.indexOf(EP.id); showHome(); await fade(0, 600); };
+  const err = new Error('abort'); err.abort = true; throw err;
+}
+async function retryCheckpoint() {
+  let ck = W.ckpt;
+  if (!ck) { try { ck = JSON.parse(localStorage.getItem(EP.saveKey + '_ck')); } catch (e) {} }
+  if (!ck) { showHome(); await fade(0, 500); return; }
+  STATE = JSON.parse(JSON.stringify(ck.state));
+  W.log = [];
+  loadMap(STATE.map, STATE.x, STATE.y, STATE.dir);
+  W.mode = 'play';
+  STORY.onResume(); updateRoom(); refreshHUD();
+  await fade(0, 500);
+  runScript(STORY[ck.script]);
+}
+
 /* ======================= Result ======================= */
 async function showResult() {
-  const t = STATE.trust;
-  const [rank, title] = t >= 90 ? ['S', '名探偵の相棒'] : t >= 72 ? ['A', '頼れる助手'] : t >= 50 ? ['B', '駆け出しの助手'] : ['C', '見習い助手'];
+  const r = STORY.result();
   const el = $('result');
-  el.innerHTML = `<div class="rs-k">九条からの信頼</div><div class="rs-rank">${rank}</div><div class="rs-title">${title}</div>
-    <div class="rs-stat">信頼度　${t} / 100<br>集めた証拠・証言　${STATE.evidence.length} / ${EVIDENCE_ORDER.length}</div><div class="rs-next">― ${isTouch ? 'タップ' : 'クリック または キー'}で続ける ―</div>`;
+  el.classList.toggle('cy', EP.id === 'cyber');
+  el.innerHTML = `<div class="rs-k">${r.label}</div><div class="rs-rank">${r.rank}</div><div class="rs-title">${r.title}</div>
+    <div class="rs-stat">${r.stats}</div><div class="rs-next">― ${isTouch ? 'タップ' : 'クリック または キー'}で続ける ―</div>`;
   el.classList.remove('hidden');
   await fade(0, 800);
   SND.se('clue');
   await sleep(2600); await waitOk();
-  el.innerHTML = `<div class="credits">
-    <h2>黒鷺館の殺人</h2><p style="color:#bfae86">― 探偵助手の手記 ―</p>
-    <h4>探偵</h4><p>九条 玲司</p>
-    <h4>探偵助手</h4><p>${esc(STATE.name)}</p>
-    <h4>黒鷺館の人々</h4><p>鷺沼 源一郎</p><p>鷺沼 雅人</p><p>白瀬 冬子</p><p>真田 宗助</p><p>小鳥遊 すず</p><p>藤堂 恭介</p>
-    <h4>シナリオ・プログラム・グラフィック・音楽</h4><p>すべてブラウザ上で生成</p>
-    <h4>Special Thanks</h4><p>最後まで遊んでくれたあなた</p>
-    <div class="end">完</div></div>`;
-  SND.bgm('ending');
+  el.innerHTML = `<div class="credits">${r.credits}</div>`;
+  SND.bgm(r.bgm);
   await sleep(30000);
   await waitOkOr(6000);
   UIH.length = 0;
   await fade(1, 1200);
   el.classList.add('hidden');
   clearSave();
+  try { localStorage.setItem('cleared_' + EP.id, '1'); } catch (e) {}
   W.mode = 'title';
+  applyTitle();
   $('title').classList.remove('hidden'); $('tt-press').classList.add('hidden');
-  SND.bgm('title'); SND.rain(0.8);
+  SND.bgm(EP.bgm); epAmbience(EP);
   await fade(0, 1000);
   showTitleMenu();
 }
+
 
 /* ======================= boot ======================= */
 (function makeGrain() {
@@ -1089,4 +1259,4 @@ async function showResult() {
 resize();
 requestAnimationFrame(frame);
 setInterval(() => { if (queued && !W.busy) { const f = queued; queued = null; runScript(f); } }, 100);
-bootTitle();
+bootHome();

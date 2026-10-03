@@ -11,6 +11,12 @@ const PORTRAIT = (() => {
     fuyuko: { rim: '#c0a6f0', hair: ['#0e0b14', '#262032'], skin: ['#322a33', '#54464f'], coat: ['#17121f', '#2f2440'], hairStyle: 'bun', glasses: true, brooch: true },
     sanada: { rim: '#d2d6de', hair: ['#4a4a52', '#86868e'], skin: ['#2c2526', '#4a3c3a'], coat: ['#08080b', '#1a1a20'], hairStyle: 'side', mustache: true, bowtie: true },
     todo: { rim: '#b4cf86', hair: ['#14110e', '#2e2820'], skin: ['#2e2627', '#4c3e3b'], coat: ['#18140e', '#3a3022'], hairStyle: 'part', glasses: true, steth: true, mustache: true },
+    mirai: { rim: '#5ef0ff', hair: ['#0c0a12', '#26202e'], skin: ['#342c36', '#5a4a52'], coat: ['#3a3e4c', '#9aa2b8'], hairStyle: 'bobcut', tie: '#3ff0ff', techCollar: '#3ff0ff', earring: '#3ff0ff' },
+    kurosu: { rim: '#6dff9a', hair: ['#0c1414', '#203030'], skin: ['#302826', '#544640'], coat: ['#14161c', '#2c303c'], hairStyle: 'shaggy', hoodie: true, headset: '#6dff9a' },
+    amagi: { rim: '#ffcc66', hair: ['#4a4a52', '#9a9aa2'], skin: ['#2e2526', '#4c3c3a'], coat: ['#121216', '#2e2e36'], hairStyle: 'slick', tie: '#c9a24a', monocle: '#ff5a5a' },
+    noa: { rim: '#ff6ad5', hair: ['#5a1a4a', '#ff8ad8'], skin: ['#382c30', '#60504e'], coat: ['#1c1026', '#3a2450'], hairStyle: 'twintail', phones: '#5ef0ff', tie: '#5ef0ff' },
+    muse: { rim: '#9ffcff', hair: ['#1a6a8a', '#7fe8ff'], skin: ['#2a5a70', '#8adcf0'], coat: ['#14506a', '#5fd0ec'], hairStyle: 'holo', holo: true, techCollar: '#ffffff' },
+    kirishima: { rim: '#a0b8ff', hair: ['#14141a', '#2c2c36'], skin: ['#302828', '#504240'], coat: ['#6a7080', '#d8dde8'], hairStyle: 'part', glasses: true, lab: true, tie: '#5a8aff' },
     suzu: { rim: '#f6a2c0', hair: ['#1e130c', '#3e2a1c'], skin: ['#342a2c', '#5a4844'], coat: ['#0e0e12', '#22222a'], hairStyle: 'braids', maid: true },
   };
   let uid = 0;
@@ -107,6 +113,21 @@ const PORTRAIT = (() => {
       case 'part': return `
         <path d="M63 110 C58 64 144 62 137 110 C135 92 127 84 113 82 L111 88 C99 82 79 86 63 110 Z" ${f}/>
         <path d="M64 102 C61 114 62 122 66 128 L70 108 Z" ${f}/><path d="M136 102 C139 114 138 122 134 128 L130 108 Z" ${f}/>`;
+      case 'bobcut': return `
+        <path d="M60 140 C52 90 66 60 100 58 C134 60 148 90 140 140 C134 142 130 140 128 136 C132 112 128 96 118 88 C104 96 84 98 72 92 C68 106 68 124 72 136 C68 140 64 142 60 140 Z" ${f}/>
+        <path d="M70 92 C86 84 110 82 126 90" stroke="${c.rim}" stroke-width="1.6" opacity=".55" fill="none"/>`;
+      case 'shaggy': return `
+        <path d="M60 120 C52 76 78 52 102 52 C130 52 152 74 142 122 L136 104 L130 114 L124 96 L116 108 L110 94 L100 106 L92 92 L84 106 L78 94 L70 110 L66 100 Z" ${f}/>
+        <path d="M118 66 C126 70 132 78 134 88" stroke="${c.rim}" stroke-width="3" opacity=".7" fill="none"/>`;
+      case 'twintail': return `
+        <path d="M62 114 C58 68 142 68 138 114 C130 92 116 84 100 86 C84 84 70 92 62 114 Z" ${f}/>
+        <path d="M66 82 C40 92 30 140 40 196 C46 170 52 140 66 112 Z" ${f}/><path d="M134 82 C160 92 170 140 160 196 C154 170 148 140 134 112 Z" ${f}/>
+        <circle cx="68" cy="80" r="6" fill="${c.tie}"/><circle cx="132" cy="80" r="6" fill="${c.tie}"/>
+        <path d="M72 96 L80 104 L86 94 L94 104 L100 92 L106 104 L114 94 L120 104 L128 96" stroke="url(#h${id})" stroke-width="6" fill="none"/>`;
+      case 'holo': return `
+        <path d="M58 150 C48 90 66 54 100 52 C134 54 152 90 142 150 L134 120 L136 96 C124 84 112 80 100 82 C88 80 76 84 64 96 L66 120 Z" ${f} opacity=".85"/>
+        <path d="M64 96 L58 150 M136 96 L142 150 M100 52 L100 82" stroke="#e8fdff" stroke-width="1" opacity=".6"/>
+        <path d="M76 70 L100 60 L124 70" stroke="#e8fdff" stroke-width="1.2" fill="none" opacity=".8"/>`;
       case 'braids': return `
         <path d="M63 114 C59 70 141 70 137 114 C129 92 113 86 100 90 C87 86 71 92 63 114 Z" ${f}/>
         <path d="M64 104 C60 116 61 126 64 132 L70 110 Z" ${f}/><path d="M136 104 C140 116 139 126 136 132 L130 110 Z" ${f}/>
@@ -128,6 +149,16 @@ const PORTRAIT = (() => {
       s += `<path d="M94 200 L100 206 L106 200 L100 196 Z" fill="${c.rim}"/>`;
       return s;
     }
+    if (c.lab) {
+      s += `<path d="M84 190 L100 236 L116 190 Z" fill="#c8cfdc" opacity=".6"/><path d="M96 196 L104 196 L106 206 L102 240 L98 240 L94 206 Z" fill="${c.tie}"/>`;
+      s += `<path d="M50 206 L96 262 L70 262 L40 230 Z" fill="#e8ecf4" opacity=".85"/><path d="M150 206 L104 262 L130 262 L160 230 Z" fill="#dfe4ee" opacity=".85"/>`;
+      return s;
+    }
+    if (c.hoodie) {
+      s += `<path d="M60 196 C70 176 130 176 140 196 C130 186 70 186 60 196 Z" fill="url(#c${id})"/><path d="M58 200 C64 178 80 172 100 172 C120 172 136 178 142 200" stroke="#3a3e4c" stroke-width="6" fill="none"/>`;
+      s += `<path d="M92 196 L90 236 M108 196 L110 236" stroke="#9aa2b0" stroke-width="2"/><circle cx="90" cy="238" r="2.5" fill="${c.rim}"/><circle cx="110" cy="238" r="2.5" fill="${c.rim}"/>`;
+      return s;
+    }
     if (c.vest) {
       s += `<path d="M78 192 L122 192 L132 262 L68 262 Z" fill="#b7aa92" opacity=".55"/>`;
       s += `<path d="M66 202 L96 262 L58 262 Z" ${cf}/><path d="M134 202 L104 262 L142 262 Z" ${cf}/>`;
@@ -144,17 +175,27 @@ const PORTRAIT = (() => {
       s += `<path d="M54 210 L72 146 L94 196 Z" ${cf}/><path d="M146 210 L128 146 L106 196 Z" ${cf}/>`;
       s += `<path d="M72 146 L94 196" stroke="${c.rim}" stroke-width="1.4" opacity=".5"/><path d="M128 146 L106 196" stroke="${c.rim}" stroke-width="1.4" opacity=".8"/>`;
     }
+    if (c.techCollar) s += `<path d="M70 200 L100 214 L130 200" stroke="${c.techCollar}" stroke-width="2.4" fill="none" opacity=".9"/><path d="M60 214 L100 232 L140 214" stroke="${c.techCollar}" stroke-width="1" fill="none" opacity=".5"/>`;
     if (c.brooch) s += `<circle cx="100" cy="206" r="5" fill="${c.rim}" opacity=".9"/><circle cx="100" cy="206" r="2" fill="#fff" opacity=".7"/>`;
     if (c.steth) s += `<path d="M76 194 C66 226 84 246 100 240 C116 246 134 226 124 194" stroke="#8a9096" stroke-width="3" fill="none"/><circle cx="100" cy="242" r="6" fill="#a8b0b6" stroke="#5a6066" stroke-width="2"/>`;
     return s;
   }
 
+  function acc(c) {
+    let s = '';
+    if (c.headset) s += `<path d="M62 112 C58 70 142 70 138 112" stroke="#1a1e26" stroke-width="5" fill="none"/><rect x="56" y="104" width="12" height="20" rx="4" fill="#1a1e26" stroke="${c.headset}" stroke-width="1.5"/><path d="M62 124 C66 140 76 146 88 146" stroke="#1a1e26" stroke-width="3" fill="none"/><circle cx="89" cy="146" r="3" fill="${c.headset}"/>`;
+    if (c.phones) s += `<path d="M60 104 C58 60 142 60 140 104" stroke="${c.phones}" stroke-width="4" fill="none" opacity=".9"/><rect x="52" y="98" width="14" height="24" rx="6" fill="#1a1026" stroke="${c.phones}" stroke-width="2"/><rect x="134" y="98" width="14" height="24" rx="6" fill="#1a1026" stroke="${c.phones}" stroke-width="2"/>`;
+    if (c.monocle) s += `<circle cx="114" cy="114" r="11" fill="rgba(255,60,60,.18)" stroke="#2a2a30" stroke-width="3"/><circle cx="114" cy="114" r="4" fill="${c.monocle}"/><path d="M125 114 L138 108" stroke="#2a2a30" stroke-width="2"/>`;
+    if (c.earring) s += `<rect x="62" y="122" width="3" height="10" fill="${c.earring}"/><rect x="135" y="122" width="3" height="10" fill="${c.earring}"/>`;
+    if (c.holo) { s += `<g opacity=".22">`; for (let y = 50; y < 262; y += 6) s += `<rect x="0" y="${y}" width="200" height="1.4" fill="#dffcff"/>`; s += `</g>`; }
+    return s;
+  }
   function svg(name, expr = 'normal') {
     const c = C[name]; if (!c) return '';
     const id = name + (uid++);
     const glasses = c.glasses ? `<g stroke="rgba(236,232,224,.75)" stroke-width="2" fill="rgba(200,220,240,.06)"><circle cx="86" cy="114" r="10"/><circle cx="114" cy="114" r="10"/><path d="M96 113 L104 113" /></g><path d="M80 108 L84 104" stroke="#fff" stroke-width="1.6" opacity=".6"/>` : '';
     const must = (c.mustache && !c.beard) ? `<path d="M84 134 C92 129 98 131 100 134 C102 131 108 129 116 134 C108 140 92 140 84 134 Z" fill="url(#h${id})"/>` : '';
-    return `<svg viewBox="0 0 200 262" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax meet">
+    return `<svg viewBox="0 0 200 262" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax meet"${c.holo ? ' class="holo" opacity=".88"' : ''}>
       <defs>
         ${grad('s' + id, c.skin, c.rim)}${grad('h' + id, c.hair, c.rim)}${grad('c' + id, c.coat, c.rim)}
         <radialGradient id="g${id}" cx=".5" cy=".42" r=".55"><stop offset="0" stop-color="${c.rim}" stop-opacity=".32"/><stop offset="1" stop-color="${c.rim}" stop-opacity="0"/></radialGradient>
@@ -168,7 +209,7 @@ const PORTRAIT = (() => {
       <path d="M100 118 L97 132 L102 133" stroke="rgba(0,0,0,.35)" stroke-width="1.6" fill="none"/>
       ${eyes(expr)}${mouth(expr, c)}${must}
       ${hair(c, id)}
-      ${glasses}
+      ${glasses}${acc(c)}
     </svg>`;
   }
   return { svg, has: n => !!C[n] };

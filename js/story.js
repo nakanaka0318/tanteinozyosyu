@@ -2,7 +2,7 @@
 /* =========================================================
    STORY : 黒鷺館の殺人 ― シナリオ
    ========================================================= */
-const STORY = (() => {
+const STORY_KUROSAGI = (() => {
   const f = () => STATE.flags;
   const ch = () => STATE.chapter;
   const has = id => STATE.evidence.includes(id);
@@ -1185,5 +1185,22 @@ const STORY = (() => {
   return {
     npcs, objective, FLAVOR, flavor, EVENTS, talk: id => (TALK[id] ? TALK[id]() : Promise.resolve()),
     prologue, hint, onResume, hintFromMenu: true,
+    start: { map: '1F', x: 19, y: 23, dir: 'up' },
+    people: () => STATE.flags.dinner ? ['kujo', 'genichiro', 'masato', 'fuyuko', 'sanada', 'todo', 'suzu'] : ['kujo', 'sanada'],
+    evidenceIds: () => EVIDENCE_ORDER,
+    result() {
+      const t = STATE.trust;
+      const [rank, title] = t >= 90 ? ['S', '名探偵の相棒'] : t >= 72 ? ['A', '頼れる助手'] : t >= 50 ? ['B', '駆け出しの助手'] : ['C', '見習い助手'];
+      return {
+        label: '九条からの信頼', rank, title,
+        stats: `信頼度　${t} / 100<br>集めた証拠・証言　${STATE.evidence.length} / ${EVIDENCE_ORDER.length}`,
+        credits: `<h2>黒鷺館の殺人</h2><p style="color:#bfae86">― 探偵助手の手記 ―</p>
+          <h4>探偵</h4><p>九条 玲司</p><h4>探偵助手</h4><p>${esc(STATE.name)}</p>
+          <h4>黒鷺館の人々</h4><p>鷺沼 源一郎</p><p>鷺沼 雅人</p><p>白瀬 冬子</p><p>真田 宗助</p><p>小鳥遊 すず</p><p>藤堂 恭介</p>
+          <h4>シナリオ・プログラム・グラフィック・音楽</h4><p>すべてブラウザ上で生成</p>
+          <h4>Special Thanks</h4><p>最後まで遊んでくれたあなた</p><div class="end">完</div>`,
+        bgm: 'ending',
+      };
+    },
   };
 })();

@@ -435,10 +435,13 @@ const ART = (() => {
     const bob = walking ? 1 : 0;
     const st = frame === 1 ? 1 : frame === 3 ? -1 : 0;
     c.save();
+    if (L.holo) c.globalAlpha = 0.62 + Math.sin(performance.now() * 0.006) * 0.08;
     if (dir === 'left') { c.translate(x * 2 + 16, 0); c.scale(-1, 1); }
     const side = dir === 'left' || dir === 'right';
     const by = y + bob;
     if (side) drawSide(c, x, by, st, L); else drawFront(c, x, by, st, L, dir === 'up');
+    if (L.holo) { c.globalAlpha = 0.25; for (let i = 0; i < 24; i += 3) R(c, x + 1, by + i, 14, 1, '#bff8ff'); }
+    if (L.neon) { c.globalAlpha = 0.9; R(c, x + 3, by + 17, 10, 1, L.neon); }
     c.restore();
   }
 
@@ -487,6 +490,9 @@ const ART = (() => {
       else { R(c, x + 3, y + 1, 10, 9, h); R(c, x + 4, y + 0, 8, 1, h); }
       if (s === 'bun') { R(c, x + 6, y - 2, 4, 3, h); }
       if (s === 'braids') { R(c, x + 3, y + 9, 2, 5, h); R(c, x + 11, y + 9, 2, 5, h); }
+      if (s === 'twin') { R(c, x + 1, y + 3, 2, 8, h); R(c, x + 13, y + 3, 2, 8, h); }
+      if (s === 'long') { R(c, x + 3, y + 9, 10, 4, h); }
+      if (s === 'hood') { R(c, x + 2, y + 0, 12, 10, L.coat); }
     } else {
       if (s === 'messy') { R(c, x + 3, y + 0, 10, 3, h); R(c, x + 3, y + 3, 1, 5, h); R(c, x + 12, y + 3, 1, 4, h); R(c, x + 4, y + 3, 2, 1, h); R(c, x + 7, y + 3, 1, 2, h); R(c, x + 10, y + 3, 2, 1, h); R(c, x + 2, y + 1, 1, 2, h); R(c, x + 13, y + 2, 1, 1, h); }
       else if (s === 'short') { R(c, x + 4, y + 1, 8, 2, h); R(c, x + 3, y + 2, 1, 6, h); R(c, x + 12, y + 2, 1, 6, h); R(c, x + 4, y + 3, 3, 1, h); }
@@ -494,8 +500,14 @@ const ART = (() => {
       else if (s === 'slick') { R(c, x + 4, y + 0, 8, 3, h); R(c, x + 3, y + 2, 1, 4, h); R(c, x + 12, y + 2, 1, 4, h); R(c, x + 6, y + 1, 3, 1, '#3a3a44'); }
       else if (s === 'bun') { R(c, x + 4, y + 1, 8, 2, h); R(c, x + 6, y - 2, 4, 3, h); R(c, x + 3, y + 2, 1, 7, h); R(c, x + 12, y + 2, 1, 7, h); }
       else if (s === 'side') { R(c, x + 4, y + 0, 8, 3, h); R(c, x + 3, y + 2, 1, 4, h); R(c, x + 12, y + 2, 1, 3, h); R(c, x + 9, y + 1, 1, 1, shade(h, 1.4)); }
+      else if (s === 'bob') { R(c, x + 3, y + 0, 10, 3, h); R(c, x + 3, y + 3, 2, 6, h); R(c, x + 11, y + 3, 2, 6, h); R(c, x + 5, y + 3, 6, 1, h); }
+      else if (s === 'twin') { R(c, x + 4, y + 0, 8, 3, h); R(c, x + 3, y + 2, 1, 5, h); R(c, x + 12, y + 2, 1, 5, h); R(c, x + 1, y + 2, 2, 9, h); R(c, x + 13, y + 2, 2, 9, h); R(c, x + 1, y + 2, 2, 1, L.tie); R(c, x + 13, y + 2, 2, 1, L.tie); }
+      else if (s === 'long') { R(c, x + 3, y + 0, 10, 3, h); R(c, x + 3, y + 3, 2, 10, h); R(c, x + 11, y + 3, 2, 10, h); R(c, x + 6, y + 3, 4, 1, h); }
+      else if (s === 'hood') { R(c, x + 2, y - 1, 12, 4, L.coat); R(c, x + 2, y + 3, 2, 7, L.coat); R(c, x + 12, y + 3, 2, 7, L.coat); R(c, x + 4, y + 3, 8, 1, h); R(c, x + 5, y + 4, 2, 1, h); }
       else if (s === 'braids') { R(c, x + 4, y + 1, 8, 2, h); R(c, x + 3, y + 2, 1, 6, h); R(c, x + 12, y + 2, 1, 6, h); R(c, x + 2, y + 8, 2, 6, h); R(c, x + 12, y + 8, 2, 6, h); R(c, x + 2, y + 13, 2, 1, L.tie); R(c, x + 12, y + 13, 2, 1, L.tie); }
     }
+    if (L.visor && !back) { R(c, x + 4, y + 5, 8, 2, L.visor); }
+    if (L.phones) { R(c, x + 2, y + 4, 2, 4, L.phones); R(c, x + 12, y + 4, 2, 4, L.phones); R(c, x + 3, y - 1, 10, 1, L.phones); }
     if (L.cap) { R(c, x + 3, y - 1, 10, 3, L.cap); R(c, x + 4, y - 2, 8, 1, L.cap); if (!back) R(c, x + 3, y + 2, 10, 1, shade(L.cap)); R(c, x + 7, y - 2, 2, 1, shade(L.cap, 1.3)); }
     if (L.headdress) { R(c, x + 4, y + 0, 8, 2, L.headdress); R(c, x + 5, y - 1, 1, 1, L.headdress); R(c, x + 8, y - 1, 1, 1, L.headdress); R(c, x + 10, y - 1, 1, 1, L.headdress); }
   }
@@ -521,6 +533,11 @@ const ART = (() => {
     else { R(c, x + 4, y + 1, 8, 2, h); R(c, x + 4, y + 2, 3, 6, h); if (s === 'messy') { R(c, x + 3, y + 1, 1, 6, h); R(c, x + 11, y + 3, 1, 1, h); } }
     if (s === 'bun') R(c, x + 2, y + 1, 3, 4, h);
     if (s === 'braids') R(c, x + 4, y + 8, 2, 6, h);
+    if (s === 'twin') R(c, x + 2, y + 2, 2, 9, h);
+    if (s === 'long' || s === 'bob') R(c, x + 4, y + 8, 3, s === 'long' ? 5 : 1, h);
+    if (s === 'hood') { R(c, x + 3, y - 1, 9, 3, L.coat); R(c, x + 3, y + 2, 4, 8, L.coat); }
+    if (L.visor) R(c, x + 9, y + 5, 3, 2, L.visor);
+    if (L.phones) R(c, x + 5, y + 4, 2, 4, L.phones);
     if (L.cap) { R(c, x + 4, y - 1, 8, 3, L.cap); R(c, x + 11, y + 2, 3, 1, shade(L.cap)); }
     if (L.headdress) R(c, x + 6, y + 0, 5, 2, L.headdress);
   }
