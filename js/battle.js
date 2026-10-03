@@ -363,7 +363,7 @@ const BATTLE = (() => {
       if (!hinted && E.turn >= 1) {
         await sleep(250);
         {
-          hinted = true;
+          hinted = true; STATE.flags.caseHint = true;
           q('.bt-cmds').innerHTML = '';
           await G.say('siesta', '助手。あの耳は、聴こえすぎてる。……なら、聴かせてあげればいい。とびきり大きな音を。', 'serious');
           await G.say('siesta', 'アタッシュケースの番号は【0・7・2・1】。', 'smile');
