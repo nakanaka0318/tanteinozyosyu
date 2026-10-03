@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="description" content="嵐の夜、岬の洋館で起きた殺人事件。名探偵・九条玲司の助手として、真犯人を追え。ブラウザで遊べるミステリーRPG。">
+<meta name="theme-color" content="#07060b">
+<title>黒鷺館の殺人 ― 探偵助手の手記</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2307060b'/%3E%3Ccircle cx='27' cy='27' r='13' fill='none' stroke='%23c9a45c' stroke-width='5'/%3E%3Cpath d='M37 37l14 14' stroke='%23c9a45c' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="wrap">
+  <div id="stage">
+    <canvas id="game"></canvas>
+
+    <div id="fx-vignette"></div>
+    <div id="fx-grain"></div>
+    <div id="fx-flashback"><span>― 回 想 ―</span></div>
+    <div id="flash"></div>
+
+    <div id="letterbox"><div class="bar top"></div><div class="bar bottom"></div></div>
+
+    <!-- HUD -->
+    <div id="hud" class="hidden">
+      <div id="hud-loc">
+        <div class="loc-time" id="hud-time">22:10</div>
+        <div class="loc-name" id="hud-place">サロン</div>
+      </div>
+      <div id="hud-trust" title="九条からの信頼">
+        <span class="lbl">信頼</span>
+        <div class="bar"><div class="fill" id="trust-fill"></div></div>
+        <span class="delta" id="trust-delta"></span>
+      </div>
+      <div id="hud-obj"><span class="lbl">目的</span><span id="hud-objtext"></span></div>
+      <button id="hud-menu" aria-label="手帳">手帳</button>
+    </div>
+    <div id="room-label" class="hidden"></div>
+    <div id="toast" class="hidden"></div>
+
+    <!-- dialogue -->
+    <div id="portrait-l" class="portrait"></div>
+    <div id="portrait-r" class="portrait right"></div>
+    <div id="dialog" class="hidden">
+      <div id="dlg-name"></div>
+      <div id="dlg-text"></div>
+      <div id="dlg-next">▼</div>
+    </div>
+    <div id="choices" class="hidden"></div>
+
+    <!-- monologue on black -->
+    <div id="mono" class="hidden"><p id="mono-text"></p><div class="mono-next">▼</div></div>
+
+    <!-- notebook -->
+    <div id="notebook" class="hidden">
+      <div class="nb-book">
+        <div class="nb-head">
+          <div class="nb-prompt" id="nb-prompt"></div>
+          <div class="nb-tabs" id="nb-tabs"></div>
+        </div>
+        <div class="nb-body">
+          <div class="nb-list" id="nb-list"></div>
+          <div class="nb-detail" id="nb-detail"></div>
+        </div>
+        <div class="nb-foot" id="nb-foot"></div>
+      </div>
+    </div>
+
+    <!-- person picker -->
+    <div id="picker" class="hidden"><div class="pk-prompt" id="pk-prompt"></div><div class="pk-row" id="pk-row"></div></div>
+
+    <!-- evidence get card -->
+    <div id="card" class="hidden">
+      <div class="card-inner">
+        <div class="card-kicker" id="card-kicker">証拠品を入手</div>
+        <div class="card-icon" id="card-icon"></div>
+        <div class="card-name" id="card-name"></div>
+        <div class="card-desc" id="card-desc"></div>
+        <div class="card-foot">手帳に記録した　▼</div>
+      </div>
+    </div>
+
+    <!-- cut-in -->
+    <div id="cutin" class="hidden"><div class="ci-lines"></div><div class="ci-icon" id="ci-icon"></div><div class="ci-text" id="ci-text"></div></div>
+
+    <!-- timeline -->
+    <div id="timeline" class="hidden"><div class="tl-title">事件の時系列</div><div class="tl-body" id="tl-body"></div><div class="tl-foot">▼</div></div>
+
+    <!-- chapter card -->
+    <div id="chapter" class="hidden"><div class="ch-num" id="ch-num"></div><div class="ch-line"></div><div class="ch-title" id="ch-title"></div><div class="ch-sub" id="ch-sub"></div></div>
+
+    <!-- title -->
+    <div id="title" class="hidden">
+      <div class="tt-kicker">― 探偵助手の手記 ―</div>
+      <h1 class="tt-logo"><span>黒</span><span>鷺</span><span>館</span><span class="no">の</span><span>殺</span><span>人</span></h1>
+      <div class="tt-en">THE MURDER AT KUROSAGI MANOR</div>
+      <div class="tt-menu" id="tt-menu"></div>
+      <div class="tt-press" id="tt-press">クリック または キーを押してください</div>
+      <div class="tt-copy">移動：矢印キー / WASD　調べる・決定：Z / Enter / Space　手帳・戻る：X / Esc</div>
+    </div>
+
+    <!-- name entry -->
+    <div id="namebox" class="hidden">
+      <div class="nm-inner">
+        <div class="nm-q">あなたは、名探偵・九条玲司の助手。<br>あなたの名前を教えてください。</div>
+        <input id="nm-input" maxlength="6" autocomplete="off" spellcheck="false">
+        <div class="nm-hint">６文字まで　／　Enterで決定</div>
+        <button id="nm-ok">決定</button>
+      </div>
+    </div>
+
+    <!-- result / credits -->
+    <div id="result" class="hidden"></div>
+
+    <div id="fade"></div>
+  </div>
+
+  <!-- touch controls -->
+  <div id="touch" class="hidden">
+    <div class="dpad">
+      <button data-k="up" class="du">▲</button>
+      <button data-k="left" class="dl">◀</button>
+      <button data-k="right" class="dr">▶</button>
+      <button data-k="down" class="dd">▼</button>
+    </div>
+    <div class="abtn">
+      <button data-k="cancel" class="bb">手帳<br><small>B</small></button>
+      <button data-k="ok" class="ba">調べる<br><small>A</small></button>
+    </div>
+  </div>
+</div>
+
+<script src="js/audio.js"></script>
+<script src="js/art.js"></script>
+<script src="js/portraits.js"></script>
+<script src="js/data.js"></script>
+<script src="js/story.js"></script>
+<script src="js/engine.js"></script>
+</body>
+</html>
