@@ -25,6 +25,13 @@ const PORTRAIT = (() => {
     mina: { rim: '#f0a0b0', hair: ['#1e120a', '#3e2a1a'], skin: ['#342a2c', '#5a4844'], coat: ['#0e0e14', '#2a2a3a'], hairStyle: 'bun', maid: true },
     yogarasu: { rim: '#ff3a4a', hair: ['#9a9aa6', '#f4f4fa'], skin: ['#3a3236', '#6a5c5c'], coat: ['#020204', '#14141c'], hairStyle: 'messy', cape: true, mask: true },
     yogarasu_face: { rim: '#ff3a4a', hair: ['#9a9aa6', '#f4f4fa'], skin: ['#3a3236', '#6a5c5c'], coat: ['#020204', '#14141c'], hairStyle: 'messy', cape: true, redEyes: true },
+    siesta: { rim: '#8ac4ff', hair: ['#b8bccc', '#f6f8ff'], skin: ['#3a3236', '#6a5a5c'], coat: ['#121a36', '#2c3c6e'], hairStyle: 'longwave', hairclip: '#c8304a', tie: '#c8304a', collar: 'high' },
+    ca: { rim: '#f0a080', hair: ['#1a100c', '#3a2a1e'], skin: ['#342a2c', '#5a4844'], coat: ['#121a36', '#24345e'], hairStyle: 'bun', scarf: '#d84a3a' },
+    hikawa: { rim: '#a8c0d8', hair: ['#14110e', '#2e2a24'], skin: ['#302828', '#504240'], coat: ['#2a2c32', '#5a5e68'], hairStyle: 'side', glasses: true, tie: '#3a5a7a' },
+    hikawa_x: { rim: '#b46aff', hair: ['#14110e', '#2e2a24'], skin: ['#2a2230', '#4a3a52'], coat: ['#1a1620', '#3a3446'], hairStyle: 'side', glasses: true, tie: '#3a5a7a', tentacles: '#b46aff' },
+    kuroda: { rim: '#e8c070', hair: ['#0c0c10', '#24242c'], skin: ['#2e2526', '#4c3c3a'], coat: ['#0e0e12', '#24242c'], hairStyle: 'slick', mustache: true, tie: '#c9a24a' },
+    nanase: { rim: '#9ae07a', hair: ['#1e140c', '#3e2a1c'], skin: ['#342a2a', '#5a4844'], coat: ['#22301c', '#4a6a3a'], hairStyle: 'shaggy', hoodie: true, phones: '#e8e8e8' },
+    kase: { rim: '#ff5a4a', hair: ['#5a0a0a', '#e0402a'], skin: ['#362a2c', '#5e4a48'], coat: ['#08080c', '#24242c'], hairStyle: 'longwave', collar: 'high', tie: '#24242c' },
     suzu: { rim: '#f6a2c0', hair: ['#1e130c', '#3e2a1c'], skin: ['#342a2c', '#5a4844'], coat: ['#0e0e12', '#22222a'], hairStyle: 'braids', maid: true },
   };
   let uid = 0;
@@ -201,6 +208,9 @@ const PORTRAIT = (() => {
     let s = '';
     if (c.fedora) s += `<path d="M52 92 C70 86 130 86 148 92 C152 98 138 100 100 98 C62 100 48 98 52 92 Z" fill="${c.fedora}"/><path d="M68 90 C66 62 134 62 132 90 Z" fill="${c.fedora}"/><path d="M68 84 L132 84" stroke="#14110e" stroke-width="5"/>`;
     if (c.mask) s += `<path d="M66 106 C80 98 92 104 100 110 C108 104 120 98 134 106 C136 116 128 124 118 122 C110 120 104 116 100 114 C96 116 90 120 82 122 C72 124 64 116 66 106 Z" fill="#06060a" stroke="${c.rim}" stroke-width="1.4"/><ellipse cx="86" cy="112" rx="5" ry="3" fill="#ff3a4a"/><ellipse cx="114" cy="112" rx="5" ry="3" fill="#ff3a4a"/>`;
+    if (c.hairclip) s += `<path d="M120 74 L134 66 L138 76 L126 82 Z" fill="${c.hairclip}"/><circle cx="129" cy="74" r="3" fill="#f6f8ff"/>`;
+    if (c.scarf) s += `<path d="M82 192 C92 202 108 202 118 192 L124 200 C112 214 88 214 76 200 Z" fill="${c.scarf}"/><path d="M104 204 L116 228 L106 226 Z" fill="${c.scarf}"/>`;
+    if (c.tentacles) s += `<g fill="none" stroke="${c.tentacles}" stroke-width="5" stroke-linecap="round" opacity=".9"><path d="M64 112 C40 100 30 120 14 108 C4 100 8 84 18 82"/><path d="M64 120 C44 126 36 150 16 148"/><path d="M136 112 C160 100 170 120 186 108 C196 100 192 84 182 82"/><path d="M136 120 C156 126 164 150 184 148"/></g><g fill="none" stroke="#2a0a3a" stroke-width="2"><path d="M64 112 C40 100 30 120 14 108"/><path d="M136 112 C160 100 170 120 186 108"/></g>`;
     if (c.redEyes) s += `<circle cx="86" cy="113.5" r="2.4" fill="#ff3a4a"/><circle cx="114" cy="113.5" r="2.4" fill="#ff3a4a"/>`;
     if (c.headset) s += `<path d="M62 112 C58 70 142 70 138 112" stroke="#1a1e26" stroke-width="5" fill="none"/><rect x="56" y="104" width="12" height="20" rx="4" fill="#1a1e26" stroke="${c.headset}" stroke-width="1.5"/><path d="M62 124 C66 140 76 146 88 146" stroke="#1a1e26" stroke-width="3" fill="none"/><circle cx="89" cy="146" r="3" fill="${c.headset}"/>`;
     if (c.phones) s += `<path d="M60 104 C58 60 142 60 140 104" stroke="${c.phones}" stroke-width="4" fill="none" opacity=".9"/><rect x="52" y="98" width="14" height="24" rx="6" fill="#1a1026" stroke="${c.phones}" stroke-width="2"/><rect x="134" y="98" width="14" height="24" rx="6" fill="#1a1026" stroke="${c.phones}" stroke-width="2"/>`;

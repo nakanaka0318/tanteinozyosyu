@@ -676,3 +676,59 @@ body.touch-land #touch .abtn .ba{transform:none}
 /* リザルト */
 #result.th{background:radial-gradient(ellipse at 50% 30%,#2a0a10,#050204 75%)}
 #result.th .rs-rank{color:#ffd0c8;text-shadow:0 0 40px rgba(255,60,80,.55)}
+
+/* =========================================================
+   空の名探偵編
+   ========================================================= */
+#stage.ep-sky{--gold:#9ac8ff;--gold2:#dcecff;--gold3:#3a5a9a}
+#stage.ep-sky #fx-vignette{background:radial-gradient(ellipse at 50% 50%,rgba(0,0,0,0) 55%,rgba(4,10,30,.45) 85%,rgba(2,4,16,.85) 100%)}
+#stage.ep-sky #dialog{background:linear-gradient(180deg,rgba(10,16,34,.9),rgba(6,8,20,.94));border-color:rgba(154,200,255,.5)}
+#stage.ep-sky #dialog::after{border-color:#e8eef8}
+#title.sk .tt-kicker{color:#a8c8f0}
+#title.sk .tt-logo{color:#f4f8ff;letter-spacing:.14em;text-shadow:0 0 30px rgba(0,0,0,.9),0 0 60px rgba(120,170,255,.5),0 2px 0 #0a1430}
+#title.sk .tt-logo span:nth-child(3),#title.sk .tt-logo span:nth-child(4),#title.sk .tt-logo span:nth-child(5){color:#e4f0ff}
+#title.sk .tt-logo .no{color:#9ac8ff}
+#title.sk .tt-en{color:#9ac8ff;letter-spacing:.4em}
+#title.sk .tt-menu button.sel{text-shadow:0 0 14px rgba(154,200,255,.9)}
+#title.sk .tt-menu button.sel::before,#title.sk .tt-menu button.sel::after{background:#9ac8ff}
+#home.sk .hm-logo{text-shadow:0 0 24px rgba(0,0,0,.9),0 0 40px rgba(120,170,255,.45)}
+#home.sk .hm-kicker,#home.sk .hm-sub{color:#a8c8f0}
+.hm-card.sky{border-color:rgba(154,200,255,.4);background:linear-gradient(160deg,rgba(12,20,44,.94),rgba(4,6,16,.96))}
+.hm-card.sky.sel{border-color:#9ac8ff;box-shadow:0 0 0 1px #9ac8ff,0 0 40px rgba(120,170,255,.4),0 16px 40px rgba(0,0,0,.7)}
+.hm-card.sky .hm-file{color:#9ac8ff}
+.hm-card.sky .hm-name{color:#f4f8ff;text-shadow:0 0 12px rgba(154,200,255,.5)}
+.hm-card.sky .hm-title{color:#a8c8f0}
+.hm-card.sky .hm-diff{color:#bcd8ff}
+.hm-card.file05{border-style:dashed;border-color:rgba(160,160,180,.35);background:linear-gradient(160deg,rgba(14,14,20,.92),rgba(4,4,8,.95))}
+.hm-card.file05 .hm-file{color:#8a8aa0}
+.hm-card.file05 .hm-name{color:#9a9aae;letter-spacing:.35em}
+.hm-card.file05 .hm-title{color:#6a6a7e;font-family:'Orbitron',var(--sans);letter-spacing:.3em}
+.hm-card.file05 .hm-blurb{color:#8e8ea0;font-style:italic}
+.hm-card.file05 .hm-diff{color:#6a6a7e}
+/* 5枚のカード */
+.hm-cards{gap:calc(var(--u)*1.6)}
+.hm-card{width:calc(var(--u)*21.5);padding:calc(var(--u)*1.4) calc(var(--u)*1.4) calc(var(--u)*1.2)}
+.hm-name{font-size:1.06em;letter-spacing:.06em;white-space:nowrap}
+.hm-title{font-size:.64em;letter-spacing:.08em}
+.hm-blurb{font-size:.56em;line-height:1.75;min-height:9em}
+.hm-foot{font-size:.56em}
+#stage.vmode .hm-card{width:88vw;max-width:calc(var(--u)*46)}
+#stage.vmode .hm-name{font-size:1.4em}
+#stage.vmode .hm-title{font-size:.74em}
+#stage.vmode .hm-blurb{min-height:0;font-size:.66em}
+#stage.vmode .hm-foot{font-size:.64em}
+/* 機内戦 */
+#battle.bt-sky .bt-bg{background:radial-gradient(ellipse at 50% 30%,rgba(60,20,90,.75),rgba(2,4,14,.95) 70%)}
+#battle.bt-sky .bt-esprite{filter:drop-shadow(0 0 18px rgba(180,106,255,.6))}
+#battle.bt-sky .bt-esprite .tent{transform-origin:120px 90px;animation:tentWave 1.8s ease-in-out infinite alternate}
+#battle.bt-sky .bt-esprite .tent.tr{animation-delay:.5s}
+#battle.bt-sky .bt-esprite .wave{transform-origin:120px 100px;animation:sWave 1.6s ease-out infinite}
+@keyframes tentWave{from{transform:rotate(-4deg)}to{transform:rotate(5deg)}}
+@keyframes sWave{from{transform:scale(.6);opacity:.8}to{transform:scale(1.25);opacity:0}}
+#battle.bt-sky .bt-card{border-color:rgba(154,200,255,.5);box-shadow:0 0 14px rgba(154,200,255,.15)}
+#battle.bt-sky .bt-ename{color:#e8d8ff;text-shadow:0 0 12px rgba(180,106,255,.8)}
+#battle.bt-sky .bt-ehp .fill{background:linear-gradient(90deg,#b46aff,#ff6a9a)}
+#scene .sc-siren{animation:siren .6s steps(1) infinite}#scene .sc-siren2{animation:siren .6s steps(1) .3s infinite}
+@keyframes siren{0%{opacity:1}50%{opacity:.25}}
+#result.sk{background:radial-gradient(ellipse at 50% 30%,#14234a,#03050c 75%)}
+#result.sk .rs-rank{color:#e4f0ff;text-shadow:0 0 40px rgba(120,170,255,.6)}

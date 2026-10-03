@@ -131,7 +131,7 @@ function loadMap(id, x, y, dir) {
   const m = MAPS[id];
   if (!m._r) {
     m.grid = m.rows; m.w = m.rows[0].length; m.h = m.rows.length;
-    m._art = m.theme ? CYART : ART;
+    m._art = m.theme === 'plane' ? SKYART : m.theme ? CYART : ART;
     m._r = m._art.renderMap(m, RS);
   }
   W.map = m; W.mapId = id;
@@ -909,7 +909,7 @@ const G = {
     if (!name) { el.classList.remove('show'); setTimeout(() => { if (!el.classList.contains('show')) el.innerHTML = ''; }, 900); return; }
     el.innerHTML = SCENES[name] || ''; el.className = 'show sc-' + name;
   },
-  battle: def => BATTLE.run(def),
+  battle: def => def.kind === 'sky' ? BATTLE.sky(def) : BATTLE.run(def),
   debate: def => BATTLE.debate(def),
 };
 
@@ -1017,12 +1017,20 @@ const EPISODES = {
     kicker: '― 探偵助手の手記 FILE.03 ―', en: 'THE PHANTOM CROW AND THE SCARLET MOON',
     logo: '<span>怪</span><span>盗</span><span class="no">と</span><span>宝</span><span>玉</span>',
   },
-  file04: {
-    id: 'file04', file: 'FILE.04', name: '？？？編', title: 'COMING SOON', locked: true, renderer: () => TTITLE, bgm: 't_title', rain: 0, hum: 0, diff: 0,
-    blurb: '――一年後。相棒を失い、筆を折った探偵助手は、ある事件に巻き込まれ、海外行きの飛行機に乗る。',
+  sky: {
+    id: 'sky', file: 'FILE.04', name: '名探偵シエスタ編', title: '空の名探偵', story: () => STORY_SKY, saveKey: 'sky_save_v1',
+    bgm: 's_title', rain: 0, hum: 0.25, renderer: () => STITLE, diff: 3,
+    blurb: '一年後。謎のケースを持たされた助手は、高度一万メートルで「この中に探偵はおりませんか」の声を聞く。手を挙げたのは、白髪の《名探偵》。敗北あり・戦闘あり。',
+    kicker: '― 探偵助手の手記 FILE.04 ―', en: 'THE DETECTIVE AT TEN THOUSAND METERS',
+    logo: '<span>空</span><span class="no">の</span><span>名</span><span>探</span><span>偵</span>',
+  },
+  file05: {
+    id: 'file05', file: 'FILE.05', name: '？？？編', title: 'COMING SOON', locked: true, renderer: () => STITLE, bgm: 's_title', rain: 0, hum: 0, diff: 0,
+    blurb: '――一年後、イギリス。名探偵と助手に課せられたのは、《巫女》マルチルゲートの祭典を守る任務。',
+    lockMsg: 'この事件ファイルは、まだ開けない。――<b>FILE.04</b> の、その先の物語。',
   },
 };
-const EP_ORDER = ['kurosagi', 'cyber', 'thief', 'file04'];
+const EP_ORDER = ['kurosagi', 'cyber', 'thief', 'sky', 'file05'];
 let EP = EPISODES.kurosagi;
 let homeSel = 0;
 function titleRenderer() { return (W.mode === 'home' ? EPISODES[EP_ORDER[homeSel]] : EP).renderer(); }
@@ -1030,6 +1038,7 @@ function setEpisode(id) {
   EP = EPISODES[id]; STORY = EP.story();
   stage.classList.toggle('ep-cyber', id === 'cyber');
   stage.classList.toggle('ep-thief', id === 'thief');
+  stage.classList.toggle('ep-sky', id === 'sky');
 }
 const cleared = id => { try { return !!localStorage.getItem('cleared_' + id); } catch (e) { return false; } };
 function epAmbience(ep) { SND.rain(ep.rain); SND.hum(ep.hum); }
@@ -1041,6 +1050,7 @@ function applyTitle() {
   t.querySelector('.tt-en').textContent = EP.en;
   t.classList.toggle('cy', EP.id === 'cyber');
   t.classList.toggle('th', EP.id === 'thief');
+  t.classList.toggle('sk', EP.id === 'sky');
   [...t.querySelectorAll('.tt-logo span, .tt-kicker, .tt-en')].forEach(e => { e.style.animation = 'none'; void e.offsetWidth; e.style.animation = ''; });
 }
 
@@ -1083,13 +1093,14 @@ function homeSync() {
   [...$('hm-cards').children].forEach((c, i) => c.classList.toggle('sel', i === homeSel));
   const ep = EPISODES[EP_ORDER[homeSel]];
   $('home').classList.toggle('cy', ep.id === 'cyber');
-  $('home').classList.toggle('th', ep.id === 'thief' || ep.id === 'file04');
+  $('home').classList.toggle('th', ep.id === 'thief');
+  $('home').classList.toggle('sk', ep.id === 'sky' || ep.id === 'file05');
   SND.bgm(ep.bgm); epAmbience(ep);
 }
 let homeH = null;
 function showHome() {
   W.mode = 'home'; W.map = null; refreshHUD();
-  stage.classList.remove('ep-cyber', 'ep-thief');
+  stage.classList.remove('ep-cyber', 'ep-thief', 'ep-sky');
   $('title').classList.add('hidden');
   $('home').classList.remove('hidden');
   $('hm-press').classList.add('hidden');
@@ -1102,7 +1113,7 @@ function showHome() {
   pushH(homeH);
 }
 async function openEpisode(id) {
-  if (EPISODES[id].locked) { SND.se('wrong'); shake(3, 300, true); toast('この事件ファイルは、まだ開けない。――<b>FILE.03</b> の、その先の物語。', 3500); return; }
+  if (EPISODES[id].locked) { SND.se('wrong'); shake(3, 300, true); toast(EPISODES[id].lockMsg || 'この事件ファイルは、まだ開けない。', 3500); return; }
   if (homeH) { popH(homeH); homeH = null; }
   SND.se('ok');
   await fade(1, 350);
@@ -1248,6 +1259,7 @@ async function showResult() {
   const el = $('result');
   el.classList.toggle('cy', EP.id === 'cyber');
   el.classList.toggle('th', EP.id === 'thief');
+  el.classList.toggle('sk', EP.id === 'sky');
   el.innerHTML = `<div class="rs-k">${r.label}</div><div class="rs-rank">${r.rank}</div><div class="rs-title">${r.title}</div>
     <div class="rs-stat">${r.stats}</div><div class="rs-next">― ${isTouch ? 'タップ' : 'クリック または キー'}で続ける ―</div>`;
   el.classList.remove('hidden');

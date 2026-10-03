@@ -245,6 +245,182 @@ const BATTLE = (() => {
     await G.gameOver('GAME OVER', 'ダイブ失敗', def.loseText || '強制切断――{N}の意識は、電脳の闇に呑まれた。');
   }
 
+  /* ======================= 機内戦（空の名探偵編） ======================= */
+  async function sky(def) {
+    const P = STATE.party;
+    const E = { name: def.name, hp: def.hp, max: def.hp, turn: 0 };
+    let stun = 0, listen = false, decoy = false, guard = false, siestaGuard = false, hinted = !!STATE.flags.caseOpen;
+    build('cyber'); root.classList.add('bt-sky');
+    q('.bt-ename').textContent = E.name;
+    q('.bt-esprite').innerHTML = def.svg;
+    setEnemyHP(E.hp, E.max);
+    const NM = { me: () => STATE.name, siesta: () => 'シエスタ' };
+    const renderParty = () => {
+      const box = q('.bt-party'); box.innerHTML = '';
+      [['me', P.me], ['siesta', P.siesta]].forEach(([id, m]) => {
+        const c = el('div', 'bt-card' + (m.hp <= 0 ? ' ko' : '') + (m.hp > 0 && m.hp <= m.max * 0.3 ? ' danger' : ''));
+        c.dataset.id = id;
+        c.innerHTML = `<div class="bt-cname">${id === 'me' ? '◆' : '✦'} ${esc(NM[id]())}</div>
+          <div class="bt-bar hp"><div style="width:${Math.max(0, m.hp / m.max * 100)}%"></div></div><div class="bt-num">HP ${Math.max(0, m.hp)} / ${m.max}</div>
+          ${id === 'me' && STATE.flags.caseOpen ? `<div class="bt-num">残弾 ${STATE.items.ammo} / 6</div>` : ''}`;
+        box.appendChild(c);
+      });
+      const st = [];
+      if (stun) st.push(`<span class="bt-st bf">聴覚マヒ ${stun}</span>`);
+      if (listen) st.push('<span class="bt-st sh">敵：聴音中</span>');
+      if (decoy) st.push('<span class="bt-st sh">おとり</span>');
+      if (st.length) box.appendChild(el('div', 'bt-sts', st.join('')));
+    };
+    const nextAct = () => def.pattern[E.turn % def.pattern.length];
+    const showIntent = () => {
+      const i = q('.bt-intent'); const n = stun ? 'stun' : nextAct();
+      i.innerHTML = 'シエスタの分析：' + { atk: '次は触手の薙ぎ払い', listen: '次は「聴音」――足音で攻撃を読まれる', roar: '⚠ 次は超音波の咆哮（全体攻撃）', stun: '聴覚がマヒしている。今が好機！' }[n];
+      i.classList.toggle('warn', n === 'roar');
+    };
+    const dmgTo = async (id, d, text) => {
+      const m = P[id]; if (m.hp <= 0) return;
+      if (id === 'me' && guard) d = Math.round(d / 2);
+      if (id === 'me' && siestaGuard) { d = Math.round(d * 0.4); }
+      m.hp = Math.max(0, m.hp - d); SND.se('hurt'); hitFx(id, d >= 18); pop(id, d, 'dmg'); renderParty();
+      await msg(text.replace('#', NM[id]()).replace('$', d));
+    };
+    const hitEnemy = async (d, text, crit) => {
+      SND.se(crit ? 'crit' : 'hit'); hitFx('enemy', crit); pop('enemy', d, crit ? 'crit' : '');
+      E.hp -= d; setEnemyHP(E.hp, E.max); await msg(text.replace('$', d));
+    };
+    SND.bgm(def.bgm || 'c_boss');
+    SND.se('glitch'); flash('#b46aff', 300);
+    renderParty();
+    await msg(def.intro || `${E.name} が襲いかかってきた！`, 1400);
+    let result = null;
+    while (!result) {
+      renderParty(); showIntent();
+      guard = false; siestaGuard = false;
+      let acted = false;
+      while (!acted) {
+        const opened = !!STATE.flags.caseOpen;
+        const top = await menu([
+          { label: 'たたかう', v: 'atk', help: stun ? '素手で殴りかかる。今なら当たる！' : '素手で殴りかかる。……ただし、足音は聴かれている。' },
+          opened
+            ? { label: '銃を撃つ', v: 'gun', note: `残弾 ${STATE.items.ammo}`, dis: STATE.items.ammo <= 0, help: '【シエスタの銃】。轟音が、狭い機内に反響する。' }
+            : { label: 'アタッシュケース', v: 'case', help: hinted ? 'シエスタに教わった番号で、ケースを開ける。' : '空港で押しつけられたケース。ダイヤル錠がかかっている。' },
+          { label: '物を投げる', v: 'decoy', help: '機内食のトレーを投げて物音を立てる。次の触手攻撃を、音のほうへ逸らす。' },
+          { label: '身を守る', v: 'guard', help: 'このターン、受けるダメージを半減する。' },
+          { label: 'ミネラルウォーター', v: 'water', note: `×${STATE.items.water}`, dis: STATE.items.water <= 0, help: `${STATE.name}のHPを40回復する。` },
+        ], `${STATE.name} の行動`);
+        if (top === 'atk') {
+          if (!stun && listen) {
+            await msg('足音を聴き取られた！ 拳は空を切った――', 900);
+            await dmgTo('me', rnd(8, 12), '触手のカウンター！ # に $ のダメージ。');
+          } else if (!stun && Math.random() < 0.65) {
+            SND.se('cancel'); await msg('かわされた！ 動きを、音で読まれている……！');
+          } else {
+            const d = stun ? rnd(14, 19) : rnd(9, 13);
+            await hitEnemy(d, `${STATE.name} の攻撃！ $ のダメージ。`);
+          }
+          acted = true;
+        } else if (top === 'case') {
+          if (!hinted) { SND.se('wrong'); await msg('ダイヤル錠がかかっている……！ 番号が分からない。', 1100); continue; }
+          STATE.flags.caseOpen = true; STATE.items.ammo = 6;
+          SND.se('clue'); flash('#fff', 200);
+          q('.bt-cmds').innerHTML = '';
+          await msg('カチリ。――ケースの中には、一丁の銃が収められていた。', 1600);
+          await G.say('siesta', 'それ、私の銃。撃ち方は分かるでしょ？ ……分からなくても、引き金を引けば弾は出るから。', 'smile');
+          await G.say('me', 'そういう問題じゃない！！', 'shock'); DLG.close();
+          renderParty();
+          acted = true;
+        } else if (top === 'gun') {
+          STATE.items.ammo--;
+          SND.se('crit'); shake(8, 500, true); flash('#fff', 250);
+          if (stun) {
+            await hitEnemy(rnd(34, 42), '銃声！ 【聴覚がマヒした相手には、避けられない】！ $ のダメージ。', true);
+          } else {
+            if (Math.random() < 0.7) await hitEnemy(rnd(24, 30), '銃声が、狭い機内に反響した！ $ のダメージ。', true);
+            else await msg('銃声が機内に反響した！ 弾は、わずかに逸れた――');
+            stun = 2; listen = false;
+            SND.se('glitch');
+            await msg(`${E.name} が耳を押さえてのたうち回る！ 【聴覚マヒ】！`, 1300);
+          }
+          acted = true;
+        } else if (top === 'decoy') {
+          decoy = true; SND.se('crash');
+          await msg('トレーを放り投げた！ ガシャン――触手が、音のほうへ向く！');
+          acted = true;
+        } else if (top === 'guard') {
+          guard = true; SND.se('shield');
+          await msg(`${STATE.name} は身を守っている。`);
+          acted = true;
+        } else if (top === 'water') {
+          STATE.items.water--; SND.se('heal');
+          const a = Math.min(P.me.max - P.me.hp, 40); P.me.hp += a; pop('me', '+' + a, 'heal'); renderParty();
+          await msg(`ミネラルウォーターを飲んだ。HPが ${a} 回復。`);
+          acted = true;
+        }
+      }
+      renderParty();
+      if (E.hp <= 0) { result = 'win'; break; }
+      // ---- シエスタの行動 ----
+      if (!hinted && E.turn >= 1) {
+        await sleep(250);
+        {
+          hinted = true;
+          q('.bt-cmds').innerHTML = '';
+          await G.say('siesta', '助手。あの耳は、聴こえすぎてる。……なら、聴かせてあげればいい。とびきり大きな音を。', 'serious');
+          await G.say('siesta', 'アタッシュケースの番号は【0・7・2・1】。', 'smile');
+          await G.say('me', 'なんで知ってるの!?', 'shock');
+          await G.say('siesta', '空港で君に持たせたの、私だから。', 'smile');
+          await G.say('me', '…………はあ!?', 'shock'); DLG.close();
+          await msg('【アタッシュケース】が開けられるようになった！', 1300);
+        }
+      } else if (P.siesta.hp > 0) {
+        await sleep(250);
+        if (P.me.hp > 0 && P.me.hp <= P.me.max * 0.35 && !stun) {
+          siestaGuard = true; SND.se('shield');
+          await msg('シエスタが前に出た！ 「下がって、助手」――次の攻撃から庇う。', 1200);
+        } else if (stun || Math.random() < 0.5) {
+          await hitEnemy(stun ? rnd(14, 18) : rnd(9, 13), 'シエスタの回し蹴り！ $ のダメージ。');
+        } else {
+          SND.se('cancel'); await msg('シエスタの蹴り――触手に受け流された。');
+        }
+        if (E.hp <= 0) { result = 'win'; break; }
+      }
+      // ---- 敵の行動 ----
+      await sleep(250);
+      if (stun) {
+        stun--; SND.se('glitch');
+        await msg(`${E.name} は耳を押さえて苦しんでいる……！`);
+      } else {
+        const act = nextAct(); E.turn++;
+        listen = false;
+        if (act === 'atk') {
+          if (decoy) { decoy = false; SND.se('whoosh'); await msg('触手が、転がったトレーを叩き潰した！ ――攻撃を逸らした！'); }
+          else {
+            const tgt = siestaGuard || (P.siesta.hp > 0 && Math.random() < 0.35) ? 'siesta' : 'me';
+            await dmgTo(tgt, rnd(def.atk[0], def.atk[1]), `触手の薙ぎ払い！ # に $ のダメージ。`);
+          }
+        } else if (act === 'listen') {
+          listen = true; SND.se('charge'); q('.bt-esprite').classList.add('charging');
+          await msg(`${E.name} は耳を澄ませている……（次の「たたかう」は読まれる）`, 1200);
+          q('.bt-esprite').classList.remove('charging');
+        } else if (act === 'roar') {
+          SND.se('crit'); shake(7, 500, true); flash('#b46aff', 300);
+          await msg(`${E.name} の【超音波の咆哮】！`, 900);
+          for (const id of ['me', 'siesta']) await dmgTo(id, rnd(def.roar[0], def.roar[1]), '# に $ のダメージ。');
+        }
+      }
+      if (P.me.hp <= 0) { P.me.hp = 0; renderParty(); result = 'lose'; break; }
+    }
+    if (result === 'win') {
+      q('.bt-esprite').classList.add('dead'); SND.se('victory'); SND.bgm(null);
+      await msg(`${E.name} は、崩れ落ちた――！`, 1800);
+      await fade(1, 400); root.classList.add('hidden'); G.hud(true); await fade(0, 400);
+      return 'win';
+    }
+    await msg(`${STATE.name} は、触手に締め上げられ――意識が遠のいていく……`, 1800);
+    root.classList.add('hidden');
+    await G.gameOver('GAME OVER', '高度一万メートルの闇', def.loseText);
+  }
+
   /* ======================= 論戦 ======================= */
   async function debate(def) {
     build('debate');
@@ -277,7 +453,7 @@ const BATTLE = (() => {
       while (!solved) {
         renderParty();
         const c = await menu([
-          { label: '証拠をつきつける', v: 'present', help: '手帳から、反論を崩す証拠を選ぶ。【間違えると集中力が大きく減る】。' },
+          { label: '証拠をつきつける', v: 'present', help: `手帳から、反論を崩す証拠を選ぶ。【間違えると${def.hpName || '集中力'}が大きく減る】。` },
           { label: def.hintLabel || '九条の推理を聞く', v: 'hint', help: `${def.hintHelp || '九条から手がかりをもらう。'}（${def.hpName || '集中力'} -8）` },
           { label: '深呼吸する', v: 'breath', note: `残り${breath}`, dis: breath <= 0, help: `${def.hpName || '集中力'}を20回復する。（1回のみ）` },
         ], '論戦');
@@ -303,7 +479,7 @@ const BATTLE = (() => {
           await G.say(def.hintSpeaker || 'kujo', r.hint, 'think'); DLG.close();
         } else if (c === 'breath') {
           breath--; STATE.focus = Math.min(100, STATE.focus + 20); SND.se('heal'); renderParty(); pop('me', '+20', 'heal');
-          await msg('深呼吸をして、心を落ち着けた。集中力が20回復。');
+          await msg(`深呼吸をして、心を落ち着けた。${def.hpName || '集中力'}が20回復。`);
         }
         if (STATE.focus <= 0) {
           await msg('論理が崩れていく……もう、言葉が出てこない。', 1600);
@@ -318,5 +494,5 @@ const BATTLE = (() => {
     return 'win';
   }
 
-  return { run, debate };
+  return { run, debate, sky };
 })();
