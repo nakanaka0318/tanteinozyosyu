@@ -258,11 +258,11 @@ const BATTLE = (() => {
     const renderParty = () => {
       const box = q('.bt-party');
       const f = STATE.focus;
-      box.innerHTML = `<div class="bt-card focus${f <= 30 ? ' danger' : ''}" data-id="me"><div class="bt-cname">九条 ＆ ${esc(STATE.name)}</div>
-        <div class="bt-bar hp"><div style="width:${Math.max(0, f)}%"></div></div><div class="bt-num">集中力 ${Math.max(0, f)} / 100</div></div>`;
+      box.innerHTML = `<div class="bt-card focus${f <= 30 ? ' danger' : ''}" data-id="me"><div class="bt-cname">${def.partyName ? sub(def.partyName) : '九条 ＆ ' + esc(STATE.name)}</div>
+        <div class="bt-bar hp"><div style="width:${Math.max(0, f)}%"></div></div><div class="bt-num">${def.hpName || '集中力'} ${Math.max(0, f)} / 100</div></div>`;
     };
     renderParty();
-    SND.bgm('c_debate');
+    SND.bgm(def.bgm || 'c_debate');
     flash('#fff', 250);
     await msg(def.intro || '論戦開始！', 1200);
     const per = Math.ceil(E.max / def.rounds.length);
@@ -278,8 +278,8 @@ const BATTLE = (() => {
         renderParty();
         const c = await menu([
           { label: '証拠をつきつける', v: 'present', help: '手帳から、反論を崩す証拠を選ぶ。【間違えると集中力が大きく減る】。' },
-          { label: '九条の推理を聞く', v: 'hint', help: '九条から手がかりをもらう。（集中力 -8）' },
-          { label: '深呼吸する', v: 'breath', note: `残り${breath}`, dis: breath <= 0, help: '集中力を20回復する。（1回のみ）' },
+          { label: def.hintLabel || '九条の推理を聞く', v: 'hint', help: `${def.hintHelp || '九条から手がかりをもらう。'}（${def.hpName || '集中力'} -8）` },
+          { label: '深呼吸する', v: 'breath', note: `残り${breath}`, dis: breath <= 0, help: `${def.hpName || '集中力'}を20回復する。（1回のみ）` },
         ], '論戦');
         if (c === 'present') {
           const id = await NB.open('present', r.claim.length > 30 ? r.claim.slice(0, 30) + '…' : r.claim);
@@ -292,7 +292,7 @@ const BATTLE = (() => {
             claim.innerHTML = '';
             if (r.after) { await r.after(); DLG.close(); }
           } else if (r.alt && r.alt[id]) {
-            await G.say('kujo', r.alt[id], 'think'); DLG.close();
+            await G.say(def.hintSpeaker || 'kujo', r.alt[id], 'think'); DLG.close();
           } else {
             SND.se('wrong'); face('smile');
             STATE.focus = Math.max(0, STATE.focus - (def.wrongDmg || 20)); renderParty(); hitFx('me', true); pop('me', def.wrongDmg || 20, 'dmg');
@@ -300,7 +300,7 @@ const BATTLE = (() => {
           }
         } else if (c === 'hint') {
           STATE.focus = Math.max(0, STATE.focus - 8); renderParty(); pop('me', 8, 'dmg');
-          await G.say('kujo', r.hint, 'think'); DLG.close();
+          await G.say(def.hintSpeaker || 'kujo', r.hint, 'think'); DLG.close();
         } else if (c === 'breath') {
           breath--; STATE.focus = Math.min(100, STATE.focus + 20); SND.se('heal'); renderParty(); pop('me', '+20', 'heal');
           await msg('深呼吸をして、心を落ち着けた。集中力が20回復。');

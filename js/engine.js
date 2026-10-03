@@ -420,6 +420,8 @@ function refreshHUD() {
   if (!STATE) return;
   $('hud-time').textContent = STATE.time || '';
   $('trust-fill').style.width = Math.max(0, Math.min(100, STATE.trust)) + '%';
+  $('hud-trust').classList.toggle('hidden', !!(STORY.hideTrust && STORY.hideTrust()));
+  $('hud-focus').querySelector('.lbl').textContent = STORY.focusLabel || '集中';
   const hasF = typeof STATE.focus === 'number';
   $('hud-focus').classList.toggle('hidden', !hasF);
   if (hasF) $('focus-fill').style.width = Math.max(0, Math.min(100, STATE.focus)) + '%';
@@ -784,7 +786,7 @@ const NB = {
     } else if (this.tab === 'set') {
       list.style.display = 'none';
       const bar = v => '■'.repeat(Math.round(v * 10)) + '□'.repeat(10 - Math.round(v * 10));
-      const rows = [['BGM 音量', bar(CFG.bgm)], ['効果音 音量', bar(CFG.se)], ['雨音 音量', bar(CFG.amb)], ['文字の速さ', ['ゆっくり', 'ふつう', 'はやい'][CFG.speed]], ['九条に相談する（ヒント）', '▶'], ['タイトルへ戻る', '▶']];
+      const rows = [['BGM 音量', bar(CFG.bgm)], ['効果音 音量', bar(CFG.se)], ['雨音 音量', bar(CFG.amb)], ['文字の速さ', ['ゆっくり', 'ふつう', 'はやい'][CFG.speed]], [(STORY.hintMenu && STORY.hintMenu()) || '九条に相談する（ヒント）', '▶'], ['タイトルへ戻る', '▶']];
       det.innerHTML = `<div class="nb-set">${rows.map((r, i) => `<div class="row ${i === this.setSel ? 'sel' : ''}" data-i="${i}"><span>${r[0]}</span><span class="val">${r[1]}</span></div>`).join('')}</div>
         <div class="note">←→ で値を変更。進行状況は自動で保存されます。</div>`;
       det.querySelectorAll('.row').forEach(r => r.onclick = e => {
@@ -870,7 +872,8 @@ const G = {
   getActor,
   async present(prompt, correct, o = {}) {
     let tries = 0;
-    const wrongLines = ['……違うな。それが今の話の何を証明する？', '{N}くん、落ち着きたまえ。もう一度、よく考えて。', 'ふむ……それは今、関係がなさそうだ。'];
+    const sp = o.speaker || 'kujo';
+    const wrongLines = o.wrongLines || ['……違うな。それが今の話の何を証明する？', '{N}くん、落ち着きたまえ。もう一度、よく考えて。', 'ふむ……それは今、関係がなさそうだ。'];
     while (true) {
       const id = await NB.open('present', prompt);
       if (correct.includes(id)) {
@@ -878,12 +881,12 @@ const G = {
         await cutin(o.cut || '提示！', EVIDENCE[id].icon, o.cutMs || 1200);
         return id;
       }
-      if (o.alt && o.alt[id]) { await G.say('kujo', o.alt[id], 'think'); continue; }
+      if (o.alt && o.alt[id]) { await G.say(sp, o.alt[id], 'think'); continue; }
       tries++;
       SND.se('wrong'); shake(3, 300, true);
       if (o.penalty) await o.penalty(); else G.trust(-6);
-      await G.say('kujo', wrongLines[(tries - 1) % wrongLines.length], 'serious');
-      if (tries === 2 && o.hint) await G.say('kujo', o.hint, 'think');
+      await G.say(sp, wrongLines[(tries - 1) % wrongLines.length], 'serious');
+      if (tries === 2 && o.hint) await G.say(sp, o.hint, 'think');
       if (tries >= 3 && !o.noAuto) {
         await G.say('kujo', '……仕方ない。私が出そう。', 'closed');
         await cutin('提示！', EVIDENCE[correct[0]].icon, 1000);
@@ -901,6 +904,11 @@ const G = {
     if (W.cinema || W.busy) { $('hud').classList.remove('hidden'); clearTimeout(G._th); G._th = setTimeout(refreshHUD, 2000); }
   },
   hum: v => SND.hum(v),
+  scene(name) {
+    const el = $('scene');
+    if (!name) { el.classList.remove('show'); setTimeout(() => { if (!el.classList.contains('show')) el.innerHTML = ''; }, 900); return; }
+    el.innerHTML = SCENES[name] || ''; el.className = 'show sc-' + name;
+  },
   battle: def => BATTLE.run(def),
   debate: def => BATTLE.debate(def),
 };
@@ -1002,14 +1010,26 @@ const EPISODES = {
     kicker: '― 探偵助手の手記 FILE.02 ―', en: 'GHOST IN THE EXHIBITION',
     logo: '<span>電</span><span>脳</span><span>展</span><span class="no">の</span><span>亡</span><span>霊</span>',
   },
+  thief: {
+    id: 'thief', file: 'FILE.03', name: '怪盗と宝玉編', title: '怪盗夜鴉と緋月の宝玉', story: () => STORY_THIEF, saveKey: 'thief_save_v1',
+    bgm: 't_title', rain: 0, hum: 0, renderer: () => TTITLE, diff: 3,
+    blurb: '怪盗「夜鴉」からの挑戦状。予告の五時間前、探偵は死んだ――。代理探偵となった助手が、師を殺した共犯者を追う。時間制限あり。',
+    kicker: '― 探偵助手の手記 FILE.03 ―', en: 'THE PHANTOM CROW AND THE SCARLET MOON',
+    logo: '<span>怪</span><span>盗</span><span class="no">と</span><span>宝</span><span>玉</span>',
+  },
+  file04: {
+    id: 'file04', file: 'FILE.04', name: '？？？編', title: 'COMING SOON', locked: true, renderer: () => TTITLE, bgm: 't_title', rain: 0, hum: 0, diff: 0,
+    blurb: '――一年後。相棒を失い、筆を折った探偵助手は、ある事件に巻き込まれ、海外行きの飛行機に乗る。',
+  },
 };
-const EP_ORDER = ['kurosagi', 'cyber'];
+const EP_ORDER = ['kurosagi', 'cyber', 'thief', 'file04'];
 let EP = EPISODES.kurosagi;
 let homeSel = 0;
 function titleRenderer() { return (W.mode === 'home' ? EPISODES[EP_ORDER[homeSel]] : EP).renderer(); }
 function setEpisode(id) {
   EP = EPISODES[id]; STORY = EP.story();
   stage.classList.toggle('ep-cyber', id === 'cyber');
+  stage.classList.toggle('ep-thief', id === 'thief');
 }
 const cleared = id => { try { return !!localStorage.getItem('cleared_' + id); } catch (e) { return false; } };
 function epAmbience(ep) { SND.rain(ep.rain); SND.hum(ep.hum); }
@@ -1020,6 +1040,7 @@ function applyTitle() {
   t.querySelector('.tt-logo').innerHTML = EP.logo;
   t.querySelector('.tt-en').textContent = EP.en;
   t.classList.toggle('cy', EP.id === 'cyber');
+  t.classList.toggle('th', EP.id === 'thief');
   [...t.querySelectorAll('.tt-logo span, .tt-kicker, .tt-en')].forEach(e => { e.style.animation = 'none'; void e.offsetWidth; e.style.animation = ''; });
 }
 
@@ -1048,11 +1069,11 @@ function renderHome() {
   const box = $('hm-cards'); box.innerHTML = '';
   EP_ORDER.forEach((id, i) => {
     const e = EPISODES[id];
-    const st = cleared(id) ? '<span class="hm-st clear">CLEAR</span>' : hasSave(e) ? '<span class="hm-st cont">つづきあり</span>' : '<span class="hm-st new">NEW</span>';
+    const st = e.locked ? '<span class="hm-st lock">LOCKED</span>' : cleared(id) ? '<span class="hm-st clear">CLEAR</span>' : hasSave(e) ? '<span class="hm-st cont">つづきあり</span>' : '<span class="hm-st new">NEW</span>';
     const d = document.createElement('div');
-    d.className = `hm-card ${id}` + (i === homeSel ? ' sel' : '');
+    d.className = `hm-card ${id}` + (e.locked ? ' locked' : '') + (i === homeSel ? ' sel' : '');
     d.innerHTML = `<div class="hm-file">${e.file}</div><div class="hm-name">${e.name}</div><div class="hm-title">${e.title}</div>
-      <div class="hm-blurb">${e.blurb}</div><div class="hm-foot"><span class="hm-diff">難易度 ${'★'.repeat(e.diff)}${'☆'.repeat(3 - e.diff)}</span>${st}</div>`;
+      <div class="hm-blurb">${sub(e.blurb)}</div><div class="hm-foot"><span class="hm-diff">${e.locked ? '近日公開' : '難易度 ' + '★'.repeat(e.diff) + '☆'.repeat(3 - e.diff)}</span>${st}</div>`;
     d.onmouseenter = () => { if (homeSel !== i) { homeSel = i; SND.se('cursor'); homeSync(); } };
     d.onclick = ev => { ev.stopPropagation(); homeSel = i; homeSync(); openEpisode(id); };
     box.appendChild(d);
@@ -1062,12 +1083,13 @@ function homeSync() {
   [...$('hm-cards').children].forEach((c, i) => c.classList.toggle('sel', i === homeSel));
   const ep = EPISODES[EP_ORDER[homeSel]];
   $('home').classList.toggle('cy', ep.id === 'cyber');
+  $('home').classList.toggle('th', ep.id === 'thief' || ep.id === 'file04');
   SND.bgm(ep.bgm); epAmbience(ep);
 }
 let homeH = null;
 function showHome() {
   W.mode = 'home'; W.map = null; refreshHUD();
-  stage.classList.remove('ep-cyber');
+  stage.classList.remove('ep-cyber', 'ep-thief');
   $('title').classList.add('hidden');
   $('home').classList.remove('hidden');
   $('hm-press').classList.add('hidden');
@@ -1080,6 +1102,7 @@ function showHome() {
   pushH(homeH);
 }
 async function openEpisode(id) {
+  if (EPISODES[id].locked) { SND.se('wrong'); shake(3, 300, true); toast('この事件ファイルは、まだ開けない。――<b>FILE.03</b> の、その先の物語。', 3500); return; }
   if (homeH) { popH(homeH); homeH = null; }
   SND.se('ok');
   await fade(1, 350);
@@ -1224,6 +1247,7 @@ async function showResult() {
   const r = STORY.result();
   const el = $('result');
   el.classList.toggle('cy', EP.id === 'cyber');
+  el.classList.toggle('th', EP.id === 'thief');
   el.innerHTML = `<div class="rs-k">${r.label}</div><div class="rs-rank">${r.rank}</div><div class="rs-title">${r.title}</div>
     <div class="rs-stat">${r.stats}</div><div class="rs-next">― ${isTouch ? 'タップ' : 'クリック または キー'}で続ける ―</div>`;
   el.classList.remove('hidden');

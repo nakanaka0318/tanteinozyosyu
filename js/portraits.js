@@ -17,6 +17,14 @@ const PORTRAIT = (() => {
     noa: { rim: '#ff6ad5', hair: ['#5a1a4a', '#ff8ad8'], skin: ['#382c30', '#60504e'], coat: ['#1c1026', '#3a2450'], hairStyle: 'twintail', phones: '#5ef0ff', tie: '#5ef0ff' },
     muse: { rim: '#9ffcff', hair: ['#1a6a8a', '#7fe8ff'], skin: ['#2a5a70', '#8adcf0'], coat: ['#14506a', '#5fd0ec'], hairStyle: 'holo', holo: true, techCollar: '#ffffff' },
     kirishima: { rim: '#a0b8ff', hair: ['#14141a', '#2c2c36'], skin: ['#302828', '#504240'], coat: ['#6a7080', '#d8dde8'], hairStyle: 'part', glasses: true, lab: true, tie: '#5a8aff' },
+    houjou: { rim: '#e6c06a', hair: ['#5a5a60', '#9a9aa2'], skin: ['#2e2526', '#4e3e3a'], coat: ['#1a120c', '#3e2c1e'], hairStyle: 'bald', mustache: true, tie: '#8a1e22' },
+    reika: { rim: '#ff6a7a', hair: ['#14080c', '#3a1820'], skin: ['#362a2c', '#5e4a48'], coat: ['#3a0610', '#8a1428'], hairStyle: 'longwave', brooch: true },
+    washio: { rim: '#d8c08a', hair: ['#14110e', '#2e2820'], skin: ['#2e2422', '#4c3a34'], coat: ['#2e2618', '#6a5a44'], hairStyle: 'part', fedora: '#2e2618', collar: 'high', tie: '#2a3a5a' },
+    hiiragi: { rim: '#c8ccd8', hair: ['#4a4a52', '#8a8a92'], skin: ['#2e2628', '#4c3e3c'], coat: ['#060608', '#1c1c22'], hairStyle: 'side', bowtie: true },
+    hayase: { rim: '#8ab8e8', hair: ['#1e160e', '#4a3a2a'], skin: ['#342a2a', '#5a4844'], coat: ['#4a4438', '#b8b0a0'], hairStyle: 'slick', glasses: true, tie: '#2a4a6a' },
+    mina: { rim: '#f0a0b0', hair: ['#1e120a', '#3e2a1a'], skin: ['#342a2c', '#5a4844'], coat: ['#0e0e14', '#2a2a3a'], hairStyle: 'bun', maid: true },
+    yogarasu: { rim: '#ff3a4a', hair: ['#9a9aa6', '#f4f4fa'], skin: ['#3a3236', '#6a5c5c'], coat: ['#020204', '#14141c'], hairStyle: 'messy', cape: true, mask: true },
+    yogarasu_face: { rim: '#ff3a4a', hair: ['#9a9aa6', '#f4f4fa'], skin: ['#3a3236', '#6a5c5c'], coat: ['#020204', '#14141c'], hairStyle: 'messy', cape: true, redEyes: true },
     suzu: { rim: '#f6a2c0', hair: ['#1e130c', '#3e2a1c'], skin: ['#342a2c', '#5a4844'], coat: ['#0e0e12', '#22222a'], hairStyle: 'braids', maid: true },
   };
   let uid = 0;
@@ -128,6 +136,10 @@ const PORTRAIT = (() => {
         <path d="M58 150 C48 90 66 54 100 52 C134 54 152 90 142 150 L134 120 L136 96 C124 84 112 80 100 82 C88 80 76 84 64 96 L66 120 Z" ${f} opacity=".85"/>
         <path d="M64 96 L58 150 M136 96 L142 150 M100 52 L100 82" stroke="#e8fdff" stroke-width="1" opacity=".6"/>
         <path d="M76 70 L100 60 L124 70" stroke="#e8fdff" stroke-width="1.2" fill="none" opacity=".8"/>`;
+      case 'longwave': return `
+        <path d="M62 118 C56 72 78 54 102 54 C128 54 146 74 138 118 C130 96 116 86 100 88 C84 86 70 96 62 118 Z" ${f}/>
+        <path d="M64 100 C52 140 64 170 52 214 C70 200 74 170 72 120 Z" ${f}/><path d="M136 100 C148 140 136 170 148 214 C130 200 126 170 128 120 Z" ${f}/>
+        <path d="M70 80 C90 66 116 66 132 80" stroke="${c.rim}" stroke-width="1.4" opacity=".45" fill="none"/>`;
       case 'braids': return `
         <path d="M63 114 C59 70 141 70 137 114 C129 92 113 86 100 90 C87 86 71 92 63 114 Z" ${f}/>
         <path d="M64 104 C60 116 61 126 64 132 L70 110 Z" ${f}/><path d="M136 104 C140 116 139 126 136 132 L130 110 Z" ${f}/>
@@ -176,6 +188,10 @@ const PORTRAIT = (() => {
       s += `<path d="M72 146 L94 196" stroke="${c.rim}" stroke-width="1.4" opacity=".5"/><path d="M128 146 L106 196" stroke="${c.rim}" stroke-width="1.4" opacity=".8"/>`;
     }
     if (c.techCollar) s += `<path d="M70 200 L100 214 L130 200" stroke="${c.techCollar}" stroke-width="2.4" fill="none" opacity=".9"/><path d="M60 214 L100 232 L140 214" stroke="${c.techCollar}" stroke-width="1" fill="none" opacity=".5"/>`;
+    if (c.cape) {
+      s += `<path d="M40 214 C30 170 60 150 78 150 L100 196 L122 150 C140 150 170 170 160 214 L194 262 L6 262 Z" fill="url(#c${id})"/>`;
+      s += `<path d="M78 150 L100 196 L122 150" stroke="${c.rim}" stroke-width="1.6" fill="none" opacity=".8"/><circle cx="100" cy="198" r="5" fill="#c8102e"/>`;
+    }
     if (c.brooch) s += `<circle cx="100" cy="206" r="5" fill="${c.rim}" opacity=".9"/><circle cx="100" cy="206" r="2" fill="#fff" opacity=".7"/>`;
     if (c.steth) s += `<path d="M76 194 C66 226 84 246 100 240 C116 246 134 226 124 194" stroke="#8a9096" stroke-width="3" fill="none"/><circle cx="100" cy="242" r="6" fill="#a8b0b6" stroke="#5a6066" stroke-width="2"/>`;
     return s;
@@ -183,6 +199,9 @@ const PORTRAIT = (() => {
 
   function acc(c) {
     let s = '';
+    if (c.fedora) s += `<path d="M52 92 C70 86 130 86 148 92 C152 98 138 100 100 98 C62 100 48 98 52 92 Z" fill="${c.fedora}"/><path d="M68 90 C66 62 134 62 132 90 Z" fill="${c.fedora}"/><path d="M68 84 L132 84" stroke="#14110e" stroke-width="5"/>`;
+    if (c.mask) s += `<path d="M66 106 C80 98 92 104 100 110 C108 104 120 98 134 106 C136 116 128 124 118 122 C110 120 104 116 100 114 C96 116 90 120 82 122 C72 124 64 116 66 106 Z" fill="#06060a" stroke="${c.rim}" stroke-width="1.4"/><ellipse cx="86" cy="112" rx="5" ry="3" fill="#ff3a4a"/><ellipse cx="114" cy="112" rx="5" ry="3" fill="#ff3a4a"/>`;
+    if (c.redEyes) s += `<circle cx="86" cy="113.5" r="2.4" fill="#ff3a4a"/><circle cx="114" cy="113.5" r="2.4" fill="#ff3a4a"/>`;
     if (c.headset) s += `<path d="M62 112 C58 70 142 70 138 112" stroke="#1a1e26" stroke-width="5" fill="none"/><rect x="56" y="104" width="12" height="20" rx="4" fill="#1a1e26" stroke="${c.headset}" stroke-width="1.5"/><path d="M62 124 C66 140 76 146 88 146" stroke="#1a1e26" stroke-width="3" fill="none"/><circle cx="89" cy="146" r="3" fill="${c.headset}"/>`;
     if (c.phones) s += `<path d="M60 104 C58 60 142 60 140 104" stroke="${c.phones}" stroke-width="4" fill="none" opacity=".9"/><rect x="52" y="98" width="14" height="24" rx="6" fill="#1a1026" stroke="${c.phones}" stroke-width="2"/><rect x="134" y="98" width="14" height="24" rx="6" fill="#1a1026" stroke="${c.phones}" stroke-width="2"/>`;
     if (c.monocle) s += `<circle cx="114" cy="114" r="11" fill="rgba(255,60,60,.18)" stroke="#2a2a30" stroke-width="3"/><circle cx="114" cy="114" r="4" fill="${c.monocle}"/><path d="M125 114 L138 108" stroke="#2a2a30" stroke-width="2"/>`;

@@ -4,7 +4,7 @@
    ========================================================= */
 const ART = (() => {
   const T = 16;
-  const WALK = new Set(['.', ',', ':', '_', '=', 'D', 'U']);
+  const WALK = new Set(['.', ',', ':', '_', '=', 'D', 'U', 'e']);
   const WALL = new Set(['#', 'W', 'F', 'Z', 'E']);
   const FLOOR = new Set(['.', ',', ':', '_', '=']);
 
@@ -78,6 +78,10 @@ const ART = (() => {
     navy: { base: '#1c2034', stripe: '#22283e', dot: '#30385a' },
     cream: { base: '#4a4232', stripe: '#52493a', dot: '#5e5440' },
     plum: { base: '#2c1d33', stripe: '#34233c', dot: '#44304e' },
+    ivory: { base: '#4a4436', stripe: '#544d3e', dot: '#6a604a' },
+    wine: { base: '#3a1420', stripe: '#441a28', dot: '#5a2434' },
+    night: { base: '#1a1e2e', stripe: '#20253a', dot: '#2a3048' },
+    slate: { base: '#26303a', stripe: '#2c3742', dot: '#3a4652' },
   };
   function wallFace(c, x, y, p, tx) {
     R(c, x, y, T, T, p.base);
@@ -357,6 +361,12 @@ const ART = (() => {
           break;
         }
         case 'U': stairs(c, x, y, tx, ty, g); break;
+        case 'e': {
+          R(c, x, y, T, T, '#2a2a30'); R(c, x + 1, y, 14, T, '#8a8c94'); R(c, x + 1, y, 7, T, '#a4a6ae'); R(c, x + 8, y, 1, T, '#3a3a40');
+          R(c, x, y, 1, T, '#c9a45c'); R(c, x + 15, y, 1, T, '#c9a45c');
+          if (at(g, tx + 1, ty) === 'e') { R(c, x + 12, y + 1, 6, 3, '#1a1008'); R(c, x + 13, y + 2, 4, 1, '#ff9a3a'); }
+          break;
+        }
         case 'B': bookshelf(c, x, y, tx, ty); break;
         case 'T': diningTable(c, x, y, tx, ty, g); if (tx % 3 === 1 && at(g, tx, ty - 1) === 'T') lights.push({ x: x + 8, y: y - 8, r: 44, col: '255,190,110', a: 0.16, flick: true }); break;
         case 'Q': workTable(c, x, y, tx, ty, g); break;
@@ -583,6 +593,37 @@ const ART = (() => {
       R(c, x + 2, y + 6, 12, 8, '#141016'); R(c, x + 2, y + 6, 12, 1, '#3a3440'); R(c, x + 3, y + 5, 10, 2, '#1e1a22');
       c.strokeStyle = '#2a2430'; c.lineWidth = 1.4; c.beginPath(); c.arc(x + 8, y + 5, 3.5, Math.PI, 0); c.stroke();
       R(c, x + 7, y + 7, 2, 2, '#c9a45c');
+    } else if (kind === 'kujo_body') {
+      const L = LOOKS.kujo;
+      ell(c, x + 10, y + 13, 12, 3, 'rgba(0,0,0,.4)');
+      R(c, x + 3, y + 5, 15, 8, L.coat); R(c, x + 3, y + 12, 15, 1, L.coatD); R(c, x + 6, y + 6, 3, 6, L.tie);
+      R(c, x + 17, y + 6, 7, 2, L.pants); R(c, x + 17, y + 10, 7, 2, L.pants); R(c, x + 23, y + 6, 2, 2, L.shoes); R(c, x + 23, y + 10, 2, 2, L.shoes);
+      R(c, x - 4, y + 5, 7, 7, L.skin); R(c, x - 4, y + 5, 3, 7, L.hair); R(c, x - 2, y + 4, 5, 2, L.hair);
+      R(c, x + 4, y + 13, 3, 2, L.skin); R(c, x + 1, y + 14, 3, 1, L.skin);
+    } else if (kind === 'notebook') {
+      R(c, x + 3, y + 7, 10, 7, '#3a2414'); R(c, x + 4, y + 8, 8, 5, '#efe6d0'); R(c, x + 8, y + 8, 1, 5, '#b8ac90'); R(c, x + 5, y + 10, 2, 1, '#2a1a10');
+      R(c, x + 10, y + 11, 4, 1, '#c9a45c');
+    } else if (kind === 'plan') {
+      R(c, x + 2, y + 6, 11, 8, '#e8e2d4'); R(c, x + 3, y + 5, 11, 8, '#f4efe4'); for (let i = 0; i < 3; i++) R(c, x + 5, y + 7 + i * 2, 7, 1, '#9a9080');
+      R(c, x + 12, y + 11, 2, 2, '#d8d0a8');
+    } else if (kind === 'jewel') {
+      const g = 0.5 + Math.sin(t * 0.004) * 0.3;
+      R(c, x + 4, y - 6, 8, 7, 'rgba(180,210,240,.22)'); c.strokeStyle = 'rgba(220,235,255,.55)'; c.lineWidth = 0.6; c.strokeRect(x + 4.5, y - 5.5, 7, 7);
+      c.fillStyle = '#c8102e'; c.beginPath(); c.moveTo(x + 8, y - 5); c.lineTo(x + 11, y - 2); c.lineTo(x + 8, y + 1); c.lineTo(x + 5, y - 2); c.fill();
+      c.globalAlpha = g; R(c, x + 7, y - 3, 2, 2, '#ffd0d8'); c.globalAlpha = 1;
+    } else if (kind === 'emptycase') {
+      R(c, x + 4, y - 6, 8, 7, 'rgba(180,210,240,.15)'); c.strokeStyle = 'rgba(220,235,255,.4)'; c.lineWidth = 0.6; c.strokeRect(x + 4.5, y - 5.5, 7, 7);
+      R(c, x + 6, y - 3, 4, 1, '#111'); R(c, x + 7, y - 4, 1, 3, '#111');
+    } else if (kind === 'pot') {
+      R(c, x + 4, y + 9, 8, 6, '#7a4a2e'); R(c, x + 3, y + 9, 10, 2, '#8a5a3a');
+      R(c, x + 5, y + 8, 6, 2, '#3a2414'); R(c, x + 7, y + 7, 2, 1, '#5a3a20');
+      for (let i = 0; i < 4; i++) { R(c, x + 4 + i * 2, y + 2 - (i % 2) * 2, 1, 7, '#2a4a2a'); R(c, x + 3 + i * 2, y + 1 - (i % 2) * 2, 3, 2, '#5a4ab8'); }
+    } else if (kind === 'toolbox') {
+      R(c, x + 2, y + 7, 12, 7, '#7a1e1e'); R(c, x + 2, y + 7, 12, 1, '#a83a3a'); R(c, x + 6, y + 5, 4, 2, '#3a3a40'); R(c, x + 7, y + 9, 2, 2, '#c9a45c');
+      R(c, x + 12, y + 12, 3, 2, '#e8d070');
+    } else if (kind === 'feather') {
+      c.strokeStyle = '#0a0a10'; c.lineWidth = 2.2; c.beginPath(); c.moveTo(x + 4, y + 13); c.quadraticCurveTo(x + 8, y + 4, x + 13, y + 3); c.stroke();
+      R(c, x + 8, y + 7, 1, 1, '#4a4a6a');
     } else if (kind === 'bottles') {
       R(c, x + 3, y + 4, 3, 8, '#5a3a14'); R(c, x + 4, y + 1, 1, 3, '#5a3a14'); R(c, x + 3, y + 7, 3, 2, '#d8c8a0');
       c.save(); c.translate(x + 10, y + 11); c.rotate(1.3); R(c, -1, -4, 3, 8, '#2a5a2a'); R(c, 0, -7, 1, 3, '#2a5a2a'); c.restore();
