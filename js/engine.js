@@ -16,7 +16,7 @@ cv.width = VW * RS; cv.height = VH * RS;
 const lc = document.createElement('canvas'); lc.width = cv.width; lc.height = cv.height;
 const lx = lc.getContext('2d');
 
-const CFG = { bgm: 0.7, se: 0.8, speed: 1 };
+const CFG = { bgm: 0.7, se: 0.8, amb: 0.4, speed: 1 };
 try { Object.assign(CFG, JSON.parse(localStorage.getItem(CFG_KEY) || '{}')); } catch (e) {}
 function saveCfg() { try { localStorage.setItem(CFG_KEY, JSON.stringify(CFG)); } catch (e) {} }
 
@@ -697,14 +697,15 @@ const NB = {
     const n = this.items().length;
     if (a === 'cancel' || a === 'menu') { if (this.mode === 'menu') this.close(null); else SND.se('wrong'); return; }
     if (this.tab === 'set') {
-      const rows = 5;
+      const rows = 6;
       if (a === 'up') { this.setSel = (this.setSel + rows - 1) % rows; SND.se('cursor'); }
       else if (a === 'down') { this.setSel = (this.setSel + 1) % rows; SND.se('cursor'); }
       else if (a === 'left' || a === 'right') {
         const d = a === 'left' ? -1 : 1;
         if (this.setSel === 0) { CFG.bgm = Math.round(Math.max(0, Math.min(1, CFG.bgm + d * 0.1)) * 10) / 10; SND.setVol('bgm', CFG.bgm); }
         else if (this.setSel === 1) { CFG.se = Math.round(Math.max(0, Math.min(1, CFG.se + d * 0.1)) * 10) / 10; SND.setVol('se', CFG.se); SND.se('cursor'); }
-        else if (this.setSel === 2) { CFG.speed = Math.max(0, Math.min(2, CFG.speed + d)); }
+        else if (this.setSel === 2) { CFG.amb = Math.round(Math.max(0, Math.min(1, CFG.amb + d * 0.1)) * 10) / 10; SND.setVol('amb', CFG.amb); }
+        else if (this.setSel === 3) { CFG.speed = Math.max(0, Math.min(2, CFG.speed + d)); }
         else { this.switchTab(d); return; }
         saveCfg();
       } else if (a === 'ok') this.setAct(this.setSel);
@@ -719,8 +720,8 @@ const NB = {
     }
   },
   setAct(i) {
-    if (i === 3) { this.close(null); setTimeout(() => STORY.hintFromMenu && runScriptQueued(STORY.hint), 50); }
-    else if (i === 4) { this.close(null); setTimeout(() => toTitle(), 50); }
+    if (i === 4) { this.close(null); setTimeout(() => STORY.hintFromMenu && runScriptQueued(STORY.hint), 50); }
+    else if (i === 5) { this.close(null); setTimeout(() => toTitle(), 50); }
   },
   switchTab(d) {
     const i = this.tabs.indexOf(this.tab);
@@ -768,12 +769,15 @@ const NB = {
     } else if (this.tab === 'set') {
       list.style.display = 'none';
       const bar = v => '■'.repeat(Math.round(v * 10)) + '□'.repeat(10 - Math.round(v * 10));
-      const rows = [['BGM 音量', bar(CFG.bgm)], ['効果音 音量', bar(CFG.se)], ['文字の速さ', ['ゆっくり', 'ふつう', 'はやい'][CFG.speed]], ['九条に相談する（ヒント）', '▶'], ['タイトルへ戻る', '▶']];
+      const rows = [['BGM 音量', bar(CFG.bgm)], ['効果音 音量', bar(CFG.se)], ['雨音 音量', bar(CFG.amb)], ['文字の速さ', ['ゆっくり', 'ふつう', 'はやい'][CFG.speed]], ['九条に相談する（ヒント）', '▶'], ['タイトルへ戻る', '▶']];
       det.innerHTML = `<div class="nb-set">${rows.map((r, i) => `<div class="row ${i === this.setSel ? 'sel' : ''}" data-i="${i}"><span>${r[0]}</span><span class="val">${r[1]}</span></div>`).join('')}</div>
         <div class="note">←→ で値を変更。進行状況は自動で保存されます。</div>`;
       det.querySelectorAll('.row').forEach(r => r.onclick = e => {
         e.stopPropagation(); const i = +r.dataset.i; this.setSel = i;
-        if (i <= 2) { this.key('right'); if ((i < 2 && CFG[i ? 'se' : 'bgm'] >= 1) || (i === 2 && CFG.speed >= 2)) { if (i === 0) CFG.bgm = 0; else if (i === 1) CFG.se = 0; else CFG.speed = 0; SND.setVol('bgm', CFG.bgm); SND.setVol('se', CFG.se); saveCfg(); this.render(); } }
+        if (i <= 3) {
+          const k = ['bgm', 'se', 'amb', 'speed'][i], max = i === 3 ? 2 : 1;
+          if (CFG[k] >= max) { CFG[k] = 0; if (i < 3) SND.setVol(k, 0); saveCfg(); this.render(); } else this.key('right');
+        }
         else this.setAct(i);
       });
     }
@@ -983,7 +987,7 @@ async function bootTitle() {
   $('result').classList.add('hidden');
   await fade(0, 1200);
   await new Promise(r => { const h = { key: () => { popH(h); r(); }, tap: () => { popH(h); r(); } }; pushH(h); });
-  SND.init(); SND.setVol('bgm', CFG.bgm); SND.setVol('se', CFG.se);
+  SND.init(); SND.setVol('bgm', CFG.bgm); SND.setVol('se', CFG.se); SND.setVol('amb', CFG.amb);
   SND.bgm('title'); SND.rain(0.8); SND.se('ok');
   $('tt-press').classList.add('hidden');
   showTitleMenu();

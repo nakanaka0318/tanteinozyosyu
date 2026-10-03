@@ -5,7 +5,7 @@
 const SND = (() => {
   let ac = null, master, busMusic, busSe, busAmb, reverb, noiseBuf;
   let rainNodes = null;
-  const vol = { bgm: 0.7, se: 0.8 };
+  const vol = { bgm: 0.7, se: 0.8, amb: 0.4 };
   let track = null, trackName = null, trackGain = null, seqTimer = null, nextT = 0, stepN = 0;
 
   const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
@@ -31,7 +31,7 @@ const SND = (() => {
     if (!ac) return;
     busMusic.gain.value = vol.bgm * 0.55;
     busSe.gain.value = vol.se;
-    busAmb.gain.value = vol.se * 0.7;
+    busAmb.gain.value = vol.amb * 0.7;
   }
   function setVol(k, v) { vol[k] = Math.max(0, Math.min(1, v)); applyVol(); }
 
@@ -243,7 +243,7 @@ const SND = (() => {
       s.start(); s2.start();
       rainNodes = { g };
     }
-    rainNodes.g.gain.setTargetAtTime(level * 0.16, ac.currentTime, 1.2);
+    rainNodes.g.gain.setTargetAtTime(level * 0.1, ac.currentTime, 1.2);
   }
 
   /* ---------------- SFX ---------------- */

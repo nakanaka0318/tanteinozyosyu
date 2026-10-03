@@ -155,8 +155,8 @@ button{font-family:inherit;cursor:pointer}
 .nb-log{font-size:.82em;line-height:1.8;align-self:stretch}
 .nb-log div{padding:calc(var(--u)*.35) 0;border-bottom:1px dotted rgba(90,60,30,.25)}
 .nb-log b{color:#7a1e22;font-weight:600;margin-right:.6em}
-.nb-set{align-self:stretch;display:flex;flex-direction:column;gap:calc(var(--u)*1.2)}
-.nb-set .row{display:flex;align-items:center;justify-content:space-between;padding:calc(var(--u)*.8) calc(var(--u)*1.2);border:1px solid rgba(90,60,30,.25);cursor:pointer}
+.nb-set{align-self:stretch;display:flex;flex-direction:column;gap:calc(var(--u)*.6)}
+.nb-set .row{display:flex;align-items:center;justify-content:space-between;padding:calc(var(--u)*.55) calc(var(--u)*1.2);border:1px solid rgba(90,60,30,.25);cursor:pointer}
 .nb-set .row.sel{background:rgba(122,30,34,.85);color:#fbefd4}
 .nb-set .val{font-family:var(--sans);font-size:.85em;letter-spacing:.1em}
 
