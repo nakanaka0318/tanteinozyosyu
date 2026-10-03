@@ -132,7 +132,7 @@ function loadMap(id, x, y, dir) {
   const m = MAPS[id];
   if (!m._r) {
     m.grid = m.rows; m.w = m.rows[0].length; m.h = m.rows.length;
-    m._art = m.theme === 'plane' ? SKYART : m.theme ? CYART : ART;
+    m._art = m.theme === 'plane' ? SKYART : m.theme === 'hideout' ? ABART : m.theme ? CYART : ART;
     m._r = m._art.renderMap(m, RS);
   }
   W.map = m; W.mapId = id;
@@ -217,6 +217,7 @@ function onPlayerArrive() {
   const ev = eventAt(W.P.x, W.P.y);
   if (ev && ev.step && !W.busy) runScript(ev.step);
   updateRoom();
+  if (STORY.onStep && !W.busy) STORY.onStep(W.P.x, W.P.y);
 }
 function facing() { const [dx, dy] = DV[W.P.dir]; return [W.P.x + dx, W.P.y + dy]; }
 function interactTarget() {
@@ -285,6 +286,7 @@ function update(dt) {
     W.thunderIn -= dt;
     if (W.thunderIn <= 0) { W.thunderIn = 16000 + Math.random() * 26000; lightning(0.55 + Math.random() * 0.45); }
   }
+  if (STORY.tick && !W.busy && !topH()) STORY.tick(dt);
   if (!W.busy && !topH()) {
     if (W.inputLock) { if (!heldDir()) W.inputLock = false; }
     else if (!W.P.moving && !W.P.path.length) { const d = heldDir(); if (d) tryMove(d); }
@@ -325,6 +327,7 @@ function render(dt) {
   const all = [...W.actors, W.P];
   for (const a of all) if (a.visible) list.push({ y: a.py + 8, d: () => { const fr = a.moving ? [1, 0, 3, 0][Math.floor(a.anim / 115) % 4] : 0; ART.drawChar(cx, a.px, a.py, a.dir, fr, a.look); } });
   list.sort((a, b) => a.y - b.y).forEach(o => o.d());
+  if (STORY.overlay) STORY.overlay(cx);
   // lighting
   drawLighting(ox, oy);
   // overlays
@@ -910,7 +913,7 @@ const G = {
     if (!name) { el.classList.remove('show'); setTimeout(() => { if (!el.classList.contains('show')) el.innerHTML = ''; }, 900); return; }
     el.innerHTML = SCENES[name] || ''; el.className = 'show sc-' + name;
   },
-  battle: def => def.kind === 'sky' ? BATTLE.sky(def) : def.kind === 'clock' ? BATTLE.clock(def) : BATTLE.run(def),
+  battle: def => def.kind === 'sky' ? BATTLE.sky(def) : def.kind === 'clock' ? BATTLE.clock(def) : def.kind === 'abyss' ? BATTLE.abyss(def) : BATTLE.run(def),
   debate: def => BATTLE.debate(def),
 };
 
@@ -1032,13 +1035,20 @@ const EPISODES = {
     kicker: '― 探偵助手の手記 FILE.05 ―', en: 'THE CLOCKTOWER OF FORESIGHT',
     logo: '<span>未</span><span>来</span><span>視</span><span class="no">の</span><span>時</span><span>計</span><span>台</span>',
   },
-  file06: {
-    id: 'file06', file: 'FILE.06', name: '？？？編', title: 'COMING SOON', locked: true, renderer: () => CTITLE, bgm: 'f_title', rain: 0, hum: 0, diff: 0,
-    blurb: '――北の果て、凍てつく海の孤島。世界樹の“根”が眠る場所へ。',
-    lockMsg: 'この事件ファイルは、まだ開けない。――<b>FILE.05</b> の、その先の物語。',
+  abyss: {
+    id: 'abyss', file: 'FILE.06', name: 'アジト潜入編', title: '世界樹の深淵', story: () => STORY_ABYSS, saveKey: 'abyss_save_v1',
+    bgm: 'a_title', rain: 0, hum: 0.2, renderer: () => ATITLE, diff: 3,
+    blurb: 'ユグドラシルのアジトへ。浮遊の靴で機械兵の目をかいくぐり、地の底に逆さに生える世界樹のもとへ――。潜入・戦闘・敗北あり。',
+    kicker: '― 探偵助手の手記 FILE.06 ―', en: 'THE ABYSS OF YGGDRASIL',
+    logo: '<span>世</span><span>界</span><span>樹</span><span class="no">の</span><span>深</span><span>淵</span>',
+  },
+  file07: {
+    id: 'file07', file: 'FILE.07', name: '？？？編', title: 'COMING SOON', locked: true, renderer: () => ATITLE, bgm: 'a_title', rain: 0, hum: 0, diff: 0,
+    blurb: '――名探偵のいない世界で。助手は、巫女の扉を叩く。',
+    lockMsg: 'この事件ファイルは、まだ開けない。――<b>FILE.06</b> の、その先の物語。',
   },
 };
-const EP_ORDER = ['kurosagi', 'cyber', 'thief', 'sky', 'tower', 'file06'];
+const EP_ORDER = ['kurosagi', 'cyber', 'thief', 'sky', 'tower', 'abyss', 'file07'];
 let EP = EPISODES.kurosagi;
 let homeSel = 0;
 function titleRenderer() { return (W.mode === 'home' ? EPISODES[EP_ORDER[homeSel]] : EP).renderer(); }
@@ -1048,6 +1058,7 @@ function setEpisode(id) {
   stage.classList.toggle('ep-thief', id === 'thief');
   stage.classList.toggle('ep-sky', id === 'sky');
   stage.classList.toggle('ep-tower', id === 'tower');
+  stage.classList.toggle('ep-abyss', id === 'abyss');
 }
 const cleared = id => { try { return !!localStorage.getItem('cleared_' + id); } catch (e) { return false; } };
 function epAmbience(ep) { SND.rain(ep.rain); SND.hum(ep.hum); }
@@ -1061,6 +1072,7 @@ function applyTitle() {
   t.classList.toggle('th', EP.id === 'thief');
   t.classList.toggle('sk', EP.id === 'sky');
   t.classList.toggle('tw', EP.id === 'tower');
+  t.classList.toggle('ab', EP.id === 'abyss');
   [...t.querySelectorAll('.tt-logo span, .tt-kicker, .tt-en')].forEach(e => { e.style.animation = 'none'; void e.offsetWidth; e.style.animation = ''; });
 }
 
@@ -1105,7 +1117,8 @@ function homeSync() {
   $('home').classList.toggle('cy', ep.id === 'cyber');
   $('home').classList.toggle('th', ep.id === 'thief');
   $('home').classList.toggle('sk', ep.id === 'sky');
-  $('home').classList.toggle('tw', ep.id === 'tower' || ep.id === 'file06');
+  $('home').classList.toggle('tw', ep.id === 'tower');
+  $('home').classList.toggle('ab', ep.id === 'abyss' || ep.id === 'file07');
   const box = $('hm-cards'), card = box.children[homeSel];
   if (card) {
     try {
@@ -1118,7 +1131,7 @@ function homeSync() {
 let homeH = null;
 function showHome() {
   W.mode = 'home'; W.map = null; refreshHUD();
-  stage.classList.remove('ep-cyber', 'ep-thief', 'ep-sky', 'ep-tower');
+  stage.classList.remove('ep-cyber', 'ep-thief', 'ep-sky', 'ep-tower', 'ep-abyss');
   $('title').classList.add('hidden');
   $('home').classList.remove('hidden');
   $('hm-press').classList.add('hidden');
@@ -1279,6 +1292,7 @@ async function showResult() {
   el.classList.toggle('th', EP.id === 'thief');
   el.classList.toggle('sk', EP.id === 'sky');
   el.classList.toggle('tw', EP.id === 'tower');
+  el.classList.toggle('ab', EP.id === 'abyss');
   el.innerHTML = `<div class="rs-k">${r.label}</div><div class="rs-rank">${r.rank}</div><div class="rs-title">${r.title}</div>
     <div class="rs-stat">${r.stats}</div><div class="rs-next">― ${isTouch ? 'タップ' : 'クリック または キー'}で続ける ―</div>`;
   el.classList.remove('hidden');

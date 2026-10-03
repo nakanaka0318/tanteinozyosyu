@@ -774,3 +774,31 @@ body.touch-land #touch .abtn .ba{transform:none}
 #result.tw{background:radial-gradient(ellipse at 50% 30%,#2a2414,#050407 75%)}
 #result.tw .rs-rank{color:#fff0c8;text-shadow:0 0 40px rgba(255,214,140,.6)}
 .hm-cards{position:relative}
+
+/* =========================================================
+   アジト潜入編
+   ========================================================= */
+#stage.ep-abyss{--gold:#8aff9a;--gold2:#d8ffd8;--gold3:#2a6a3a}
+#stage.ep-abyss #dialog{background:linear-gradient(180deg,rgba(8,14,10,.92),rgba(4,6,5,.95));border-color:rgba(138,255,154,.4)}
+#title.ab .tt-kicker{color:#a8e8b0}
+#title.ab .tt-logo{color:#eaffea;letter-spacing:.08em;text-shadow:0 0 30px rgba(0,0,0,.95),0 0 60px rgba(120,255,140,.4),0 2px 0 #0a1a0e}
+#title.ab .tt-logo span:nth-child(5),#title.ab .tt-logo span:nth-child(6){color:#a8ffb4}
+#title.ab .tt-logo .no{color:#5aa86a}
+#title.ab .tt-en{color:#8aff9a;letter-spacing:.42em}
+#title.ab .tt-menu button.sel{text-shadow:0 0 14px rgba(138,255,154,.9)}
+#home.ab .hm-logo{text-shadow:0 0 24px rgba(0,0,0,.9),0 0 40px rgba(120,255,140,.35)}
+#home.ab .hm-kicker,#home.ab .hm-sub{color:#a8e8b0}
+.hm-card.abyss{border-color:rgba(138,255,154,.35);background:linear-gradient(160deg,rgba(10,20,14,.95),rgba(3,6,4,.97))}
+.hm-card.abyss.sel{border-color:#8aff9a;box-shadow:0 0 0 1px #8aff9a,0 0 40px rgba(120,255,140,.3),0 16px 40px rgba(0,0,0,.7)}
+.hm-card.abyss .hm-file{color:#8aff9a}
+.hm-card.abyss .hm-name{color:#eaffea;text-shadow:0 0 12px rgba(138,255,154,.5)}
+.hm-card.abyss .hm-title{color:#a8e8b0}
+.hm-card.abyss .hm-diff{color:#a8ffb4}
+.hm-card.file07{border-style:dashed;border-color:rgba(160,160,180,.35);background:linear-gradient(160deg,rgba(14,14,20,.92),rgba(4,4,8,.95))}
+.hm-card.file07 .hm-file{color:#8a8aa0}
+.hm-card.file07 .hm-name{color:#9a9aae;letter-spacing:.35em}
+.hm-card.file07 .hm-title{color:#6a6a7e;font-family:'Orbitron',var(--sans);letter-spacing:.3em}
+.hm-card.file07 .hm-blurb{color:#8e8ea0;font-style:italic}
+.hm-card.file07 .hm-diff{color:#6a6a7e}
+#result.ab{background:radial-gradient(ellipse at 50% 30%,#0e2014,#020403 75%)}
+#result.ab .rs-rank{color:#eaffea;text-shadow:0 0 40px rgba(120,255,140,.5)}

@@ -38,6 +38,8 @@ const PORTRAIT = (() => {
     harold: { rim: '#e8a060', hair: ['#8a6030', '#c8a060'], skin: ['#e4b392', '#f8d6bc'], coat: ['#5a0a10', '#9a1a20'], hairStyle: 'cap', collar: 'high', tie: '#c9a45c' },
     edgar: { rim: '#d8d8e8', hair: ['#a8a8b0', '#e0e0e8'], skin: ['#d6a284', '#eec8ac'], coat: ['#08080c', '#24242e'], hairStyle: 'bald', tie: '#ffffff', collar: 'high' },
     lily: { rim: '#f0b0c0', hair: ['#5a3a20', '#8a5a3a'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#14141e', '#34344a'], hairStyle: 'bun', maid: true },
+    schwarz: { rim: '#f4b860', hair: ['#b8b4ac', '#f0ece4'], skin: ['#d6a284', '#eec8ac'], coat: ['#2a2018', '#5a4a3a'], hairStyle: 'side', beard: true, glasses: true, vest: false, tie: '#c9a45c' },
+    exceed: { rim: '#8aff9a', hair: ['#1a1e24', '#3a3e46'], skin: ['#7a8088', '#a8aeb6'], coat: ['#0e1014', '#2a2e36'], hairStyle: 'bald', tentacles: '#3a2a16', collar: 'high', redEyes: true },
     suzu: { rim: '#f6a2c0', hair: ['#1e130c', '#3e2a1c'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#0e0e12', '#22222a'], hairStyle: 'braids', maid: true },
   };
   let uid = 0;

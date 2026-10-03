@@ -581,6 +581,112 @@ const BATTLE = (() => {
     await G.gameOver('GAME OVER', '同じ未来', def.loseText);
   }
 
+  /* ======================= 深淵戦（アジト潜入編） ======================= */
+  async function abyss(def) {
+    const P = STATE.party;
+    const E = { name: def.name, hp: def.hp, max: def.hp, turn: 0 };
+    let phase = 0, guard = false;
+    build('cyber'); root.classList.add('bt-sky', 'bt-clock');
+    q('.bt-ename').textContent = E.name;
+    q('.bt-esprite').innerHTML = def.svg;
+    setEnemyHP(E.hp, E.max);
+    const NM = { me: () => STATE.name, siesta: () => 'シエスタ' };
+    const renderParty = () => {
+      const box = q('.bt-party'); box.innerHTML = '';
+      [['me', P.me], ['siesta', P.siesta]].forEach(([id, m]) => {
+        const c = el('div', 'bt-card' + (m.hp <= 0 ? ' ko' : '') + (m.hp > 0 && m.hp <= m.max * 0.3 ? ' danger' : ''));
+        c.dataset.id = id;
+        c.innerHTML = `<div class="bt-cname">${id === 'me' ? '◆' : '✦'} ${esc(NM[id]())}</div>
+          <div class="bt-bar hp"><div style="width:${Math.max(0, m.hp / m.max * 100)}%"></div></div><div class="bt-num">HP ${Math.max(0, m.hp)} / ${m.max}</div>`;
+        box.appendChild(c);
+      });
+      box.appendChild(el('div', 'bt-sts', `<span class="bt-st bf">弱点の推理 ${phase} / ${def.phases.length}</span>`));
+    };
+    const nextAct = () => def.pattern[E.turn % def.pattern.length];
+    const ACT = { lash: '根の薙ぎ払い', sap: '樹液の雨（全体）', charge: '力を溜めている……', crush: '⚠ 大樹の圧殺（全体・大）' };
+    const showIntent = () => {
+      const i = q('.bt-intent');
+      i.innerHTML = `${def.phases[phase].intent}<br><small>次の行動：${ACT[nextAct()]}</small>`;
+      i.classList.toggle('warn', nextAct() === 'crush');
+    };
+    const floorHp = () => phase < def.phases.length - 1 ? Math.round(E.max * (1 - (phase + 1) / def.phases.length)) + 1 : 0;
+    const hitEnemy = async (d, text, crit) => {
+      SND.se(crit ? 'crit' : 'hit'); hitFx('enemy', crit); pop('enemy', d, crit ? 'crit' : '');
+      E.hp = Math.max(floorHp(), E.hp - d); setEnemyHP(E.hp, E.max); await msg(text.replace('$', d));
+    };
+    const dmgTo = async (id, d, text) => {
+      const m = P[id]; if (m.hp <= 0) return;
+      if (id === 'me' && guard) d = Math.round(d / 2);
+      m.hp = Math.max(0, m.hp - d); SND.se('hurt'); hitFx(id, d >= 18); pop(id, d, 'dmg'); renderParty();
+      await msg(text.replace('#', NM[id]()).replace('$', d));
+    };
+    SND.bgm(def.bgm || 'c_boss');
+    SND.se('glitch'); flash('#8aff9a', 300);
+    renderParty();
+    await msg(def.intro || `${E.name} が立ちはだかった！`, 1500);
+    let result = null;
+    while (!result) {
+      renderParty(); showIntent(); guard = false;
+      let acted = false;
+      while (!acted) {
+        const top = await menu([
+          { label: 'たたかう', v: 'atk', help: '殴りかかる。' },
+          { label: '推理する', v: 'deduce', help: `手帳から、今の状況を打ち破る手がかりを示す。【間違えると反撃を受ける】。` },
+          { label: '身を守る', v: 'guard', help: 'このターン、受けるダメージを半減する。' },
+          { label: '回復薬', v: 'potion', note: `×${STATE.items.potion}`, dis: STATE.items.potion <= 0, help: '全員のHPを35回復する。' },
+        ], `${STATE.name} の行動`);
+        if (top === 'atk') { await hitEnemy(rnd(8, 12), `${STATE.name} の攻撃！ $ のダメージ。`); acted = true; }
+        else if (top === 'guard') { guard = true; SND.se('shield'); await msg(`${STATE.name} は身を守っている。`); acted = true; }
+        else if (top === 'potion') {
+          STATE.items.potion--; SND.se('heal');
+          for (const id of ['me', 'siesta']) { const m = P[id]; if (m.hp > 0) { const h = Math.min(m.max - m.hp, 35); m.hp += h; pop(id, '+' + h, 'heal'); } }
+          renderParty(); await msg('回復薬を使った。'); acted = true;
+        } else if (top === 'deduce') {
+          const ph = def.phases[phase];
+          const id = await NB.open('present', ph.prompt);
+          if (!id) continue;
+          if (ph.correct.includes(id)) {
+            await cutin(ph.cut || '見えた！', EVIDENCE[id].icon, 1200);
+            q('.bt-cmds').innerHTML = '';
+            if (ph.after) { await ph.after(); DLG.close(); }
+            phase++;
+            E.hp = Math.max(phase >= def.phases.length ? 0 : floorHp(), E.hp - Math.round(E.max / def.phases.length));
+            SND.se('crit'); hitFx('enemy', true); setEnemyHP(E.hp, E.max);
+            if (phase >= def.phases.length) { result = 'win'; break; }
+            await msg(`${E.name} の守りが崩れた！`, 1100);
+          } else {
+            SND.se('wrong'); shake(4, 300, true);
+            await msg('……違う。その手がかりでは、何も変わらない！', 1000);
+            await dmgTo('me', rnd(12, 16), `${E.name} の反撃！ # に $ のダメージ。`);
+          }
+          acted = true;
+        }
+      }
+      if (result) break;
+      if (P.me.hp <= 0) { result = 'lose'; break; }
+      // ---- シエスタ ----
+      if (P.siesta.hp > 0) { await sleep(250); await hitEnemy(rnd(12, 18), 'シエスタのマスケット銃！ $ のダメージ。'); }
+      // ---- 敵 ----
+      await sleep(250);
+      const act = nextAct(); E.turn++;
+      if (act === 'lash') { const tgt = P.siesta.hp > 0 && Math.random() < 0.4 ? 'siesta' : 'me'; await dmgTo(tgt, rnd(def.atk[0], def.atk[1]), '根の薙ぎ払い！ # に $ のダメージ。'); }
+      else if (act === 'sap') { SND.se('zap'); await msg('樹液の雨が降り注ぐ！', 700); for (const id of ['me', 'siesta']) await dmgTo(id, rnd(8, 12), '# に $ のダメージ。'); }
+      else if (act === 'charge') { SND.se('charge'); q('.bt-esprite').classList.add('charging'); await msg(`${E.name} は世界樹から力を吸い上げている……！`, 1200); q('.bt-esprite').classList.remove('charging'); }
+      else if (act === 'crush') { SND.se('crit'); shake(8, 700, true); flash('#8aff9a', 300); await msg('【大樹の圧殺】！', 800); for (const id of ['me', 'siesta']) await dmgTo(id, rnd(def.crush[0], def.crush[1]), '# に $ のダメージ。'); }
+      if (phase === 0 && E.hp < E.max) { E.hp = E.max; setEnemyHP(E.hp, E.max); SND.se('heal'); pop('enemy', '再生', 'heal'); await msg('根から力が流れ込み、傷が瞬時に塞がった……！'); }
+      if (P.me.hp <= 0) { result = 'lose'; break; }
+    }
+    if (result === 'win') {
+      q('.bt-esprite').classList.add('dead'); SND.se('victory'); SND.bgm(null);
+      await msg(def.winText || `${E.name} を打ち破った！`, 1800);
+      await fade(1, 400); root.classList.add('hidden'); G.hud(true); await fade(0, 400);
+      return 'win';
+    }
+    await msg(`${STATE.name} の意識が、深淵へと沈んでいく……`, 1800);
+    root.classList.add('hidden');
+    await G.gameOver('GAME OVER', '世界樹の深淵', def.loseText);
+  }
+
   /* ======================= 論戦 ======================= */
   async function debate(def) {
     build('debate');
@@ -654,5 +760,5 @@ const BATTLE = (() => {
     return 'win';
   }
 
-  return { run, debate, sky, clock };
+  return { run, debate, sky, clock, abyss };
 })();
