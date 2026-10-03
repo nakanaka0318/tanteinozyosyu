@@ -32,6 +32,12 @@ const PORTRAIT = (() => {
     kuroda: { rim: '#e8c070', hair: ['#0c0c10', '#24242c'], skin: ['#d9a47f', '#f0c8a6'], coat: ['#0e0e12', '#24242c'], hairStyle: 'slick', mustache: true, tie: '#c9a24a' },
     nanase: { rim: '#9ae07a', hair: ['#1e140c', '#3e2a1c'], skin: ['#e4b392', '#f8d6bc'], coat: ['#22301c', '#4a6a3a'], hairStyle: 'shaggy', hoodie: true, phones: '#e8e8e8' },
     kase: { rim: '#ff5a4a', hair: ['#5a0a0a', '#e0402a'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#08080c', '#24242c'], hairStyle: 'longwave', collar: 'high', tie: '#24242c' },
+    multigate: { rim: '#f4dca0', hair: ['#c8a050', '#f8e8b0'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#c8c0b0', '#f4f0e6'], hairStyle: 'longwave', brooch: true, collar: 'high' },
+    oswald: { rim: '#a8c890', hair: ['#4a3a2a', '#7a6a5a'], skin: ['#d6a284', '#eec8ac'], coat: ['#2a2014', '#5a4a34'], hairStyle: 'side', mustache: true, tie: '#2a4a2a' },
+    oswald_x: { rim: '#7ad86a', hair: ['#4a3a2a', '#7a6a5a'], skin: ['#a8a088', '#ccc4a8'], coat: ['#1a140c', '#3a2e20'], hairStyle: 'side', mustache: true, tie: '#2a4a2a', tentacles: '#6a8a3a' },
+    harold: { rim: '#e8a060', hair: ['#8a6030', '#c8a060'], skin: ['#e4b392', '#f8d6bc'], coat: ['#5a0a10', '#9a1a20'], hairStyle: 'cap', collar: 'high', tie: '#c9a45c' },
+    edgar: { rim: '#d8d8e8', hair: ['#a8a8b0', '#e0e0e8'], skin: ['#d6a284', '#eec8ac'], coat: ['#08080c', '#24242e'], hairStyle: 'bald', tie: '#ffffff', collar: 'high' },
+    lily: { rim: '#f0b0c0', hair: ['#5a3a20', '#8a5a3a'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#14141e', '#34344a'], hairStyle: 'bun', maid: true },
     suzu: { rim: '#f6a2c0', hair: ['#1e130c', '#3e2a1c'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#0e0e12', '#22222a'], hairStyle: 'braids', maid: true },
   };
   let uid = 0;

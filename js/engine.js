@@ -910,7 +910,7 @@ const G = {
     if (!name) { el.classList.remove('show'); setTimeout(() => { if (!el.classList.contains('show')) el.innerHTML = ''; }, 900); return; }
     el.innerHTML = SCENES[name] || ''; el.className = 'show sc-' + name;
   },
-  battle: def => def.kind === 'sky' ? BATTLE.sky(def) : BATTLE.run(def),
+  battle: def => def.kind === 'sky' ? BATTLE.sky(def) : def.kind === 'clock' ? BATTLE.clock(def) : BATTLE.run(def),
   debate: def => BATTLE.debate(def),
 };
 
@@ -1025,13 +1025,20 @@ const EPISODES = {
     kicker: '― 探偵助手の手記 FILE.04 ―', en: 'THE DETECTIVE AT TEN THOUSAND METERS',
     logo: '<span>空</span><span class="no">の</span><span>名</span><span>探</span><span>偵</span>',
   },
-  file05: {
-    id: 'file05', file: 'FILE.05', name: '？？？編', title: 'COMING SOON', locked: true, renderer: () => STITLE, bgm: 's_title', rain: 0, hum: 0, diff: 0,
-    blurb: '――一年後、イギリス。名探偵と助手に課せられたのは、《巫女》マルチルゲートの祭典を守る任務。',
-    lockMsg: 'この事件ファイルは、まだ開けない。――<b>FILE.04</b> の、その先の物語。',
+  tower: {
+    id: 'tower', file: 'FILE.05', name: '巫女の祭典編', title: '未来視の時計台', story: () => STORY_TOWER, saveKey: 'tower_save_v1',
+    bgm: 'f_title', rain: 0, hum: 0, renderer: () => CTITLE, diff: 3,
+    blurb: '一年後、ロンドン。《巫女》の祭典を守る任務で、助手は最悪の未来を“視る”。《聖典》が見せた未来視を手がかりに、運命を書き換えろ。敗北あり・戦闘あり。',
+    kicker: '― 探偵助手の手記 FILE.05 ―', en: 'THE CLOCKTOWER OF FORESIGHT',
+    logo: '<span>未</span><span>来</span><span>視</span><span class="no">の</span><span>時</span><span>計</span><span>台</span>',
+  },
+  file06: {
+    id: 'file06', file: 'FILE.06', name: '？？？編', title: 'COMING SOON', locked: true, renderer: () => CTITLE, bgm: 'f_title', rain: 0, hum: 0, diff: 0,
+    blurb: '――北の果て、凍てつく海の孤島。世界樹の“根”が眠る場所へ。',
+    lockMsg: 'この事件ファイルは、まだ開けない。――<b>FILE.05</b> の、その先の物語。',
   },
 };
-const EP_ORDER = ['kurosagi', 'cyber', 'thief', 'sky', 'file05'];
+const EP_ORDER = ['kurosagi', 'cyber', 'thief', 'sky', 'tower', 'file06'];
 let EP = EPISODES.kurosagi;
 let homeSel = 0;
 function titleRenderer() { return (W.mode === 'home' ? EPISODES[EP_ORDER[homeSel]] : EP).renderer(); }
@@ -1040,6 +1047,7 @@ function setEpisode(id) {
   stage.classList.toggle('ep-cyber', id === 'cyber');
   stage.classList.toggle('ep-thief', id === 'thief');
   stage.classList.toggle('ep-sky', id === 'sky');
+  stage.classList.toggle('ep-tower', id === 'tower');
 }
 const cleared = id => { try { return !!localStorage.getItem('cleared_' + id); } catch (e) { return false; } };
 function epAmbience(ep) { SND.rain(ep.rain); SND.hum(ep.hum); }
@@ -1052,6 +1060,7 @@ function applyTitle() {
   t.classList.toggle('cy', EP.id === 'cyber');
   t.classList.toggle('th', EP.id === 'thief');
   t.classList.toggle('sk', EP.id === 'sky');
+  t.classList.toggle('tw', EP.id === 'tower');
   [...t.querySelectorAll('.tt-logo span, .tt-kicker, .tt-en')].forEach(e => { e.style.animation = 'none'; void e.offsetWidth; e.style.animation = ''; });
 }
 
@@ -1095,13 +1104,21 @@ function homeSync() {
   const ep = EPISODES[EP_ORDER[homeSel]];
   $('home').classList.toggle('cy', ep.id === 'cyber');
   $('home').classList.toggle('th', ep.id === 'thief');
-  $('home').classList.toggle('sk', ep.id === 'sky' || ep.id === 'file05');
+  $('home').classList.toggle('sk', ep.id === 'sky');
+  $('home').classList.toggle('tw', ep.id === 'tower' || ep.id === 'file06');
+  const box = $('hm-cards'), card = box.children[homeSel];
+  if (card) {
+    try {
+      if (stage.classList.contains('vmode')) { const hm = $('home'); hm.scrollTo({ top: Math.max(0, box.offsetTop + card.offsetTop - (hm.clientHeight - card.offsetHeight) / 2), behavior: 'smooth' }); }
+      else box.scrollTo({ left: Math.max(0, card.offsetLeft - (box.clientWidth - card.offsetWidth) / 2), behavior: 'smooth' });
+    } catch (e) {}
+  }
   SND.bgm(ep.bgm); epAmbience(ep);
 }
 let homeH = null;
 function showHome() {
   W.mode = 'home'; W.map = null; refreshHUD();
-  stage.classList.remove('ep-cyber', 'ep-thief', 'ep-sky');
+  stage.classList.remove('ep-cyber', 'ep-thief', 'ep-sky', 'ep-tower');
   $('title').classList.add('hidden');
   $('home').classList.remove('hidden');
   $('hm-press').classList.add('hidden');
@@ -1261,6 +1278,7 @@ async function showResult() {
   el.classList.toggle('cy', EP.id === 'cyber');
   el.classList.toggle('th', EP.id === 'thief');
   el.classList.toggle('sk', EP.id === 'sky');
+  el.classList.toggle('tw', EP.id === 'tower');
   el.innerHTML = `<div class="rs-k">${r.label}</div><div class="rs-rank">${r.rank}</div><div class="rs-title">${r.title}</div>
     <div class="rs-stat">${r.stats}</div><div class="rs-next">― ${isTouch ? 'タップ' : 'クリック または キー'}で続ける ―</div>`;
   el.classList.remove('hidden');

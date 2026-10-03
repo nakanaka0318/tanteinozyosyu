@@ -732,3 +732,45 @@ body.touch-land #touch .abtn .ba{transform:none}
 @keyframes siren{0%{opacity:1}50%{opacity:.25}}
 #result.sk{background:radial-gradient(ellipse at 50% 30%,#14234a,#03050c 75%)}
 #result.sk .rs-rank{color:#e4f0ff;text-shadow:0 0 40px rgba(120,170,255,.6)}
+
+/* =========================================================
+   巫女の祭典編
+   ========================================================= */
+#stage.flashback #scene{filter:sepia(.75) contrast(1.05) brightness(.92)}
+#stage.ep-tower{--gold:#e8c878;--gold2:#fbefc8;--gold3:#7a6430}
+#stage.ep-tower #dialog{background:linear-gradient(180deg,rgba(20,18,30,.9),rgba(10,9,16,.94));border-color:rgba(232,200,120,.5)}
+#title.tw .tt-kicker{color:#e8d8a8}
+#title.tw .tt-logo{color:#fbf4e0;letter-spacing:.06em;font-size:4.2em;text-shadow:0 0 30px rgba(0,0,0,.9),0 0 60px rgba(255,214,140,.45),0 2px 0 #2a1e08}
+#title.tw .tt-logo span:nth-child(5),#title.tw .tt-logo span:nth-child(6),#title.tw .tt-logo span:nth-child(7){color:#ffe2a8}
+#title.tw .tt-logo .no{color:#c9a45c}
+#title.tw .tt-en{color:#e8c878;letter-spacing:.42em}
+#title.tw .tt-menu button.sel{text-shadow:0 0 14px rgba(255,214,140,.9)}
+#home.tw .hm-logo{text-shadow:0 0 24px rgba(0,0,0,.9),0 0 40px rgba(255,214,140,.4)}
+#home.tw .hm-kicker,#home.tw .hm-sub{color:#e8d8a8}
+.hm-card.tower{border-color:rgba(232,200,120,.4);background:linear-gradient(160deg,rgba(28,24,40,.94),rgba(8,6,12,.96))}
+.hm-card.tower.sel{border-color:#e8c878;box-shadow:0 0 0 1px #e8c878,0 0 40px rgba(255,214,140,.35),0 16px 40px rgba(0,0,0,.7)}
+.hm-card.tower .hm-file{color:#e8c878}
+.hm-card.tower .hm-name{color:#fbf4e0;text-shadow:0 0 12px rgba(255,214,140,.5)}
+.hm-card.tower .hm-title{color:#e8d8a8}
+.hm-card.tower .hm-diff{color:#f4dca0}
+.hm-card.file06{border-style:dashed;border-color:rgba(160,160,180,.35);background:linear-gradient(160deg,rgba(14,14,20,.92),rgba(4,4,8,.95))}
+.hm-card.file06 .hm-file{color:#8a8aa0}
+.hm-card.file06 .hm-name{color:#9a9aae;letter-spacing:.35em}
+.hm-card.file06 .hm-title{color:#6a6a7e;font-family:'Orbitron',var(--sans);letter-spacing:.3em}
+.hm-card.file06 .hm-blurb{color:#8e8ea0;font-style:italic}
+.hm-card.file06 .hm-diff{color:#6a6a7e}
+/* ホーム：横スクロールのカルーセル */
+.hm-cards{max-width:100%;overflow-x:auto;overflow-y:visible;padding:calc(var(--u)*1.4) calc(var(--u)*3) calc(var(--u)*1.8);scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.hm-cards::-webkit-scrollbar{display:none}
+.hm-card{flex:0 0 auto;scroll-snap-align:center}
+.hm-card:first-child{margin-left:auto}.hm-card:last-child{margin-right:auto}
+#stage.vmode .hm-cards{overflow-x:visible;padding:0}
+#stage.vmode .hm-card:first-child,#stage.vmode .hm-card:last-child{margin-left:0;margin-right:0}
+/* 時計台戦 */
+#battle.bt-clock .bt-bg{background:radial-gradient(ellipse at 50% 30%,rgba(30,60,30,.7),rgba(2,6,4,.95) 70%)}
+#battle.bt-clock .bt-esprite{filter:drop-shadow(0 0 18px rgba(122,216,106,.55))}
+#battle.bt-clock .bt-ename{color:#e0ffd8;text-shadow:0 0 12px rgba(122,216,106,.8)}
+#battle.bt-clock .bt-ehp .fill{background:linear-gradient(90deg,#5aa84a,#c8e86a)}
+#result.tw{background:radial-gradient(ellipse at 50% 30%,#2a2414,#050407 75%)}
+#result.tw .rs-rank{color:#fff0c8;text-shadow:0 0 40px rgba(255,214,140,.6)}
+.hm-cards{position:relative}

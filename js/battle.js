@@ -421,6 +421,166 @@ const BATTLE = (() => {
     await G.gameOver('GAME OVER', '高度一万メートルの闇', def.loseText);
   }
 
+  /* ======================= 時計台戦（巫女の祭典編） ======================= */
+  async function clock(def) {
+    const P = STATE.party;
+    const E = { name: def.name, hp: def.hp, max: def.hp, turn: 0 };
+    const vision = !!def.vision;
+    let guard = false, bound = false, foresee = false, sight = 0, charged = false;
+    build('cyber'); root.classList.add('bt-sky', 'bt-clock');
+    q('.bt-ename').textContent = E.name;
+    q('.bt-esprite').innerHTML = def.svg;
+    setEnemyHP(E.hp, E.max);
+    const NM = { me: () => STATE.name, siesta: () => 'シエスタ' };
+    const renderParty = () => {
+      const box = q('.bt-party'); box.innerHTML = '';
+      [['me', P.me], ['siesta', P.siesta]].forEach(([id, m]) => {
+        const c = el('div', 'bt-card' + (m.hp <= 0 ? ' ko' : '') + (m.hp > 0 && m.hp <= m.max * 0.3 ? ' danger' : ''));
+        c.dataset.id = id;
+        c.innerHTML = `<div class="bt-cname">${id === 'me' ? '◆' : '✦'} ${esc(NM[id]())}</div>
+          <div class="bt-bar hp"><div style="width:${Math.max(0, m.hp / m.max * 100)}%"></div></div><div class="bt-num">HP ${Math.max(0, m.hp)} / ${m.max}</div>`;
+        box.appendChild(c);
+      });
+      const st = [];
+      if (foresee) st.push('<span class="bt-st bf">未来視</span>');
+      if (bound) st.push('<span class="bt-st sh">拘束</span>');
+      if (def.regen) st.push('<span class="bt-st sh">敵：根から再生中</span>');
+      if (st.length) box.appendChild(el('div', 'bt-sts', st.join('')));
+    };
+    const nextAct = () => def.pattern[E.turn % def.pattern.length];
+    const INTENT = { thorn: '次は茨の鞭', bind: '次は根の拘束', bloom: '⚠ 次は花粉の嵐（全体攻撃）', charge: '根が軋んでいる……', spear: '⚠⚠ 次は《大樹の槍》――未来で見た、あの一撃！' };
+    const showIntent = () => {
+      const i = q('.bt-intent'); const n = nextAct();
+      let t = '巫女の予言：' + INTENT[n];
+      if (n === 'spear' && vision) t = '巫女の予言：ふたつの命が――途切れる……！';
+      i.innerHTML = t; i.classList.toggle('warn', n === 'bloom' || n === 'spear');
+    };
+    const dmgTo = async (id, d, text) => {
+      const m = P[id]; if (m.hp <= 0) return;
+      if (id === 'me' && guard) d = Math.round(d / 2);
+      m.hp = Math.max(0, m.hp - d); SND.se('hurt'); hitFx(id, d >= 18); pop(id, d, 'dmg'); renderParty();
+      await msg(text.replace('#', NM[id]()).replace('$', d));
+    };
+    const hitEnemy = async (d, text, crit) => {
+      SND.se(crit ? 'crit' : 'hit'); hitFx('enemy', crit); pop('enemy', d, crit ? 'crit' : '');
+      E.hp = Math.max(vision ? 1 : 0, E.hp - d); setEnemyHP(E.hp, E.max); await msg(text.replace('$', d));
+    };
+    SND.bgm(def.bgm || 'c_boss');
+    SND.se('glitch'); flash('#7ad86a', 300);
+    renderParty();
+    await msg(def.intro || `${E.name} が襲いかかってきた！`, 1400);
+    let result = null;
+    while (!result) {
+      renderParty(); showIntent();
+      guard = false;
+      if (bound) {
+        bound = false; SND.se('cancel');
+        await msg(`${STATE.name} は根に絡め取られて動けない……！`, 1100);
+      } else {
+        let acted = false;
+        while (!acted) {
+          const top = await menu([
+            { label: 'たたかう', v: 'atk', help: '殴りかかる。' },
+            vision
+              ? { label: '聖典', v: 'book', dis: true, note: '反応しない', help: '聖典は、何も答えない。' }
+              : { label: '聖典《未来視》', v: 'book', dis: sight > 0, note: sight > 0 ? `あと${sight}` : '', help: '未来を視る。【次の敵の行動を、仲間ごと完全に回避】し、反撃する。（使用後2ターン待機）' },
+            { label: '身を守る', v: 'guard', help: 'このターン、受けるダメージを半減する。' },
+            { label: '気付け薬', v: 'tonic', note: `×${STATE.items.tonic}`, dis: STATE.items.tonic <= 0, help: `${STATE.name}とシエスタのHPを30回復する。` },
+          ], `${STATE.name} の行動`);
+          if (top === 'atk') {
+            await hitEnemy(rnd(10, 15), `${STATE.name} の攻撃！ $ のダメージ。`);
+            acted = true;
+          } else if (top === 'book') {
+            foresee = true; sight = 3; SND.se('clue'); flash('#fff4d0', 300);
+            q('.bt-cmds').innerHTML = '';
+            await msg('聖典が光を放つ――視える。次の一瞬が、手に取るように！', 1400);
+            if (nextAct() === 'spear') {
+              await G.say('me', 'シエスタ、上！ 槍が来る――右へ跳んで！！', 'shock'); DLG.close();
+            }
+            acted = true;
+          } else if (top === 'guard') {
+            guard = true; SND.se('shield'); await msg(`${STATE.name} は身を守っている。`); acted = true;
+          } else if (top === 'tonic') {
+            STATE.items.tonic--; SND.se('heal');
+            for (const id of ['me', 'siesta']) { const m = P[id]; if (m.hp > 0) { const h = Math.min(m.max - m.hp, 30); m.hp += h; pop(id, '+' + h, 'heal'); } }
+            renderParty(); await msg('気付け薬を飲んだ。HPが回復した。'); acted = true;
+          }
+        }
+      }
+      renderParty();
+      if (E.hp <= 0) { result = 'win'; break; }
+      // ---- シエスタ ----
+      if (P.siesta.hp > 0) {
+        await sleep(250);
+        await hitEnemy(rnd(18, 26), 'シエスタのマスケット銃が火を噴いた！ $ のダメージ。', false);
+        if (E.hp <= 0) { result = 'win'; break; }
+      }
+      // ---- 巫女の祈り ----
+      if ((E.turn + 1) % 3 === 0) {
+        await sleep(200); SND.se('heal');
+        for (const id of ['me', 'siesta']) { const m = P[id]; if (m.hp > 0) { const h = Math.min(m.max - m.hp, 12); m.hp += h; if (h) pop(id, '+' + h, 'heal'); } }
+        renderParty(); await msg('巫女の祈り――全員のHPが少し回復した。');
+      }
+      // ---- 敵 ----
+      await sleep(250);
+      const act = nextAct(); E.turn++;
+      const dodge = foresee; foresee = false;
+      if (dodge && act !== 'charge') {
+        SND.se('whoosh');
+        await msg('未来視の通りだ――敵の攻撃を、完全に見切った！', 1100);
+        await hitEnemy(rnd(16, 22), '見切りざまの反撃！ $ のダメージ。', true);
+        if (act === 'spear') { charged = false; await msg('《大樹の槍》は、誰もいない床を貫いた！', 1300); }
+      } else if (act === 'thorn') {
+        const tgt = P.siesta.hp > 0 && Math.random() < 0.4 ? 'siesta' : 'me';
+        await dmgTo(tgt, rnd(def.atk[0], def.atk[1]), '茨の鞭！ # に $ のダメージ。');
+      } else if (act === 'bind') {
+        await dmgTo('me', rnd(8, 12), '地を這う根！ # に $ のダメージ。');
+        if (!guard && P.me.hp > 0) { bound = true; await msg(`${STATE.name} は根に絡め取られた！（次のターン行動不能）`); }
+      } else if (act === 'bloom') {
+        SND.se('crit'); shake(6, 500, true); flash('#9aff7a', 260);
+        await msg(`${E.name} の【花粉の嵐】！`, 800);
+        for (const id of ['me', 'siesta']) await dmgTo(id, rnd(def.bloom[0], def.bloom[1]), '# に $ のダメージ。');
+      } else if (act === 'charge') {
+        charged = true; SND.se('charge'); q('.bt-esprite').classList.add('charging');
+        await msg('ギシ、ギシ――頭上で、根が軋む音がする……！', 1400);
+        q('.bt-esprite').classList.remove('charging');
+      } else if (act === 'spear') {
+        charged = false;
+        SND.se('crit'); shake(9, 900, true); flash('#c8102e', 400);
+        await msg(`鐘楼の上から――《大樹の槍》が降り注いだ！！`, 1400);
+        P.siesta.hp = 0; pop('siesta', '致命傷', 'dmg'); hitFx('siesta', true); renderParty();
+        if (vision) { result = 'vision'; break; }
+        await msg('シエスタが――貫かれた。', 1600);
+        result = 'lose'; break;
+      }
+      if (def.regen && E.hp > 0) {
+        const h = Math.min(E.max - E.hp, def.regen);
+        if (h > 0) { E.hp += h; setEnemyHP(E.hp, E.max); SND.se('heal'); pop('enemy', '+' + h, 'heal'); await msg('根から命を吸い上げ、傷が塞がっていく……！'); }
+        if (vision && E.turn === 2 && !STATE.flags.sawRoot) {
+          STATE.flags.sawRoot = true; q('.bt-cmds').innerHTML = '';
+          await G.say('multigate', '……視えます。彼は、機械室の《根》から命を吸い上げている。あれを断たない限り――', 'serious'); DLG.close();
+        }
+      }
+      if (sight > 0) sight--;
+      if (vision && P.me.hp <= 0) { P.me.hp = 1; renderParty(); }
+      if (P.me.hp <= 0) { P.me.hp = 0; renderParty(); result = 'lose'; break; }
+    }
+    if (result === 'win') {
+      q('.bt-esprite').classList.add('dead'); SND.se('victory'); SND.bgm(null);
+      await msg(`${E.name} は、崩れ落ちた――！`, 1800);
+      await fade(1, 400); root.classList.add('hidden'); G.hud(true); await fade(0, 400);
+      return 'win';
+    }
+    if (result === 'vision') {
+      await sleep(900);
+      await fade(1, 900); root.classList.add('hidden'); G.hud(true);
+      return 'vision';
+    }
+    await msg(P.siesta.hp <= 0 ? '――同じ未来が、繰り返された。' : `${STATE.name} の意識が、遠のいていく……`, 1800);
+    root.classList.add('hidden');
+    await G.gameOver('GAME OVER', '同じ未来', def.loseText);
+  }
+
   /* ======================= 論戦 ======================= */
   async function debate(def) {
     build('debate');
@@ -494,5 +654,5 @@ const BATTLE = (() => {
     return 'win';
   }
 
-  return { run, debate, sky };
+  return { run, debate, sky, clock };
 })();
