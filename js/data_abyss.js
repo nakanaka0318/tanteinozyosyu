@@ -86,7 +86,7 @@ Object.assign(CHARS, {
     profile: () => '《調律者》のひとり、《技工士》。あらゆる魔法道具を作り、直す職人。無口で偏屈だが、腕は確か。シエスタの道具の修理と、《聖典》の解析を引き受けた。' },
   exceed: { name: 'エクシード', short: 'エクシード', role: 'ユグドラシルの統括者', voice: 0.55,
     profile: () => '《ユグドラシル》を束ねる統括個体。世界樹と根で繋がり、機械兵を従える。' + (STATE.flags.sealed ? '【シエスタと{N}の手で封印された】。' : '') },
-  mech: { name: '機械兵', short: '機械兵', role: 'ユグドラシルの番兵', voice: 0.5, profile: () => 'アジトを巡回する機械の兵。前方を赤い視線で見張っている。' },
+  mech: { name: '機械兵', short: '機械兵', role: 'ユグドラシルの番兵', voice: 0.5, profile: () => 'アジトを巡回する機械の兵。前方を、黄色く光る視線で見張っている。' },
 });
 
 const Z_EVIDENCE_ORDER = ['z_key', 'z_musket', 'z_shoes', 'z_mirror', 'z_fifth', 'z_letter', 'z_log', 'z_light', 'z_graft'];

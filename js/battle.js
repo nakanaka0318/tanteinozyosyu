@@ -606,7 +606,7 @@ const BATTLE = (() => {
     const ACT = { lash: '根の薙ぎ払い', sap: '樹液の雨（全体）', charge: '力を溜めている……', crush: '⚠ 大樹の圧殺（全体・大）' };
     const showIntent = () => {
       const i = q('.bt-intent');
-      i.innerHTML = `${def.phases[phase].intent}<br><small>次の行動：${ACT[nextAct()]}</small>`;
+      i.innerHTML = `${def.phases[phase].intent}　<small>（次：${ACT[nextAct()]}）</small>`;
       i.classList.toggle('warn', nextAct() === 'crush');
     };
     const floorHp = () => phase < def.phases.length - 1 ? Math.round(E.max * (1 - (phase + 1) / def.phases.length)) + 1 : 0;

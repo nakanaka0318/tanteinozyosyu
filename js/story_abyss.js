@@ -56,7 +56,10 @@ const STORY_ABYSS = (() => {
     const pulse = 0.18 + Math.sin(W.t * 0.008) * 0.06;
     for (const s of SENTRIES) {
       const tiles = sightTiles(s);
-      tiles.forEach(([x, y], i) => { c.fillStyle = `rgba(255,30,50,${pulse * (1 - i * 0.15)})`; c.fillRect(x * TS, y * TS, TS, TS); });
+      tiles.forEach(([x, y], i) => {
+        c.fillStyle = `rgba(255,214,60,${(pulse + 0.12) * (1 - i * 0.14)})`; c.fillRect(x * TS, y * TS, TS, TS);
+        c.strokeStyle = `rgba(255,240,150,${0.55 - i * 0.1})`; c.lineWidth = 1; c.strokeRect(x * TS + 0.5, y * TS + 0.5, TS - 1, TS - 1);
+      });
     }
   }
   function onStep(x, y) {
@@ -97,7 +100,7 @@ const STORY_ABYSS = (() => {
     G.bgm('a_sneak');
     G.refresh();
     await G.fadeIn(500);
-    G.toast('<b>赤い警報床</b>の上は浮遊で進む（<b>浮遊</b>ゲージを消費）。灰色の足場で回復。<br><b>機械兵の赤い視線</b>に入ると見つかります。', 7000);
+    G.toast('<b>赤い警報床</b>の上は浮遊で進む（<b>浮遊</b>ゲージを消費）。灰色の足場で回復。<br>機械兵の<b>黄色く光る視線</b>に入ると見つかります。', 7000);
   }
 
   /* ------------------------------------------------------------------ */
@@ -259,7 +262,7 @@ const STORY_ABYSS = (() => {
      第二章 潜入
      ------------------------------------------------------------------ */
   async function ch2() {
-    STATE.chapter = 2; STATE.follow = true; f().zone = 1;
+    STATE.chapter = 2; STATE.follow = true; f().zone = 1; G.time('');
     await G.chapter('第二章', '潜入', '― ユグドラシルのアジト ―');
     G.load('AB', 2, 18, 'up');
     G.cinema(true); G.clearActors(); G.restore();
@@ -275,7 +278,7 @@ const STORY_ABYSS = (() => {
     await X('siesta', 'あの靴、片方だけ貸してあげる。私とお揃い。警報床の上は、浮いて進もう。', 'smile');
     await M('片方で浮けるの!?', 'shock');
     await X('siesta', '気合い。……ただし、浮いていられるのは短い間だけ。灰色の足場で休めば、また浮ける。', 'serious');
-    await X('siesta', 'それと、あの機械兵。赤い目が向いてる方には、絶対に入らないこと。', 'serious');
+    await X('siesta', 'それと、あの機械兵。目の光が照らしてる場所には、絶対に入らないこと。', 'serious');
     await X('siesta', '……それから、エクシードの弱点の手がかりも探そう。正面から戦って勝てる相手じゃない。', 'serious');
     G.checkpoint('sneak');
     await sneak();
@@ -525,7 +528,7 @@ const STORY_ABYSS = (() => {
       if (!has('z_light')) L.push('第二区画に倒れてる機械兵');
       if (!has('z_graft')) L.push('第三区画の壁');
       await S(L.length ? `手がかりは、${L.join('、')}にありそう。` : '手がかりは揃った。最深部の扉は、北東の奥。', 'serious');
-      await S('赤い床の上は浮いて進む。浮遊ゲージが尽きる前に、灰色の足場へ。機械兵の赤い視線には入らないで。', 'serious');
+      await S('赤い床の上は浮いて進む。浮遊ゲージが尽きる前に、灰色の足場へ。機械兵の黄色い視線には入らないで。', 'serious');
       return;
     }
     if (c === 4) { await N('シエスタは、浅い息を繰り返している。……急がないと。'); return; }

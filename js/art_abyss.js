@@ -182,11 +182,15 @@ Object.assign(SCENES, {
   snowfield: `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
     <defs><linearGradient id="ssSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a2a44"/><stop offset=".6" stop-color="#6a84a4"/><stop offset="1" stop-color="#c8d6e4"/></linearGradient></defs>
     <rect width="1600" height="900" fill="url(#ssSky)"/>
-    <g opacity=".45" stroke="#9affd8" stroke-width="5" fill="none"><path d="M0 160 C400 100 800 220 1600 120"/></g>
-    <path d="M0 560 L300 440 L520 520 L760 420 L1000 520 L1260 450 L1600 560 L1600 900 L0 900 Z" fill="#e8eef6"/>
-    <path d="M760 420 L700 900 L860 900 Z" fill="#2a2420" opacity=".3"/>
-    <g fill="#0a0c12"><path d="M620 760 C660 700 760 690 820 720 L860 760 Z"/><circle cx="830" cy="700" r="22"/>
-      <path d="M700 770 C740 740 820 740 860 770" stroke="#f4f6fb" stroke-width="22" fill="none"/></g>
+    <g opacity=".45" stroke="#9affd8" stroke-width="5" fill="none"><path d="M0 120 C400 70 800 170 1600 90"/></g>
+    <path d="M0 400 L300 300 L520 360 L760 280 L1000 360 L1260 310 L1600 400 L1600 900 L0 900 Z" fill="#e8eef6"/>
+    <path d="M1100 340 L1180 300 L1260 340 Z" fill="#3a3a44" opacity=".5"/>
+    <g transform="translate(0 -200)">
+      <ellipse cx="760" cy="790" rx="230" ry="26" fill="#c8d4e2"/>
+      <g fill="#0a0c12"><path d="M600 770 C640 735 720 728 780 742 L840 770 Z"/><circle cx="860" cy="750" r="22"/></g>
+      <path d="M840 752 C900 760 940 790 960 800" stroke="#f4f6fb" stroke-width="16" fill="none" stroke-linecap="round"/>
+      <g fill="#14161e"><path d="M560 790 C560 720 600 670 640 660 L660 790 Z"/><circle cx="636" cy="640" r="24"/><path d="M640 690 C700 700 760 730 800 750" stroke="#14161e" stroke-width="16" fill="none" stroke-linecap="round"/></g>
+    </g>
     <g fill="#ffffff" class="sc-rain">${Array.from({ length: 80 }, (_, i) => `<circle cx="${(i * 137) % 1600}" cy="${(i * 71) % 900}" r="${2 + (i % 3)}"/>`).join('')}</g>
   </svg>`,
   hospital: `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
