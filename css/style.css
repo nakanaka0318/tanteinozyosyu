@@ -798,12 +798,6 @@ body.touch-land #touch .abtn .ba{transform:none}
 .hm-card.abyss .hm-name{color:#eaffea;text-shadow:0 0 12px rgba(138,255,154,.5)}
 .hm-card.abyss .hm-title{color:#a8e8b0}
 .hm-card.abyss .hm-diff{color:#a8ffb4}
-.hm-card.file08{border-style:dashed;border-color:rgba(160,160,180,.35);background:linear-gradient(160deg,rgba(14,14,20,.92),rgba(4,4,8,.95))}
-.hm-card.file08 .hm-file{color:#8a8aa0}
-.hm-card.file08 .hm-name{color:#9a9aae;letter-spacing:.35em}
-.hm-card.file08 .hm-title{color:#6a6a7e;font-family:'Orbitron',var(--sans);letter-spacing:.3em}
-.hm-card.file08 .hm-blurb{color:#8e8ea0;font-style:italic}
-.hm-card.file08 .hm-diff{color:#6a6a7e}
 #result.ab{background:radial-gradient(ellipse at 50% 30%,#0e2014,#020403 75%)}
 #result.ab .rs-rank{color:#eaffea;text-shadow:0 0 40px rgba(120,255,140,.5)}
 
@@ -827,3 +821,28 @@ body.touch-land #touch .abtn .ba{transform:none}
 #result.tr{background:radial-gradient(ellipse at 50% 30%,#1e1430,#050308 75%)}
 #result.tr .rs-rank{color:#fff4ea;text-shadow:0 0 40px rgba(200,168,255,.55)}
 #result.tr .rs-title{color:#ffc890}
+
+/* ---- 純白の少女編 ---- */
+#stage.ep-dream{--gold:#e8d8ff;--gold2:#ffffff;--gold3:#7a6aa8}
+#stage.ep-dream #dialog{background:linear-gradient(180deg,rgba(26,22,44,.9),rgba(12,10,22,.94));border-color:rgba(232,216,255,.45)}
+#stage.dreamy #game{filter:saturate(.85) contrast(1.05)}
+#stage.dreamy.memory #game{filter:sepia(.45) hue-rotate(205deg) saturate(.85) brightness(1.12)}
+#stage.dreamy.nightmare #game{filter:saturate(1.35) hue-rotate(-28deg) brightness(.78) contrast(1.15)}
+#title.dr .tt-kicker{color:#f0e8ff}
+#title.dr .tt-logo{color:#ffffff;letter-spacing:.12em;text-shadow:0 0 30px rgba(40,30,80,.9),0 0 60px rgba(232,216,255,.55),0 2px 0 #3a2a6a}
+#title.dr .tt-logo span:nth-child(1),#title.dr .tt-logo span:nth-child(2){color:#ffffff}
+#title.dr .tt-logo span:nth-child(4),#title.dr .tt-logo span:nth-child(5){color:#e8d8ff}
+#title.dr .tt-logo .no{color:#b8a8e8}
+#title.dr .tt-en{color:#f0e8ff;letter-spacing:.42em}
+#title.dr .tt-menu button.sel{text-shadow:0 0 14px rgba(232,216,255,.95)}
+#home.dr .hm-logo{text-shadow:0 0 24px rgba(0,0,0,.9),0 0 40px rgba(232,216,255,.45)}
+#home.dr .hm-kicker,#home.dr .hm-sub{color:#f0e8ff}
+.hm-card.dream{border-color:rgba(232,216,255,.4);background:linear-gradient(160deg,rgba(36,30,60,.95),rgba(12,10,22,.97))}
+.hm-card.dream.sel{border-color:#ffffff;box-shadow:0 0 0 1px #e8d8ff,0 0 40px rgba(232,216,255,.35),0 16px 40px rgba(0,0,0,.7)}
+.hm-card.dream .hm-file{color:#e8d8ff}
+.hm-card.dream .hm-name{color:#ffffff;text-shadow:0 0 12px rgba(232,216,255,.6)}
+.hm-card.dream .hm-title{color:#e8d8ff}
+.hm-card.dream .hm-diff{color:#f0e8ff}
+#result.dr{background:radial-gradient(ellipse at 50% 30%,#3a305a,#0a0814 75%)}
+#result.dr .rs-rank{color:#ffffff;text-shadow:0 0 40px rgba(232,216,255,.7)}
+#result.dr .rs-title{color:#e8d8ff}

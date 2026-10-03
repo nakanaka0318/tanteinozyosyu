@@ -132,7 +132,7 @@ function loadMap(id, x, y, dir) {
   const m = MAPS[id];
   if (!m._r) {
     m.grid = m.rows; m.w = m.rows[0].length; m.h = m.rows.length;
-    m._art = m.theme === 'plane' ? SKYART : m.theme === 'hideout' ? ABART : m.theme ? CYART : ART;
+    m._art = m.theme === 'plane' ? SKYART : m.theme === 'hideout' ? ABART : m.theme === 'dream' ? DRART : m.theme ? CYART : ART;
     m._r = m._art.renderMap(m, RS);
   }
   W.map = m; W.mapId = id;
@@ -913,7 +913,7 @@ const G = {
     if (!name) { el.classList.remove('show'); setTimeout(() => { if (!el.classList.contains('show')) el.innerHTML = ''; }, 900); return; }
     el.innerHTML = SCENES[name] || ''; el.className = 'show sc-' + name;
   },
-  battle: def => def.kind === 'sky' ? BATTLE.sky(def) : def.kind === 'clock' ? BATTLE.clock(def) : def.kind === 'abyss' ? BATTLE.abyss(def) : BATTLE.run(def),
+  battle: def => def.kind === 'sky' ? BATTLE.sky(def) : def.kind === 'clock' ? BATTLE.clock(def) : def.kind === 'abyss' ? BATTLE.abyss(def) : def.kind === 'dream' ? BATTLE.dream(def) : BATTLE.run(def),
   debate: def => BATTLE.debate(def),
 };
 
@@ -1049,13 +1049,15 @@ const EPISODES = {
     kicker: '― 探偵助手の手記 FILE.07 ―', en: 'THE SIGNAL OF REVIVAL',
     logo: '<span>復</span><span>活</span><span class="no">の</span><span>狼</span><span>煙</span>',
   },
-  file08: {
-    id: 'file08', file: 'FILE.08', name: '？？？編', title: 'COMING SOON', locked: true, renderer: () => RTITLE, bgm: 'r_dream', rain: 0, hum: 0, diff: 0,
-    blurb: '――夢の扉の向こうで、名探偵が待っている。',
-    lockMsg: 'この事件ファイルは、まだ開けない。――<b>FILE.07</b> の、その先の物語。',
+  dream: {
+    id: 'dream', file: 'FILE.08', name: '夢幻編', title: '純白の少女', story: () => STORY_DREAM, saveKey: 'dream_save_v1',
+    bgm: 'w_title', rain: 0, hum: 0, renderer: () => DTITLE, diff: 3,
+    blurb: '《夢幻》の執行者ドロシーの力で、助手は眠れる名探偵の夢の中へ。白の園、時計台、一万メートルの前夜――シエスタの記憶を巡り、悪夢と戦え。戦闘・敗北あり。',
+    kicker: '― 探偵助手の手記 FILE.08 ―', en: 'THE GIRL IN PURE WHITE',
+    logo: '<span>純</span><span>白</span><span class="no">の</span><span>少</span><span>女</span>',
   },
 };
-const EP_ORDER = ['kurosagi', 'cyber', 'thief', 'sky', 'tower', 'abyss', 'train', 'file08'];
+const EP_ORDER = ['kurosagi', 'cyber', 'thief', 'sky', 'tower', 'abyss', 'train', 'dream'];
 let EP = EPISODES.kurosagi;
 let homeSel = 0;
 function titleRenderer() { return (W.mode === 'home' ? EPISODES[EP_ORDER[homeSel]] : EP).renderer(); }
@@ -1067,6 +1069,7 @@ function setEpisode(id) {
   stage.classList.toggle('ep-tower', id === 'tower');
   stage.classList.toggle('ep-abyss', id === 'abyss');
   stage.classList.toggle('ep-train', id === 'train');
+  stage.classList.toggle('ep-dream', id === 'dream');
 }
 const cleared = id => { try { return !!localStorage.getItem('cleared_' + id); } catch (e) { return false; } };
 function epAmbience(ep) { SND.rain(ep.rain); SND.hum(ep.hum); }
@@ -1082,6 +1085,7 @@ function applyTitle() {
   t.classList.toggle('tw', EP.id === 'tower');
   t.classList.toggle('ab', EP.id === 'abyss');
   t.classList.toggle('tr', EP.id === 'train');
+  t.classList.toggle('dr', EP.id === 'dream');
   [...t.querySelectorAll('.tt-logo span, .tt-kicker, .tt-en')].forEach(e => { e.style.animation = 'none'; void e.offsetWidth; e.style.animation = ''; });
 }
 
@@ -1128,7 +1132,8 @@ function homeSync() {
   $('home').classList.toggle('sk', ep.id === 'sky');
   $('home').classList.toggle('tw', ep.id === 'tower');
   $('home').classList.toggle('ab', ep.id === 'abyss');
-  $('home').classList.toggle('tr', ep.id === 'train' || ep.id === 'file08');
+  $('home').classList.toggle('tr', ep.id === 'train');
+  $('home').classList.toggle('dr', ep.id === 'dream');
   const box = $('hm-cards'), card = box.children[homeSel];
   if (card) {
     try {
@@ -1141,7 +1146,7 @@ function homeSync() {
 let homeH = null;
 function showHome() {
   W.mode = 'home'; W.map = null; refreshHUD();
-  stage.classList.remove('ep-cyber', 'ep-thief', 'ep-sky', 'ep-tower', 'ep-abyss', 'ep-train');
+  stage.classList.remove('ep-cyber', 'ep-thief', 'ep-sky', 'ep-tower', 'ep-abyss', 'ep-train', 'ep-dream', 'dreamy', 'memory', 'nightmare');
   $('title').classList.add('hidden');
   $('home').classList.remove('hidden');
   $('hm-press').classList.add('hidden');
@@ -1304,6 +1309,7 @@ async function showResult() {
   el.classList.toggle('tw', EP.id === 'tower');
   el.classList.toggle('ab', EP.id === 'abyss');
   el.classList.toggle('tr', EP.id === 'train');
+  el.classList.toggle('dr', EP.id === 'dream');
   el.innerHTML = `<div class="rs-k">${r.label}</div><div class="rs-rank">${r.rank}</div><div class="rs-title">${r.title}</div>
     <div class="rs-stat">${r.stats}</div><div class="rs-next">― ${isTouch ? 'タップ' : 'クリック または キー'}で続ける ―</div>`;
   el.classList.remove('hidden');

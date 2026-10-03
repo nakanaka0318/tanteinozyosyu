@@ -687,6 +687,151 @@ const BATTLE = (() => {
     await G.gameOver('GAME OVER', '世界樹の深淵', def.loseText);
   }
 
+  /* ======================= 悪夢戦（純白の少女編） ======================= */
+  async function dream(def) {
+    const P = STATE.party;
+    const E = { name: def.name, hp: def.hp, max: def.hp, turn: 0 };
+    let phase = 0, mirror = false, float = false, floatCd = 0, guard = false;
+    build('cyber'); root.classList.add('bt-sky', 'bt-dream');
+    q('.bt-ename').textContent = E.name;
+    q('.bt-esprite').innerHTML = def.svg;
+    setEnemyHP(E.hp, E.max);
+    const ACT = Object.assign({ atk: '悪夢の爪', wave: '悪夢の波（回避しにくい）', charge: '力を溜めている……', big: '⚠ 悪夢の奔流（大技）' }, def.acts || {});
+    const renderParty = () => {
+      const box = q('.bt-party'); box.innerHTML = '';
+      const m = P.me;
+      const c = el('div', 'bt-card' + (m.hp <= m.max * 0.3 ? ' danger' : ''));
+      c.dataset.id = 'me';
+      c.innerHTML = `<div class="bt-cname">◆ ${esc(STATE.name)}</div>
+        <div class="bt-bar hp"><div style="width:${Math.max(0, m.hp / m.max * 100)}%"></div></div><div class="bt-num">心 ${Math.max(0, m.hp)} / ${m.max}</div>`;
+      box.appendChild(c);
+      const st = [`<span class="bt-st bf">思い出 ${phase} / ${def.phases.length}</span>`];
+      if (mirror) st.push('<span class="bt-st sh">手鏡</span>');
+      if (float) st.push('<span class="bt-st sh">浮遊</span>');
+      box.appendChild(el('div', 'bt-sts', st.join('')));
+    };
+    const nextAct = () => def.pattern[E.turn % def.pattern.length];
+    const showIntent = () => {
+      const i = q('.bt-intent');
+      i.innerHTML = `${phase >= NP ? (def.finalIntent || '殻は砕けた！ マスケット銃で、とどめを！') : def.phases[phase].intent}　<small>（次：${ACT[nextAct()]}）</small>`;
+      i.classList.toggle('warn', nextAct() === 'big');
+    };
+    const NP = def.phases.length;
+    const cap = k => Math.round(E.max * (1 - k / (NP + 1)));
+    const floorHp = () => phase === 0 ? E.max : phase < NP ? cap(phase + 1) : 0;
+    const hurtEnemy = async d => {
+      if (phase === 0) { SND.se('shield'); await msg(def.shell || '悪夢の殻に阻まれて、攻撃が通らない……！ 何かを「思い出さ」ないと！', 1300); return; }
+      const before = E.hp;
+      E.hp = Math.max(floorHp(), E.hp - d); setEnemyHP(E.hp, E.max);
+      if (E.hp === floorHp() && before > E.hp && phase < NP) await msg('悪夢が揺らいでいる――今なら、次の思い出が届く！', 1200);
+    };
+    const hitEnemy = async (d, text, crit) => {
+      SND.se(crit ? 'crit' : 'hit'); hitFx('enemy', crit && phase > 0); pop('enemy', phase === 0 ? 0 : d, crit ? 'crit' : '');
+      if (phase > 0) await msg(text.replace('$', d));
+      await hurtEnemy(d);
+    };
+    const dmgMe = async (d, text) => {
+      if (guard) d = Math.round(d / 2);
+      P.me.hp = Math.max(0, P.me.hp - d); SND.se('hurt'); hitFx('me', d >= 18); pop('me', d, 'dmg'); renderParty();
+      await msg(text.replace('#', STATE.name).replace('$', d));
+    };
+    SND.bgm(def.bgm || 'w_nightmare');
+    SND.se('glitch'); flash('#ff3a6a', 300);
+    renderParty();
+    await msg(def.intro || `${E.name} が立ちはだかった！`, 1500);
+    let result = null;
+    while (!result) {
+      renderParty(); showIntent(); guard = false;
+      let acted = false;
+      while (!acted) {
+        const top = await menu([
+          { label: 'マスケット銃', v: 'gun', help: 'シエスタの銃で撃つ。' },
+          { label: '思い出す', v: 'deduce', help: '手帳から、悪夢を打ち破る【思い出】を示す。【間違えると反撃を受ける】。' },
+          { label: '手鏡', v: 'mirror', help: '手鏡を構える。このターンの【大技を跳ね返す】。それ以外の攻撃は半減。' },
+          { label: '浮遊の靴', v: 'float', dis: floatCd > 0, note: floatCd > 0 ? '休み中' : '', help: '宙へ逃れ、このターンの【通常攻撃をかわす】。大技は半減。続けては使えない。' },
+          { label: '夢の雫', v: 'drop', note: `×${STATE.items.drop || 0}`, dis: !(STATE.items.drop > 0), help: '心を40回復する。' },
+          { label: 'ドロシーの声', v: 'hint', help: '夢の外から、ドロシーが手がかりをささやく。（ターンを消費しない）' },
+        ], `${STATE.name} の行動`);
+        if (top === 'gun') {
+          SND.se('crit'); shake(5, 300, true); flash('#fff', 150);
+          await hitEnemy(rnd(def.gun ? def.gun[0] : 14, def.gun ? def.gun[1] : 20), 'マスケット銃が火を噴いた！ $ のダメージ。', true);
+          acted = true;
+          if (E.hp <= 0) { result = 'win'; break; }
+        } else if (top === 'mirror') { mirror = true; SND.se('shield'); await msg('手鏡を構えた。鏡面が、白く光る。'); acted = true; }
+        else if (top === 'float') { float = true; floatCd = 2; SND.se('whoosh'); await msg('床を蹴って、宙へ――！'); acted = true; }
+        else if (top === 'drop') {
+          STATE.items.drop--; SND.se('heal');
+          const a = Math.min(P.me.max - P.me.hp, 40); P.me.hp += a; pop('me', '+' + a, 'heal'); renderParty();
+          await msg(`夢の雫を飲んだ。心が ${a} 回復。`); acted = true;
+        } else if (top === 'hint') {
+          const ph = def.phases[phase];
+          const line = !ph ? '殻はもう割れてる。……撃って、{N}！' : phase > 0 && E.hp > floorHp() ? 'まだ悪夢が強すぎるみたい。銃で、もう少し弱らせて。' : (ph.hint || 'その悪夢は、あの子の思い出でできてる。……思い出して。');
+          await G.say('dorothy', line, 'think'); DLG.close();
+        } else if (top === 'deduce') {
+          if (phase >= NP) { await msg('思い出は、もう全部届いた。あとは――撃ち抜くだけ！', 1200); continue; }
+          if (phase > 0 && E.hp > floorHp()) { SND.se('wrong'); await msg('悪夢の力が強すぎて、思い出が届かない……！ もう少し弱らせないと。', 1300); continue; }
+          const ph = def.phases[phase];
+          const id = await NB.open('present', ph.prompt);
+          if (!id) continue;
+          if (ph.correct.includes(id)) {
+            await cutin(ph.cut || '思い出した！', EVIDENCE[id].icon, 1200);
+            q('.bt-cmds').innerHTML = '';
+            if (ph.after) { await ph.after(); DLG.close(); }
+            phase++;
+            E.hp = Math.min(E.hp, cap(phase));
+            SND.se('crit'); hitFx('enemy', true); setEnemyHP(E.hp, E.max);
+            await msg(phase >= NP ? `${E.name} の殻が砕け散った！ ――とどめを！` : `${E.name} の殻が、ひび割れた！`, 1200);
+          } else if (ph.alt && ph.alt[id]) {
+            await G.say('dorothy', ph.alt[id], 'think'); DLG.close(); continue;
+          } else {
+            SND.se('wrong'); shake(4, 300, true);
+            await msg('……違う。その思い出では、悪夢は揺らがない！', 1000);
+            await dmgMe(rnd(10, 14), `${E.name} の反撃！ # の心に $ のダメージ。`);
+          }
+          acted = true;
+        }
+      }
+      if (result) break;
+      if (P.me.hp <= 0) { result = 'lose'; break; }
+      await sleep(250);
+      const act = nextAct(); E.turn++;
+      if (act === 'atk') {
+        if (float) { SND.se('cancel'); await msg(`${ACT.atk}――宙を舞って、かわした！`); }
+        else await dmgMe(rnd(def.atk[0], def.atk[1]), `${ACT.atk}！ # の心に $ のダメージ。`);
+      } else if (act === 'wave') {
+        SND.se('zap');
+        await dmgMe(Math.round(rnd(def.atk[0], def.atk[1]) * (mirror ? 0.5 : 0.8)), `${ACT.wave}！ # の心に $ のダメージ。`);
+      } else if (act === 'charge') {
+        SND.se('charge'); q('.bt-esprite').classList.add('charging'); await msg(`${E.name} は、悪夢の力を溜めている……！`, 1200); q('.bt-esprite').classList.remove('charging');
+      } else if (act === 'big') {
+        SND.se('crit'); shake(8, 700, true); flash('#ff3a6a', 300);
+        if (mirror) {
+          SND.se('clue'); flash('#ffffff', 400);
+          await msg('手鏡が、悪夢の奔流を跳ね返した――！', 1000);
+          const d = rnd(20, 26); pop('enemy', phase === 0 ? 0 : d, 'crit'); hitFx('enemy', phase > 0);
+          if (phase > 0) await msg(`${E.name} に ${d} のダメージ！`);
+          await hurtEnemy(d);
+          if (E.hp <= 0) { result = 'win'; }
+        } else {
+          await msg(`【${ACT.big.replace('⚠ ', '')}】！`, 800);
+          await dmgMe(Math.round(rnd(def.big[0], def.big[1]) * (float ? 0.5 : 1)), '# の心に $ のダメージ。');
+        }
+      }
+      mirror = false; float = false; if (floatCd > 0) floatCd--;
+      if (result) break;
+      if (P.me.hp <= 0) { result = 'lose'; break; }
+    }
+    if (result === 'win') {
+      q('.bt-esprite').classList.add('dead'); SND.se('victory'); SND.bgm(null);
+      await msg(def.winText || `${E.name} が、光の中に溶けていく……`, 1800);
+      await fade(1, 400); root.classList.add('hidden'); G.hud(true); await fade(0, 400);
+      return 'win';
+    }
+    await msg(`${STATE.name} の心が、悪夢の底へ沈んでいく……`, 1800);
+    root.classList.add('hidden');
+    await G.gameOver('GAME OVER', '悪夢に呑まれて', def.loseText);
+  }
+
   /* ======================= 論戦 ======================= */
   async function debate(def) {
     build('debate');
@@ -760,5 +905,5 @@ const BATTLE = (() => {
     return 'win';
   }
 
-  return { run, debate, sky, clock, abyss };
+  return { run, debate, sky, clock, abyss, dream };
 })();

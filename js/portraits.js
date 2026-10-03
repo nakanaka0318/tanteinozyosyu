@@ -48,6 +48,12 @@ const PORTRAIT = (() => {
     otto: { rim: '#d8c8a0', hair: ['#a8a8ae', '#e0e0e6'], skin: ['#d6a284', '#eec8ac'], coat: ['#2e261c', '#5a4a3a'], hairStyle: 'bald', beard: true },
     ida: { rim: '#a0b0d0', hair: ['#0e0b10', '#26202e'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#2a261e', '#5a5040'], hairStyle: 'bobcut', glasses: true },
     dorothy: { rim: '#c8a8ff', hair: ['#9a80c8', '#e8d8ff'], skin: ['#f0c8ae', '#fde6d4'], coat: ['#c8c0dc', '#f8f4ff'], hairStyle: 'twintail', brooch: true, collar: 'high' },
+    siesta_child: { cute: true, iris: '#3a78d8', rim: '#e8e4ff', hair: ['#d8dce8', '#ffffff'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#c8ccd8', '#f8f8fc'], hairStyle: 'siesta', blouse: '#c8ccd8' },
+    siesta_teen: { cute: true, iris: '#3a78d8', rim: '#8ac4ff', hair: ['#c4cad8', '#fbfcff'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#22263a', '#3a3e58'], hairStyle: 'siesta', hairclip: '#c8304a', blouse: '#c8304a' },
+    kase_y: { rim: '#ff5a4a', hair: ['#5a0a0a', '#e0402a'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#08080c', '#24242c'], hairStyle: 'longwave', collar: 'high', tie: '#24242c' },
+    shadow: { rim: '#ff3a4a', hair: ['#0c0c10', '#24242c'], skin: ['#c4c0cc', '#e0dce6'], coat: ['#c8c8d0', '#f4f4f8'], hairStyle: 'slick', glasses: true, lab: true, redEyes: true },
+    rootheart: { rim: '#8aff9a', hair: ['#1a120a', '#3a2a16'], skin: ['#b0a490', '#d0c4b0'], coat: ['#1a120a', '#3a2a16'], hairStyle: 'bald', tentacles: '#3a2a16', collar: 'high', redEyes: true },
+    highseed: { rim: '#b46aff', hair: ['#1a0a24', '#3a1a4a'], skin: ['#b8a8c4', '#dccfe4'], coat: ['#1a1620', '#3a3446'], hairStyle: 'messy', tentacles: '#b46aff', redEyes: true },
     suzu: { rim: '#f6a2c0', hair: ['#1e130c', '#3e2a1c'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#0e0e12', '#22222a'], hairStyle: 'braids', maid: true },
   };
   let uid = 0;
