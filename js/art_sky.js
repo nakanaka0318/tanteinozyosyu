@@ -32,6 +32,18 @@ const SKYART = (() => {
   }
 
   function floor(c, ch, x, y, tx, ty) {
+    if (TRAIN && ch === ',') {
+      R(c, x, y, T, T, '#3a1e26');
+      if ((tx + ty) % 2 === 0) { R(c, x + 3, y + 3, 2, 2, '#4a2832'); R(c, x + 11, y + 11, 2, 2, '#4a2832'); }
+      else R(c, x + 7, y + 7, 2, 2, '#5a3a2a');
+      return;
+    }
+    if (TRAIN && ch === '.') {
+      R(c, x, y, T, T, '#5a4230');
+      for (let i = 0; i < 4; i++) R(c, x, y + i * 4 + 3, T, 1, '#4a3424');
+      R(c, x + ((tx * 5 + ty * 3) % 12), y + 1, 1, 2, '#6a5038');
+      return;
+    }
     if (ch === ',') {
       R(c, x, y, T, T, '#232a44');
       if ((tx + ty) % 2 === 0) { R(c, x + 3, y + 3, 2, 2, '#2c3554'); R(c, x + 11, y + 11, 2, 2, '#2c3554'); }
@@ -45,7 +57,14 @@ const SKYART = (() => {
       for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) R(c, x + i * 8, y + j * 8, 8, 8, (i + j) % 2 ? '#b4b8c0' : '#c8ccd4');
     }
   }
+  let TRAIN = false;
   function wallFace(c, x, y, tx, win) {
+    if (TRAIN) {
+      R(c, x, y, T, T, '#6a3a2a'); R(c, x, y, T, 3, '#4a2618'); R(c, x, y + 13, T, 3, '#3a1c10'); R(c, x, y + 12, T, 1, '#c9a45c');
+      if (win) { R(c, x + 2, y + 4, 12, 7, '#2a1a12'); R(c, x + 3, y + 5, 10, 5, '#0a1022'); }
+      else R(c, x + 6, y + 5, 4, 5, '#5a3020');
+      return;
+    }
     R(c, x, y, T, T, '#c9ccd4');
     R(c, x, y, T, 3, '#9a9ea8'); R(c, x, y + 3, T, 1, '#e2e4ea');
     R(c, x, y + 13, T, 3, '#8a8e98'); R(c, x, y + 13, T, 1, '#6a6e78');
@@ -108,6 +127,7 @@ const SKYART = (() => {
     const c = cv.getContext('2d'); c.imageSmoothingEnabled = false; c.scale(RS, RS);
     const lights = [], anims = [];
     const L = (x, y, r, col, a, flick) => lights.push({ x, y, r, col, a, flick });
+    TRAIN = !!map.train;
     for (let ty = 0; ty < H; ty++) for (let tx = 0; tx < Wd; tx++) {
       const ch = at(g, tx, ty), x = tx * T, y = ty * T;
       if (isWall(ch)) {
@@ -117,7 +137,7 @@ const SKYART = (() => {
           if (at(g, tx, ty - 1) !== 'X') { R(c, x + 4, y + 4, 6, 7, '#1a1e26'); anims.push({ type: 'keypad', tx, ty }); }
           continue;
         }
-        if (face) { wallFace(c, x, y, tx, ch === 'W'); if (ch === 'W') { anims.push({ type: 'win', tx, ty }); L(x + 8, y + 12, 20, '120,150,220', 0.06); } }
+        if (face) { wallFace(c, x, y, tx, ch === 'W'); if (ch === 'W') { anims.push({ type: 'win', tx, ty, train: TRAIN }); L(x + 8, y + 12, 20, '120,150,220', 0.06); } }
         else if (ch === 'W' && ty === H - 1) {
           R(c, x, y, T, T, '#0a0c14'); R(c, x, y, T, 3, '#9a9ea8'); R(c, x, y + 3, T, 1, '#5a5e68');
         } else wallTop(c, x, y, tx, ty, g);
@@ -139,9 +159,13 @@ const SKYART = (() => {
         case 'a': seat(c, x, y, tx, ty, false); if (ty === 3 || ty === 8) L(x + 8, y + 4, 22, '255,214,150', 0.08); break;
         case 'b': seat(c, x, y, tx, ty, true); L(x + 8, y + 4, 30, '255,206,140', 0.14); break;
         case 'p': bizConsole(c, x, y); L(x + 11, y + 7, 26, '255,214,150', 0.16, true); break;
-        case 'C': galley(c, x, y, tx, ty, g); L(x + 8, y, 30, '220,230,255', 0.12); break;
+        case 'C':
+          if (TRAIN && fl === '.') { R(c, x + 1, y + 3, 14, 12, '#8a6a42'); R(c, x + 1, y + 3, 14, 2, '#a8865a'); R(c, x + 1, y + 8, 14, 1, '#5a4228'); R(c, x + 3, y + 5, 1, 9, '#5a4228'); R(c, x + 12, y + 5, 1, 9, '#5a4228'); break; }
+          galley(c, x, y, tx, ty, g); L(x + 8, y, 30, '220,230,255', 0.12); break;
         case 'I': oven(c, x, y); break;
-        case 'K': cart(c, x, y); break;
+        case 'K':
+          if (TRAIN) { const cols = ['#6a2a2a', '#2a3a5a', '#4a5a3a', '#7a5a2a'], k = (tx + ty) % 4; R(c, x + 2, y + 8, 12, 7, cols[k]); R(c, x + 2, y + 8, 12, 1, 'rgba(255,255,255,.25)'); R(c, x + 6, y + 6, 4, 2, '#2a1a10'); R(c, x + 3, y + 2, 10, 6, cols[(k + 2) % 4]); R(c, x + 7, y + 1, 2, 1, '#2a1a10'); break; }
+          cart(c, x, y); break;
         case 'T': toilet(c, x, y); L(x + 8, y + 8, 30, '230,240,255', 0.2); break;
         case 'S': sink(c, x, y); break;
         case 'R': curtain(c, x, y, tx, ty); break;
@@ -155,7 +179,15 @@ const SKYART = (() => {
 
   function drawAnim(c, a, t) {
     const x = a.tx * T, y = a.ty * T;
-    if (a.type === 'win') {
+    if (a.type === 'win' && a.train && W.trainStill) {
+      R(c, x + 3, y + 5, 10, 5, '#a8b4c4'); R(c, x + 3, y + 8, 10, 2, '#6a6e78'); R(c, x + 3, y + 8, 10, 1, '#e8c040');
+      if (a.tx % 5 === 0) R(c, x + 8, y + 5, 1, 3, '#3a3e48');
+    } else if (a.type === 'win' && a.train) {
+      R(c, x + 3, y + 5, 10, 5, '#0a1022');
+      const p = ((t * 0.05 + a.tx * 37) % 40) - 10;
+      c.fillStyle = 'rgba(30,50,40,.9)'; c.fillRect(Math.max(x + 3, x + 13 - p), y + 7, Math.min(4, Math.max(0, p)), 3);
+      if (Math.sin(t * 0.002 + a.tx * 2.3) > 0.85) R(c, x + 6, y + 6, 1, 1, '#ffe8b0');
+    } else if (a.type === 'win') {
       ell(c, x + 8, y + 8, 3.6, 3.2, '#0a1226');
       c.save(); c.beginPath(); c.ellipse(x + 8, y + 8, 3.6, 3.2, 0, 0, 7); c.clip();
       const p = ((t * 0.012 + a.tx * 37) % 40) - 10;

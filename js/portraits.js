@@ -40,6 +40,14 @@ const PORTRAIT = (() => {
     lily: { rim: '#f0b0c0', hair: ['#5a3a20', '#8a5a3a'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#14141e', '#34344a'], hairStyle: 'bun', maid: true },
     schwarz: { rim: '#f4b860', hair: ['#b8b4ac', '#f0ece4'], skin: ['#d6a284', '#eec8ac'], coat: ['#2a2018', '#5a4a3a'], hairStyle: 'side', beard: true, glasses: true, vest: false, tie: '#c9a45c' },
     exceed: { rim: '#8aff9a', hair: ['#1a1e24', '#3a3e46'], skin: ['#7a8088', '#a8aeb6'], coat: ['#0e1014', '#2a2e36'], hairStyle: 'bald', tentacles: '#3a2a16', collar: 'high', redEyes: true },
+    anneliese: { rim: '#f0c070', hair: ['#b89040', '#f0d890'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#4a0a14', '#8a1a2a'], hairStyle: 'longwave', brooch: true },
+    franz: { rim: '#c8a0a0', hair: ['#2a1e14', '#4a3a2a'], skin: ['#d9a47f', '#f0c8a6'], coat: ['#1a1c24', '#3a3e4c'], hairStyle: 'slick', mustache: true, tie: '#6a2a3a', scarf: '#7a1a2a' },
+    klaus: { rim: '#c9a45c', hair: ['#7a7a82', '#b8b8c0'], skin: ['#d6a284', '#eec8ac'], coat: ['#0e1626', '#24345a'], hairStyle: 'side', mustache: true, fedora: '#1a2a4a', tie: '#c9a45c' },
+    hanna: { rim: '#a8d0a0', hair: ['#8a6030', '#d0a060'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#1c2a1c', '#3a4a3a'], hairStyle: 'bun', collar: 'high', tie: '#1a2a1a' },
+    milo: { rim: '#e8e8f0', hair: ['#1e140c', '#3e2a1c'], skin: ['#e4b392', '#f8d6bc'], coat: ['#b8b4ac', '#f4f0e8'], hairStyle: 'part', bowtie: true },
+    otto: { rim: '#d8c8a0', hair: ['#a8a8ae', '#e0e0e6'], skin: ['#d6a284', '#eec8ac'], coat: ['#2e261c', '#5a4a3a'], hairStyle: 'bald', beard: true },
+    ida: { rim: '#a0b0d0', hair: ['#0e0b10', '#26202e'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#2a261e', '#5a5040'], hairStyle: 'bobcut', glasses: true },
+    dorothy: { rim: '#c8a8ff', hair: ['#9a80c8', '#e8d8ff'], skin: ['#f0c8ae', '#fde6d4'], coat: ['#c8c0dc', '#f8f4ff'], hairStyle: 'twintail', brooch: true, collar: 'high' },
     suzu: { rim: '#f6a2c0', hair: ['#1e130c', '#3e2a1c'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#0e0e12', '#22222a'], hairStyle: 'braids', maid: true },
   };
   let uid = 0;

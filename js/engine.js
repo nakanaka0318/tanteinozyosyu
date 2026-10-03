@@ -668,7 +668,7 @@ function pickPerson(prompt, ids) {
     DLG.el.classList.add('hidden');
     $('portrait-l').classList.remove('show'); $('portrait-r').classList.remove('show'); DLG.curL = DLG.curR = null;
     $('pk-prompt').textContent = sub(prompt);
-    const row = $('pk-row'); row.innerHTML = '';
+    const row = $('pk-row'); row.innerHTML = ''; row.classList.toggle('many', ids.length > 5);
     let sel = 0;
     const els = ids.map((id, i) => {
       const d = document.createElement('div'); d.className = 'pk';
@@ -780,7 +780,7 @@ const NB = {
         det.innerHTML = `<div class="big">${ART.ICONS[e.icon]}</div><h3>${esc(e.name)}</h3><div class="sub">${e.icon === 'voice' || e.icon === 'slip' ? '証言' : '証拠品'}</div><p>${richHTML(e.desc())}</p>`;
       } else if (id) {
         const c = CHARS[id];
-        det.innerHTML = `<div class="big portrait-box">${PORTRAIT.svg(id)}</div><h3>${esc(charName(id))}</h3><div class="sub">${esc(c.role)}</div><p>${richHTML(c.profile())}</p>`;
+        det.innerHTML = `<div class="big portrait-box">${PORTRAIT.svg(id)}</div><h3>${esc(charName(id))}</h3><div class="sub">${esc(typeof c.role === "function" ? c.role() : c.role)}</div><p>${richHTML(c.profile())}</p>`;
       }
       const sel = list.querySelector('.sel'); if (sel) sel.scrollIntoView({ block: 'nearest' });
     } else if (this.tab === 'log') {
@@ -1042,13 +1042,20 @@ const EPISODES = {
     kicker: '― 探偵助手の手記 FILE.06 ―', en: 'THE ABYSS OF YGGDRASIL',
     logo: '<span>世</span><span>界</span><span>樹</span><span class="no">の</span><span>深</span><span>淵</span>',
   },
-  file07: {
-    id: 'file07', file: 'FILE.07', name: '？？？編', title: 'COMING SOON', locked: true, renderer: () => ATITLE, bgm: 'a_title', rain: 0, hum: 0, diff: 0,
-    blurb: '――名探偵のいない世界で。助手は、巫女の扉を叩く。',
-    lockMsg: 'この事件ファイルは、まだ開けない。――<b>FILE.06</b> の、その先の物語。',
+  train: {
+    id: 'train', file: 'FILE.07', name: '復活の狼煙編', title: '復活の狼煙', story: () => STORY_TRAIN, saveKey: 'train_save_v1',
+    bgm: 'r_title', rain: 0, hum: 0, renderer: () => RTITLE, diff: 3,
+    blurb: '名探偵のいない世界で。巫女のお告げと、名探偵の手紙。そして鳴った一本の電話――。ドイツの夜行列車で、助手はひとりで推理する。長編捜査・論戦・敗北あり。',
+    kicker: '― 探偵助手の手記 FILE.07 ―', en: 'THE SIGNAL OF REVIVAL',
+    logo: '<span>復</span><span>活</span><span class="no">の</span><span>狼</span><span>煙</span>',
+  },
+  file08: {
+    id: 'file08', file: 'FILE.08', name: '？？？編', title: 'COMING SOON', locked: true, renderer: () => RTITLE, bgm: 'r_dream', rain: 0, hum: 0, diff: 0,
+    blurb: '――夢の扉の向こうで、名探偵が待っている。',
+    lockMsg: 'この事件ファイルは、まだ開けない。――<b>FILE.07</b> の、その先の物語。',
   },
 };
-const EP_ORDER = ['kurosagi', 'cyber', 'thief', 'sky', 'tower', 'abyss', 'file07'];
+const EP_ORDER = ['kurosagi', 'cyber', 'thief', 'sky', 'tower', 'abyss', 'train', 'file08'];
 let EP = EPISODES.kurosagi;
 let homeSel = 0;
 function titleRenderer() { return (W.mode === 'home' ? EPISODES[EP_ORDER[homeSel]] : EP).renderer(); }
@@ -1059,6 +1066,7 @@ function setEpisode(id) {
   stage.classList.toggle('ep-sky', id === 'sky');
   stage.classList.toggle('ep-tower', id === 'tower');
   stage.classList.toggle('ep-abyss', id === 'abyss');
+  stage.classList.toggle('ep-train', id === 'train');
 }
 const cleared = id => { try { return !!localStorage.getItem('cleared_' + id); } catch (e) { return false; } };
 function epAmbience(ep) { SND.rain(ep.rain); SND.hum(ep.hum); }
@@ -1073,6 +1081,7 @@ function applyTitle() {
   t.classList.toggle('sk', EP.id === 'sky');
   t.classList.toggle('tw', EP.id === 'tower');
   t.classList.toggle('ab', EP.id === 'abyss');
+  t.classList.toggle('tr', EP.id === 'train');
   [...t.querySelectorAll('.tt-logo span, .tt-kicker, .tt-en')].forEach(e => { e.style.animation = 'none'; void e.offsetWidth; e.style.animation = ''; });
 }
 
@@ -1118,7 +1127,8 @@ function homeSync() {
   $('home').classList.toggle('th', ep.id === 'thief');
   $('home').classList.toggle('sk', ep.id === 'sky');
   $('home').classList.toggle('tw', ep.id === 'tower');
-  $('home').classList.toggle('ab', ep.id === 'abyss' || ep.id === 'file07');
+  $('home').classList.toggle('ab', ep.id === 'abyss');
+  $('home').classList.toggle('tr', ep.id === 'train' || ep.id === 'file08');
   const box = $('hm-cards'), card = box.children[homeSel];
   if (card) {
     try {
@@ -1131,7 +1141,7 @@ function homeSync() {
 let homeH = null;
 function showHome() {
   W.mode = 'home'; W.map = null; refreshHUD();
-  stage.classList.remove('ep-cyber', 'ep-thief', 'ep-sky', 'ep-tower', 'ep-abyss');
+  stage.classList.remove('ep-cyber', 'ep-thief', 'ep-sky', 'ep-tower', 'ep-abyss', 'ep-train');
   $('title').classList.add('hidden');
   $('home').classList.remove('hidden');
   $('hm-press').classList.add('hidden');
@@ -1293,6 +1303,7 @@ async function showResult() {
   el.classList.toggle('sk', EP.id === 'sky');
   el.classList.toggle('tw', EP.id === 'tower');
   el.classList.toggle('ab', EP.id === 'abyss');
+  el.classList.toggle('tr', EP.id === 'train');
   el.innerHTML = `<div class="rs-k">${r.label}</div><div class="rs-rank">${r.rank}</div><div class="rs-title">${r.title}</div>
     <div class="rs-stat">${r.stats}</div><div class="rs-next">― ${isTouch ? 'タップ' : 'クリック または キー'}で続ける ―</div>`;
   el.classList.remove('hidden');

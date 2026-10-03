@@ -170,6 +170,10 @@ button{font-family:inherit;cursor:pointer}
 .pk .pkname{margin-top:calc(var(--u)*.8);font-size:.85em;letter-spacing:.15em}
 .pk.sel{opacity:1;filter:none;transform:translateY(-6px)}
 .pk.sel .pkimg{border-color:var(--gold);box-shadow:0 0 24px rgba(201,164,92,.35)}
+.pk-row.many{gap:calc(var(--u)*1)}
+.pk-row.many .pk{width:calc(var(--u)*11.6)}
+.pk-row.many .pk .pkimg{height:calc(var(--u)*15)}
+.pk-row.many .pk .pkname{font-size:.74em;letter-spacing:.04em;text-align:center}
 
 /* ===== card ===== */
 #card{position:absolute;inset:0;z-index:26;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);cursor:pointer;animation:nbIn .25s}
@@ -794,11 +798,32 @@ body.touch-land #touch .abtn .ba{transform:none}
 .hm-card.abyss .hm-name{color:#eaffea;text-shadow:0 0 12px rgba(138,255,154,.5)}
 .hm-card.abyss .hm-title{color:#a8e8b0}
 .hm-card.abyss .hm-diff{color:#a8ffb4}
-.hm-card.file07{border-style:dashed;border-color:rgba(160,160,180,.35);background:linear-gradient(160deg,rgba(14,14,20,.92),rgba(4,4,8,.95))}
-.hm-card.file07 .hm-file{color:#8a8aa0}
-.hm-card.file07 .hm-name{color:#9a9aae;letter-spacing:.35em}
-.hm-card.file07 .hm-title{color:#6a6a7e;font-family:'Orbitron',var(--sans);letter-spacing:.3em}
-.hm-card.file07 .hm-blurb{color:#8e8ea0;font-style:italic}
-.hm-card.file07 .hm-diff{color:#6a6a7e}
+.hm-card.file08{border-style:dashed;border-color:rgba(160,160,180,.35);background:linear-gradient(160deg,rgba(14,14,20,.92),rgba(4,4,8,.95))}
+.hm-card.file08 .hm-file{color:#8a8aa0}
+.hm-card.file08 .hm-name{color:#9a9aae;letter-spacing:.35em}
+.hm-card.file08 .hm-title{color:#6a6a7e;font-family:'Orbitron',var(--sans);letter-spacing:.3em}
+.hm-card.file08 .hm-blurb{color:#8e8ea0;font-style:italic}
+.hm-card.file08 .hm-diff{color:#6a6a7e}
 #result.ab{background:radial-gradient(ellipse at 50% 30%,#0e2014,#020403 75%)}
 #result.ab .rs-rank{color:#eaffea;text-shadow:0 0 40px rgba(120,255,140,.5)}
+
+/* ---- 復活の狼煙編 ---- */
+#stage.ep-train{--gold:#c8a8ff;--gold2:#efe4ff;--gold3:#5a3a8a}
+#stage.ep-train #dialog{background:linear-gradient(180deg,rgba(16,12,24,.92),rgba(7,5,12,.95));border-color:rgba(200,168,255,.4)}
+#title.tr .tt-kicker{color:#d8c8f0}
+#title.tr .tt-logo{color:#fff4ea;letter-spacing:.1em;text-shadow:0 0 30px rgba(0,0,0,.95),0 0 60px rgba(255,170,90,.35),0 2px 0 #1a0e08}
+#title.tr .tt-logo span:nth-child(4),#title.tr .tt-logo span:nth-child(5){color:#ffc890}
+#title.tr .tt-logo .no{color:#9a7ac8}
+#title.tr .tt-en{color:#c8a8ff;letter-spacing:.42em}
+#title.tr .tt-menu button.sel{text-shadow:0 0 14px rgba(200,168,255,.9)}
+#home.tr .hm-logo{text-shadow:0 0 24px rgba(0,0,0,.9),0 0 40px rgba(200,168,255,.35)}
+#home.tr .hm-kicker,#home.tr .hm-sub{color:#d8c8f0}
+.hm-card.train{border-color:rgba(200,168,255,.35);background:linear-gradient(160deg,rgba(22,16,32,.95),rgba(8,5,12,.97))}
+.hm-card.train.sel{border-color:#c8a8ff;box-shadow:0 0 0 1px #c8a8ff,0 0 40px rgba(200,168,255,.3),0 16px 40px rgba(0,0,0,.7)}
+.hm-card.train .hm-file{color:#c8a8ff}
+.hm-card.train .hm-name{color:#fff4ea;text-shadow:0 0 12px rgba(255,170,90,.45)}
+.hm-card.train .hm-title{color:#ffc890}
+.hm-card.train .hm-diff{color:#d8c8f0}
+#result.tr{background:radial-gradient(ellipse at 50% 30%,#1e1430,#050308 75%)}
+#result.tr .rs-rank{color:#fff4ea;text-shadow:0 0 40px rgba(200,168,255,.55)}
+#result.tr .rs-title{color:#ffc890}
