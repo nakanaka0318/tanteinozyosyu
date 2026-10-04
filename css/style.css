@@ -867,3 +867,25 @@ body.touch-land #touch .abtn .ba{transform:none}
 #result.iv{background:radial-gradient(ellipse at 50% 30%,#3a1430,#080208 75%)}
 #result.iv .rs-rank{color:#fff0f8;text-shadow:0 0 40px rgba(255,79,216,.6)}
 #result.iv .rs-title{color:#ffb0d8}
+
+/* ---- 聖典の儀式編 ---- */
+#stage.ep-final{--gold:#ffb060;--gold2:#fff0d8;--gold3:#8a4a1a}
+#stage.ep-final #dialog{background:linear-gradient(180deg,rgba(26,14,8,.92),rgba(10,6,4,.95));border-color:rgba(255,176,96,.45)}
+#stage.nightpark #game{filter:brightness(.42) contrast(1.15) saturate(.7) sepia(.25) hue-rotate(190deg)}
+#title.fn .tt-kicker{color:#ffd8b0}
+#title.fn .tt-logo{color:#fff4e8;letter-spacing:.12em;text-shadow:0 0 30px rgba(0,0,0,.95),0 0 60px rgba(255,140,60,.5),0 2px 0 #2a1408}
+#title.fn .tt-logo span:nth-child(1),#title.fn .tt-logo span:nth-child(2){color:#ffd090}
+#title.fn .tt-logo .no{color:#c8703a}
+#title.fn .tt-en{color:#ffb060;letter-spacing:.42em}
+#title.fn .tt-menu button.sel{text-shadow:0 0 14px rgba(255,176,96,.95)}
+#home.fn .hm-logo{text-shadow:0 0 24px rgba(0,0,0,.9),0 0 40px rgba(255,140,60,.45)}
+#home.fn .hm-kicker,#home.fn .hm-sub{color:#ffd8b0}
+.hm-card.final{border-color:rgba(255,176,96,.45);background:linear-gradient(160deg,rgba(40,20,10,.95),rgba(12,6,4,.97))}
+.hm-card.final.sel{border-color:#ffb060;box-shadow:0 0 0 1px #ffb060,0 0 40px rgba(255,140,60,.4),0 16px 40px rgba(0,0,0,.7)}
+.hm-card.final .hm-file{color:#ffb060}
+.hm-card.final .hm-name{color:#fff4e8;text-shadow:0 0 12px rgba(255,140,60,.6)}
+.hm-card.final .hm-title{color:#ffd090}
+.hm-card.final .hm-diff{color:#ff9a50;font-weight:bold}
+#result.fn{background:radial-gradient(ellipse at 50% 30%,#3a200e,#0a0604 75%)}
+#result.fn .rs-rank{color:#fff4e8;text-shadow:0 0 40px rgba(255,140,60,.6)}
+#result.fn .rs-title{color:#ffd090}

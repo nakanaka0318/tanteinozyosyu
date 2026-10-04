@@ -60,6 +60,11 @@ const PORTRAIT = (() => {
     mido: { rim: '#c8a0f0', hair: ['#0c0c10', '#24242c'], skin: ['#d9a47f', '#f0c8a6'], coat: ['#2a1834', '#5a3a6a'], hairStyle: 'slick', glasses: true, tie: '#c9a45c', collar: 'high' },
     haibara: { rim: '#9ae07a', hair: ['#1e140c', '#3e2a1c'], skin: ['#e4b392', '#f8d6bc'], coat: ['#141418', '#2e2e36'], hairStyle: 'shaggy', hoodie: true, headset: '#5dff9a' },
     okochi: { rim: '#ff8ac0', hair: ['#14110e', '#2e2820'], skin: ['#e4b392', '#f8d6bc'], coat: ['#c0507a', '#ff8ab8'], hairStyle: 'messy', glasses: true, hoodie: true },
+    bruno: { rim: '#e8c890', hair: ['#9a9aa2', '#e0e0e6'], skin: ['#d6a284', '#eec8ac'], coat: ['#3a2a1e', '#6a5040'], hairStyle: 'bald', beard: true, glasses: true, tie: '#8a2a2a' },
+    nagi: { rim: '#ff5a6a', hair: ['#06060a', '#1e1a24'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#08080c', '#24242c'], hairStyle: 'bobcut', collar: 'high', scarf: '#5a0a1a' },
+    irving: { rim: '#f0e0a0', hair: ['#b89040', '#f0d890'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#c8c4bc', '#f4f0e8'], hairStyle: 'slick', tie: '#3a5a8a', monocle: '#c9a45c' },
+    shinomiya: { rim: '#a8b8d8', hair: ['#2a1a14', '#4a3a2a'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#3a3e48', '#6a6e78'], hairStyle: 'bun', glasses: true, tie: '#2a3a5a' },
+    yogarasu_x: { rim: '#ff2040', hair: ['#9a9aa6', '#f4f4fa'], skin: ['#e2d2cc', '#f6e6de'], coat: ['#020204', '#14141c'], hairStyle: 'messy', cape: true, redEyes: true, tentacles: '#5a0a1a' },
     suzu: { rim: '#f6a2c0', hair: ['#1e130c', '#3e2a1c'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#0e0e12', '#22222a'], hairStyle: 'braids', maid: true },
   };
   let uid = 0;

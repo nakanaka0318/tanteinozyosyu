@@ -1063,8 +1063,15 @@ const EPISODES = {
     kicker: '― 探偵助手の手記 FILE.09 ―', en: 'THE USUAL DETECTIVES',
     logo: '<span>い</span><span>つ</span><span>も</span><span class="no">の</span><span>探</span><span>偵</span>',
   },
+  final: {
+    id: 'final', file: 'FILE.10', name: '聖典の儀式編', title: '聖典の儀式', story: () => STORY_FINAL, saveKey: 'final_save_v1',
+    bgm: 'z_title', rain: 0, hum: 0, renderer: () => KTITLE, diff: 4,
+    blurb: '最終章。役目を終えた《聖典》を燃やし、三百年の平和を――。その儀式に、最後のユグドラシルフォロワー《怪盗》Rが予告状を出した。裏切り者を暴き、調律者たちと最後の戦いへ。',
+    kicker: '― 探偵助手の手記 FILE.10・最終章 ―', en: 'THE RITE OF THE SCRIPTURE',
+    logo: '<span>聖</span><span>典</span><span class="no">の</span><span>儀</span><span>式</span>',
+  },
 };
-const EP_ORDER = ['kurosagi', 'cyber', 'thief', 'sky', 'tower', 'abyss', 'train', 'dream', 'idol'];
+const EP_ORDER = ['kurosagi', 'cyber', 'thief', 'sky', 'tower', 'abyss', 'train', 'dream', 'idol', 'final'];
 let EP = EPISODES.kurosagi;
 let homeSel = 0;
 function titleRenderer() { return (W.mode === 'home' ? EPISODES[EP_ORDER[homeSel]] : EP).renderer(); }
@@ -1078,6 +1085,7 @@ function setEpisode(id) {
   stage.classList.toggle('ep-train', id === 'train');
   stage.classList.toggle('ep-dream', id === 'dream');
   stage.classList.toggle('ep-idol', id === 'idol');
+  stage.classList.toggle('ep-final', id === 'final');
 }
 const cleared = id => { try { return !!localStorage.getItem('cleared_' + id); } catch (e) { return false; } };
 function epAmbience(ep) { SND.rain(ep.rain); SND.hum(ep.hum); }
@@ -1095,6 +1103,7 @@ function applyTitle() {
   t.classList.toggle('tr', EP.id === 'train');
   t.classList.toggle('dr', EP.id === 'dream');
   t.classList.toggle('iv', EP.id === 'idol');
+  t.classList.toggle('fn', EP.id === 'final');
   [...t.querySelectorAll('.tt-logo span, .tt-kicker, .tt-en')].forEach(e => { e.style.animation = 'none'; void e.offsetWidth; e.style.animation = ''; });
 }
 
@@ -1144,6 +1153,7 @@ function homeSync() {
   $('home').classList.toggle('tr', ep.id === 'train');
   $('home').classList.toggle('dr', ep.id === 'dream');
   $('home').classList.toggle('iv', ep.id === 'idol');
+  $('home').classList.toggle('fn', ep.id === 'final');
   const box = $('hm-cards'), card = box.children[homeSel];
   if (card) {
     try {
@@ -1156,7 +1166,7 @@ function homeSync() {
 let homeH = null;
 function showHome() {
   W.mode = 'home'; W.map = null; refreshHUD();
-  stage.classList.remove('ep-cyber', 'ep-thief', 'ep-sky', 'ep-tower', 'ep-abyss', 'ep-train', 'ep-dream', 'ep-idol', 'dreamy', 'memory', 'nightmare');
+  stage.classList.remove('ep-cyber', 'ep-thief', 'ep-sky', 'ep-tower', 'ep-abyss', 'ep-train', 'ep-dream', 'ep-idol', 'ep-final', 'dreamy', 'memory', 'nightmare', 'nightpark');
   $('title').classList.add('hidden');
   $('home').classList.remove('hidden');
   $('hm-press').classList.add('hidden');
@@ -1321,6 +1331,7 @@ async function showResult() {
   el.classList.toggle('tr', EP.id === 'train');
   el.classList.toggle('dr', EP.id === 'dream');
   el.classList.toggle('iv', EP.id === 'idol');
+  el.classList.toggle('fn', EP.id === 'final');
   el.innerHTML = `<div class="rs-k">${r.label}</div><div class="rs-rank">${r.rank}</div><div class="rs-title">${r.title}</div>
     <div class="rs-stat">${r.stats}</div><div class="rs-next">― ${isTouch ? 'タップ' : 'クリック または キー'}で続ける ―</div>`;
   el.classList.remove('hidden');
