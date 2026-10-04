@@ -95,7 +95,7 @@ const STORY_DREAM = (() => {
     ]);
     G.scene('dream');
     G.bgm('r_dream');
-    await G.wait(800);
+    await G.fadeIn(1200);
     await N('薄紫の空。足元には、雲のような、柔らかい地面。');
     await X('dorothy', 'こんばんは、{N}。約束どおり、来たよ。', 'smile');
     await M('ドロシー……！ ここは、私の夢……？', 'shock');
