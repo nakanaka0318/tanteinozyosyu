@@ -54,6 +54,12 @@ const PORTRAIT = (() => {
     shadow: { rim: '#ff3a4a', hair: ['#0c0c10', '#24242c'], skin: ['#c4c0cc', '#e0dce6'], coat: ['#c8c8d0', '#f4f4f8'], hairStyle: 'slick', glasses: true, lab: true, redEyes: true },
     rootheart: { rim: '#8aff9a', hair: ['#1a120a', '#3a2a16'], skin: ['#b0a490', '#d0c4b0'], coat: ['#1a120a', '#3a2a16'], hairStyle: 'bald', tentacles: '#3a2a16', collar: 'high', redEyes: true },
     highseed: { rim: '#b46aff', hair: ['#1a0a24', '#3a1a4a'], skin: ['#b8a8c4', '#dccfe4'], coat: ['#1a1620', '#3a3446'], hairStyle: 'messy', tentacles: '#b46aff', redEyes: true },
+    akari: { rim: '#ffb0d0', hair: ['#5a2a1e', '#9a5a40'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#d880a0', '#ffc0d8'], hairStyle: 'longwave', brooch: true },
+    sora: { rim: '#a0c8ff', hair: ['#14141c', '#34344a'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#4a7ac0', '#9ac0f0'], hairStyle: 'twintail', phones: '#ffffff' },
+    manabe: { rim: '#a8c0e0', hair: ['#14110e', '#2e2820'], skin: ['#e4b392', '#f8d6bc'], coat: ['#1a1e28', '#3a3e4c'], hairStyle: 'part', glasses: true, tie: '#3a5a8a' },
+    mido: { rim: '#c8a0f0', hair: ['#0c0c10', '#24242c'], skin: ['#d9a47f', '#f0c8a6'], coat: ['#2a1834', '#5a3a6a'], hairStyle: 'slick', glasses: true, tie: '#c9a45c', collar: 'high' },
+    haibara: { rim: '#9ae07a', hair: ['#1e140c', '#3e2a1c'], skin: ['#e4b392', '#f8d6bc'], coat: ['#141418', '#2e2e36'], hairStyle: 'shaggy', hoodie: true, headset: '#5dff9a' },
+    okochi: { rim: '#ff8ac0', hair: ['#14110e', '#2e2820'], skin: ['#e4b392', '#f8d6bc'], coat: ['#c0507a', '#ff8ab8'], hairStyle: 'messy', glasses: true, hoodie: true },
     suzu: { rim: '#f6a2c0', hair: ['#1e130c', '#3e2a1c'], skin: ['#ecc0a2', '#fde2cc'], coat: ['#0e0e12', '#22222a'], hairStyle: 'braids', maid: true },
   };
   let uid = 0;

@@ -846,3 +846,24 @@ body.touch-land #touch .abtn .ba{transform:none}
 #result.dr{background:radial-gradient(ellipse at 50% 30%,#3a305a,#0a0814 75%)}
 #result.dr .rs-rank{color:#ffffff;text-shadow:0 0 40px rgba(232,216,255,.7)}
 #result.dr .rs-title{color:#e8d8ff}
+
+/* ---- いつもの探偵編 ---- */
+#stage.ep-idol{--gold:#ff9ad0;--gold2:#fff0f8;--gold3:#8a3a6a}
+#stage.ep-idol #dialog{background:linear-gradient(180deg,rgba(28,12,26,.92),rgba(12,6,14,.95));border-color:rgba(255,154,208,.45)}
+#title.iv .tt-kicker{color:#ffd0e8}
+#title.iv .tt-logo{color:#fff0f8;letter-spacing:.1em;text-shadow:0 0 30px rgba(0,0,0,.95),0 0 60px rgba(255,79,216,.45),0 2px 0 #3a0a2a}
+#title.iv .tt-logo span:nth-child(5),#title.iv .tt-logo span:nth-child(6){color:#ffb0d8}
+#title.iv .tt-logo .no{color:#ff7ab0}
+#title.iv .tt-en{color:#ff9ad0;letter-spacing:.42em}
+#title.iv .tt-menu button.sel{text-shadow:0 0 14px rgba(255,154,208,.95)}
+#home.iv .hm-logo{text-shadow:0 0 24px rgba(0,0,0,.9),0 0 40px rgba(255,79,216,.4)}
+#home.iv .hm-kicker,#home.iv .hm-sub{color:#ffd0e8}
+.hm-card.idol{border-color:rgba(255,154,208,.4);background:linear-gradient(160deg,rgba(40,14,34,.95),rgba(12,4,12,.97))}
+.hm-card.idol.sel{border-color:#ff9ad0;box-shadow:0 0 0 1px #ff9ad0,0 0 40px rgba(255,79,216,.35),0 16px 40px rgba(0,0,0,.7)}
+.hm-card.idol .hm-file{color:#ff9ad0}
+.hm-card.idol .hm-name{color:#fff0f8;text-shadow:0 0 12px rgba(255,79,216,.55)}
+.hm-card.idol .hm-title{color:#ffd0e8}
+.hm-card.idol .hm-diff{color:#ff7ab0;font-weight:bold}
+#result.iv{background:radial-gradient(ellipse at 50% 30%,#3a1430,#080208 75%)}
+#result.iv .rs-rank{color:#fff0f8;text-shadow:0 0 40px rgba(255,79,216,.6)}
+#result.iv .rs-title{color:#ffb0d8}

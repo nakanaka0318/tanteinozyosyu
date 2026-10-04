@@ -1056,8 +1056,15 @@ const EPISODES = {
     kicker: '― 探偵助手の手記 FILE.08 ―', en: 'THE GIRL IN PURE WHITE',
     logo: '<span>純</span><span>白</span><span class="no">の</span><span>少</span><span>女</span>',
   },
+  idol: {
+    id: 'idol', file: 'FILE.09', name: '予告状編', title: 'いつもの探偵', story: () => STORY_IDOL, saveKey: 'idol_save_v1',
+    bgm: 'i_title', rain: 0, hum: 0, renderer: () => ITITLE, diff: 4,
+    blurb: '名探偵が帰ってきた、いつもの朝。舞い込んだ依頼は「アイドルとその予告状」。今回の探偵は――助手、あなた自身。シリーズ最難関の推理に挑め。論戦・敗北あり。',
+    kicker: '― 探偵助手の手記 FILE.09 ―', en: 'THE USUAL DETECTIVES',
+    logo: '<span>い</span><span>つ</span><span>も</span><span class="no">の</span><span>探</span><span>偵</span>',
+  },
 };
-const EP_ORDER = ['kurosagi', 'cyber', 'thief', 'sky', 'tower', 'abyss', 'train', 'dream'];
+const EP_ORDER = ['kurosagi', 'cyber', 'thief', 'sky', 'tower', 'abyss', 'train', 'dream', 'idol'];
 let EP = EPISODES.kurosagi;
 let homeSel = 0;
 function titleRenderer() { return (W.mode === 'home' ? EPISODES[EP_ORDER[homeSel]] : EP).renderer(); }
@@ -1070,6 +1077,7 @@ function setEpisode(id) {
   stage.classList.toggle('ep-abyss', id === 'abyss');
   stage.classList.toggle('ep-train', id === 'train');
   stage.classList.toggle('ep-dream', id === 'dream');
+  stage.classList.toggle('ep-idol', id === 'idol');
 }
 const cleared = id => { try { return !!localStorage.getItem('cleared_' + id); } catch (e) { return false; } };
 function epAmbience(ep) { SND.rain(ep.rain); SND.hum(ep.hum); }
@@ -1086,6 +1094,7 @@ function applyTitle() {
   t.classList.toggle('ab', EP.id === 'abyss');
   t.classList.toggle('tr', EP.id === 'train');
   t.classList.toggle('dr', EP.id === 'dream');
+  t.classList.toggle('iv', EP.id === 'idol');
   [...t.querySelectorAll('.tt-logo span, .tt-kicker, .tt-en')].forEach(e => { e.style.animation = 'none'; void e.offsetWidth; e.style.animation = ''; });
 }
 
@@ -1118,7 +1127,7 @@ function renderHome() {
     const d = document.createElement('div');
     d.className = `hm-card ${id}` + (e.locked ? ' locked' : '') + (i === homeSel ? ' sel' : '');
     d.innerHTML = `<div class="hm-file">${e.file}</div><div class="hm-name">${e.name}</div><div class="hm-title">${e.title}</div>
-      <div class="hm-blurb">${sub(e.blurb)}</div><div class="hm-foot"><span class="hm-diff">${e.locked ? '近日公開' : '難易度 ' + '★'.repeat(e.diff) + '☆'.repeat(3 - e.diff)}</span>${st}</div>`;
+      <div class="hm-blurb">${sub(e.blurb)}</div><div class="hm-foot"><span class="hm-diff">${e.locked ? '近日公開' : (e.diff > 3 ? '難易度 ' + '★'.repeat(e.diff) + ' 最難関' : '難易度 ' + '★'.repeat(e.diff) + '☆'.repeat(Math.max(0, 3 - e.diff)))}</span>${st}</div>`;
     d.onmouseenter = () => { if (homeSel !== i) { homeSel = i; SND.se('cursor'); homeSync(); } };
     d.onclick = ev => { ev.stopPropagation(); homeSel = i; homeSync(); openEpisode(id); };
     box.appendChild(d);
@@ -1134,6 +1143,7 @@ function homeSync() {
   $('home').classList.toggle('ab', ep.id === 'abyss');
   $('home').classList.toggle('tr', ep.id === 'train');
   $('home').classList.toggle('dr', ep.id === 'dream');
+  $('home').classList.toggle('iv', ep.id === 'idol');
   const box = $('hm-cards'), card = box.children[homeSel];
   if (card) {
     try {
@@ -1146,7 +1156,7 @@ function homeSync() {
 let homeH = null;
 function showHome() {
   W.mode = 'home'; W.map = null; refreshHUD();
-  stage.classList.remove('ep-cyber', 'ep-thief', 'ep-sky', 'ep-tower', 'ep-abyss', 'ep-train', 'ep-dream', 'dreamy', 'memory', 'nightmare');
+  stage.classList.remove('ep-cyber', 'ep-thief', 'ep-sky', 'ep-tower', 'ep-abyss', 'ep-train', 'ep-dream', 'ep-idol', 'dreamy', 'memory', 'nightmare');
   $('title').classList.add('hidden');
   $('home').classList.remove('hidden');
   $('hm-press').classList.add('hidden');
@@ -1310,6 +1320,7 @@ async function showResult() {
   el.classList.toggle('ab', EP.id === 'abyss');
   el.classList.toggle('tr', EP.id === 'train');
   el.classList.toggle('dr', EP.id === 'dream');
+  el.classList.toggle('iv', EP.id === 'idol');
   el.innerHTML = `<div class="rs-k">${r.label}</div><div class="rs-rank">${r.rank}</div><div class="rs-title">${r.title}</div>
     <div class="rs-stat">${r.stats}</div><div class="rs-next">― ${isTouch ? 'タップ' : 'クリック または キー'}で続ける ―</div>`;
   el.classList.remove('hidden');
