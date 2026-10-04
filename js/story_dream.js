@@ -837,7 +837,7 @@ const STORY_DREAM = (() => {
         stats: `最後の戦いのあとの心　${hp} / 100<br>集めた記憶のかけら　${mem} / 9<br>手帳の記録　${STATE.evidence.length} / ${D_EVIDENCE_ORDER.length}`,
         credits: `<h2>純白の少女</h2><p style="color:#e8d8ff">― 探偵助手の手記 FILE.08 ―</p>
           <h4>《名探偵》</h4><p>シエスタ</p><h4>探偵助手</h4><p>${esc(STATE.name)}</p>
-          <h4>《夢幻》の執行者</h4><p>ドロシー</p>
+          <h4>《夢幻》の調律者</h4><p>ドロシー</p>
           <h4>《巫女》</h4><p>マルチルゲート</p><h4>《技工士》</h4><p>シュバルツ</p><h4>《執行者》</h4><p>加瀬 風靡</p>
           <h4>悪夢</h4><p>白衣の影</p><p>樹核の悪夢</p><p>ハイシード</p>
           <h4>in memory of</h4><p>九条 玲司</p>

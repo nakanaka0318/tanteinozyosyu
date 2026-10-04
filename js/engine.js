@@ -1052,7 +1052,7 @@ const EPISODES = {
   dream: {
     id: 'dream', file: 'FILE.08', name: '夢幻編', title: '純白の少女', story: () => STORY_DREAM, saveKey: 'dream_save_v1',
     bgm: 'w_title', rain: 0, hum: 0, renderer: () => DTITLE, diff: 3,
-    blurb: '《夢幻》の執行者ドロシーの力で、助手は眠れる名探偵の夢の中へ。白の園、時計台、一万メートルの前夜――シエスタの記憶を巡り、悪夢と戦え。戦闘・敗北あり。',
+    blurb: '《夢幻》の調律者ドロシーの力で、助手は眠れる名探偵の夢の中へ。白の園、時計台、一万メートルの前夜――シエスタの記憶を巡り、悪夢と戦え。戦闘・敗北あり。',
     kicker: '― 探偵助手の手記 FILE.08 ―', en: 'THE GIRL IN PURE WHITE',
     logo: '<span>純</span><span>白</span><span class="no">の</span><span>少</span><span>女</span>',
   },

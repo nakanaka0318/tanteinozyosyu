@@ -230,9 +230,9 @@ const STORY_TRAIN = (() => {
     await X('siesta', '私には、まだ止まらない心臓がある。世界を調律する《調律者》たちがいる。それから――', 'serious');
     await X('siesta', '君がいる。', 'smile');
     await M('…………っ。', 'sad', { tremble: true });
-    await X('siesta', '《夢幻》の執行者を探して。夢を司る《調律者》。', 'serious');
+    await X('siesta', '《夢幻》の調律者を探して。夢を司る人。', 'serious');
     await X('siesta', 'その人に会えれば――きっと、私を夢の中から引っ張り出せると思う。', 'serious');
-    await M('《夢幻》の……執行者。', 'think');
+    await M('《夢幻》の……調律者。', 'think');
     await X('siesta', '……ただ、ごめん。私、その人に会ったことがないんだ。顔も、名前も知らない。', 'sad');
     await X('siesta', 'だから、そこは巫女のお告げ頼みになっちゃうけど……。', 'closed');
     await X('siesta', '大丈夫。君なら見つけられる。だって君は、名探偵の助手だから。', 'smile');
@@ -243,7 +243,7 @@ const STORY_TRAIN = (() => {
     await N('手紙を胸に抱いて、私はしばらく、声を殺して泣いた。');
     f().letterRead = true;
     G.toast('手帳の<b>シエスタの手紙</b>が更新された。', 3500);
-    await M('……《夢幻》の執行者。', 'serious');
+    await M('……《夢幻》の調律者。', 'serious');
     await M('見つけるよ、シエスタ。絶対に。', 'serious');
     G.scene(null);
     await G.wait(600);
@@ -263,7 +263,7 @@ const STORY_TRAIN = (() => {
     await X('klaus', '（電話）もしもし……英語で、失礼します。こちらは、ドイツ鉄道の夜行列車《ノルトシュテルン号》の車掌、クラウス・ヴェーバーと申します。', 'serious');
     await X('klaus', '（電話）昨夜、列車の中で事件が起きました。……死人は出ていません。けが人もいません。', 'serious');
     await X('klaus', '（電話）ですが、1号車の乗客が全員、夜中に眠らされ――ある女性の、宝石が消えたのです。', 'sad');
-    await M('（……今は、それどころじゃない。《夢幻》の執行者を探さないと）', 'closed');
+    await M('（……今は、それどころじゃない。《夢幻》の調律者を探さないと）', 'closed');
     await M('すみません。今は、ちょっと……。', 'sad');
     await X('klaus', '（電話）……そう、ですか。いえ、無理を言いました。', 'sad');
     await X('klaus', '（電話）ただ……数年前、白い髪の探偵さんが、この列車の事件を解決してくださったことがありまして。', 'think');
@@ -281,7 +281,7 @@ const STORY_TRAIN = (() => {
     });
     await M('「電子のお告げが大切」――。', 'serious');
     await M('（電話は、電子の声。もしこれが、巫女の言っていたお告げなら……）', 'think');
-    await M('（この事件の先に、《夢幻》の執行者へ続く道が、あるのかもしれない）', 'serious');
+    await M('（この事件の先に、《夢幻》の調律者へ続く道が、あるのかもしれない）', 'serious');
     await M('……クラウスさん。行きます。今から、そちらへ。', 'serious');
     await X('klaus', '（電話）本当ですか!? ありがとうございます……！ 列車は、ヴュルツブルク駅に足止めされています。', 'smile');
     await G.fadeOut(1200);
@@ -884,9 +884,9 @@ const STORY_TRAIN = (() => {
     G.scene('dream');
     G.bgm('r_dream');
     f().dorothyKnown = true; f().dorothyRevealed = true;
-    await X('dorothy', 'わたしはドロシー。《調律者》のひとり――《夢幻》の執行者。', 'serious');
+    await X('dorothy', 'わたしはドロシー。《夢幻》の調律者。', 'serious');
     await X('dorothy', 'ひとの夢を、渡り歩く者。', 'smile');
-    await M('（《夢幻》の、執行者……！ シエスタの手紙の――）', 'shock');
+    await M('（《夢幻》の、調律者……！ シエスタの手紙の――）', 'shock');
     await X('dorothy', 'ゆうべは、1号車のみんなの夢を少しだけ覗いたの。ごめんね、癖なの。', 'smile');
     await X('dorothy', 'ひとりだけ真っ黒な夢のひとがいたから、気になって残ってたんだ。……そしたら、あなたが来た。', 'smile');
     await M('（イーダさんの夢の中の、ウサギを抱いた女の子。名簿にない乗客。一晩中、眠らなかった少女――）', 'think');
@@ -1019,7 +1019,7 @@ const STORY_TRAIN = (() => {
           <h4>探偵助手</h4><p>${esc(STATE.name)}</p>
           <h4>《巫女》</h4><p>マルチルゲート</p><h4>《技工士》</h4><p>シュバルツ</p>
           <h4>ノルトシュテルン号の人々</h4><p>クラウス・ヴェーバー</p><p>ハンナ・ケラー</p><p>イーダ・ブラウン</p><p>アンネリーゼ・フォーゲル</p><p>フランツ・ベルガー</p><p>ミロ・ハーン</p><p>オットー・シュミット</p>
-          <h4>《夢幻》の執行者</h4><p>ドロシー</p>
+          <h4>《夢幻》の調律者</h4><p>ドロシー</p>
           <h4>眠れる《名探偵》</h4><p>シエスタ</p>
           <h4>シナリオ・プログラム・グラフィック・音楽</h4><p>すべてブラウザ上で生成</p>
           <h4>Special Thanks</h4><p>最後まで遊んでくれたあなた</p><div class="end">FILE.08 へ続く</div>`,
